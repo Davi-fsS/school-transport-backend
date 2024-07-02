@@ -1,19 +1,9 @@
-from abc import ABC
-from data.helpers.errors.model_errors import EntityError
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, DateTime
+from sqlalchemy.orm import relationship
 
-class UserType(ABC):
-    id: int
-    name: str
+from data.infrastructure.database import Base
 
-    def __init__(self, id: int, name: str):
-        EntityError.validate_field(id, int)
-        self.id = id
-
-        EntityError.validate_field(name, str)
-        self.name = name
-
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "name": self.name
-        }
+class UserTypeModel(Base):
+    __tablename__ = "user_type"
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(255))

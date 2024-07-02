@@ -1,12 +1,12 @@
-from fastapi import FastAPI, status, Depends, HTTPException
+from fastapi import FastAPI, status, HTTPException
 from presentation.controller.user_controller import UserController
-from data.infrastructure.database import get_db
-from sqlalchemy.orm import Session
+from presentation.controller.user_type_controller import UserTypeController
 from presentation.dto.UserDto import UserDto
 
 app = FastAPI()
 
 user_controller = UserController()
+user_type_controller = UserTypeController()
 
 @app.get("/")
 def read_root():
@@ -22,3 +22,10 @@ async def read_user_by_id(user_id: int):
     if user is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuário não encontrado")
     return user
+
+@app.get("/user-type-by-id/{type_id}", status_code=status.HTTP_200_OK)
+async def read_user_type_by_id(type_id: int):
+    user_type = user_type_controller.read_type(type_id)
+    if user_type is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Tipo não encontrado")
+    return user_type
