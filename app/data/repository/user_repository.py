@@ -1,11 +1,12 @@
 from sqlalchemy.orm import Session
 from data.model.user_model import UserModel
+from data.infrastructure.database import get_db
 
 class UserRepository():
-    user: UserModel
+    db: Session
 
     def __init__(self):
-        self.user = UserModel()
+        self.db = next(get_db())
 
-    def get_user(self, db: Session, id: int):
-        return db.query(self.user).filter(self.user.id == id).first()
+    def get_user(self, user_id: int):
+        return self.db.query(UserModel).filter(UserModel.id == user_id).first()

@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from datetime import datetime
 
 class UserDto(BaseModel):
     uuid: str
@@ -8,7 +9,6 @@ class UserDto(BaseModel):
     cnh: str
     rg: str
     user_type_id: int
-    # creation_date: Datetime
     creation_user: int
-    # change_date: Datetime
+    change_date: datetime
     change_user: int

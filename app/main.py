@@ -1,44 +1,22 @@
-from fastapi import FastAPI, HTTPException, Depends, status
+from fastapi import FastAPI, status, Depends
 from presentation.controller.user_controller import UserController
+from data.infrastructure.database import get_db
 from sqlalchemy.orm import Session
-from pydantic import BaseModel
-from typing import Annotated
-from datetime import datetime
-
-from data.infrastructure.database import engine, SessionLocal, Base
-
-from data.model.user_model import UserModel
 
 app = FastAPI()
-Base.metadata.create_all(bind=engine)
 
-class UserBase(BaseModel):
-    uuid: str
-    name: str
-    email: str
-    cpf: str
-    cnh: str
-    rg: str
-    user_type_id: int
-    creation_user: int
-    change_date: datetime
-    change_user: int
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-db_dependecy = Annotated[Session, Depends(get_db)]
+user_controller = UserController()
 
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
 
-@app.post("/user",status_code=status.HTTP_201_CREATED)
-async def create_user(user: UserBase, db: db_dependecy):
-    db_user = UserModel(**user.model_dump())
-    db.add(db_user)
-    db.commit()
+# @app.post("/user",status_code=status.HTTP_201_CREATED)
+# async def create_user(user: UserDto, db: db_dependecy):
+#     db_user = UserModel(**user.model_dump())
+#     db.add(db_user)
+#     db.commit()
+
+@app.get("/user-by-id/{user_id}", status_code=status.HTTP_200_OK)
+async def read_user_by_id(user_id: int):
+    return user_controller.read_user(user_id)
