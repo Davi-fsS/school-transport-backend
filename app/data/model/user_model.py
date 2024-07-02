@@ -1,50 +1,18 @@
-from abc import ABC
-from app.data.model.user_type_model import UserType
-from data.helpers.errors.model_errors import EntityError
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, DateTime
+from sqlalchemy.orm import relationship
 
-class User(ABC):
-    id: int
-    uuid: str
-    name: str
-    email: str
-    cpf: str
-    cnh: str
-    rg: str
-    user_type: UserType
+from data.infrastructure.database import Base
 
-    def __init__(self, id: int, uuid: str, name: str, email: str, cpf: str, cnh: str, rg: str, user_type: UserType):
-        EntityError.validate_field(id, int)
-        self.id = id
-
-        EntityError.validate_field(uuid, str)
-        self.uuid = uuid
-
-        EntityError.validate_field(name, str)
-        self.name = name
-
-        EntityError.validate_field(email, str)
-        self.email = email
-
-        EntityError.validate_field(cpf, str)
-        self.cpf = cpf
-
-        EntityError.validate_field(cnh, str)
-        self.cnh = cnh
-
-        EntityError.validate_field(rg, str)
-        self.rg = rg
-
-        EntityError.validate_field(user_type, UserType)
-        self.user_type = user_type
-
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "uuid": self.uuid,
-            "name": self.name,
-            "email": self.email,
-            "cpf": self.cpf,
-            "cnh": self.cnh,
-            "rg": self.rg,
-            "user_type": self.user_type.to_dict()
-        }
+class UserModel(Base):
+    __tablename__ = "user"
+    id = Column(Integer, primary_key=True, index=True)
+    uuid = Column(String(36))
+    name = Column(String(255))
+    email = Column(String(255))
+    cpf = Column(String(11))
+    cnh = Column(String(11))
+    rg = Column(String(12))
+    user_type_id = Column(Integer)
+    creation_user = Column(Integer)
+    change_date = Column(DateTime)
+    change_user = Column(Integer)
