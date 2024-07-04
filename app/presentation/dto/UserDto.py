@@ -9,6 +9,3 @@ class UserDto(BaseModel):
     cnh: str
     rg: str
     user_type_id: int
-    creation_user: int
-    change_date: datetime
-    change_user: int
