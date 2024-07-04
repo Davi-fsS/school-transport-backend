@@ -32,8 +32,8 @@ def read_root():
 async def create_user(user: UserDto):
     try:
         return user_controller.create_user(user)
-    except ValueError:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Dados inválidos")
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
 
 
 @app.get("/user/by-id/{user_id}", status_code=status.HTTP_200_OK)
