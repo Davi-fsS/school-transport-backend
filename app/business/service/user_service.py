@@ -16,11 +16,11 @@ class UserService():
         if(user.user_type_id == 0):
             raise ValueError("Tipo de Usuário não encontrado")
         
-        if(CPF().validate(user.cpf) == False):
-            raise ValueError("CPF inválido")
+        # if(CPF().validate(user.cpf) == False):
+        #     raise ValueError("CPF inválido")
         
-        if(validate_rg.is_valid(user.rg) == False):
-            raise ValueError("RG inválido")
+        # if(validate_rg.is_valid(user.rg) == False):
+        #     raise ValueError("RG inválido")
         
         if(len(user.uuid) != 28):
             raise ValueError("Firebase uid inválido")

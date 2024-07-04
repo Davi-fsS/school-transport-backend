@@ -10,7 +10,9 @@ origins = [
     "http://localhost",
     "http://localhost:3000",
     "http://127.0.0.1:8000",
-    "http://127.0.0.1:3000"
+    "http://127.0.0.1:3000",
+    "http://192.168.0.149",
+    "http://192.168.0.150"
 ]
 
 app.add_middleware(
@@ -49,3 +51,7 @@ async def read_user_type_by_id(type_id: int):
     if user_type is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Tipo não encontrado")
     return user_type
+
+if __name__ == "_main_":
+    import uvicorn
+    uvicorn.run(app, host="192.168.0.149", port=8000)
