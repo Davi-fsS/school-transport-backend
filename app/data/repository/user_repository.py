@@ -13,7 +13,11 @@ class UserRepository():
         return self.db.query(UserModel).filter(UserModel.id == user_id).first()
     
     def create_user(self, user: UserDto):
-        db_user = UserModel(**user.model_dump())
-        self.db.add(db_user)
-        self.db.commit()
-        return user.model_dump()
+        try:
+            db_user = UserModel(**user.model_dump())
+            self.db.add(db_user)
+            self.db.commit()
+            return user.model_dump()
+        except:
+            self.db.rollback()
+            raise ValueError
