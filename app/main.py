@@ -2,6 +2,7 @@ from fastapi import FastAPI, status, HTTPException
 from presentation.controller.user_controller import UserController
 from presentation.controller.user_type_controller import UserTypeController
 from presentation.dto.UserDto import UserDto
+from presentation.dto.UpdateUserUuid import UpdateUserUuid
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
@@ -36,7 +37,13 @@ async def create_user(user: UserDto):
         return user_controller.create_user(user)
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
-
+    
+@app.put("/user/update-uuid",status_code=status.HTTP_200_OK)
+async def update_user_uuid(user_data: UpdateUserUuid):
+    try:
+        return user_controller.update_user_uuid(user_data)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
 
 @app.get("/user/by-id/{user_id}", status_code=status.HTTP_200_OK)
 async def read_user_by_id(user_id: int):
@@ -54,4 +61,4 @@ async def read_user_type_by_id(type_id: int):
 
 if __name__ == "_main_":
     import uvicorn
-    uvicorn.run(app, host="192.168.0.149", port=8000)
+    uvicorn.run(app, host="192.168.15.5", port=8000)
