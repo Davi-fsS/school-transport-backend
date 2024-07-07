@@ -1,4 +1,5 @@
 from data.repository.user_repository import UserRepository
+from data.repository.user_phone_repository import UserPhoneRepository
 from presentation.dto.UserDto import UserDto
 from presentation.dto.UpdateUserUuid import UpdateUserUuid
 from validate_docbr import CPF
@@ -6,9 +7,11 @@ from validate_rg import validate_rg
 
 class UserService():
     user_repository: UserRepository
+    user_phone_repository: UserPhoneRepository
 
     def __init__(self):
         self.user_repository = UserRepository()
+        self.user_phone_repository = UserPhoneRepository()
 
     def get_user(self, user_id: int):
         return self.user_repository.get_user(user_id)
@@ -21,7 +24,20 @@ class UserService():
         else:
             self.validate_responsible(self, user)
 
-        return self.user_repository.create_user(user)
+        user_id = self.user_repository.create_user(user)
+    
+        self.user_phone_repository.create_phone(user_id, user)
+
+        return user_id
+
+      
+    def update_user_uuid(self, user_data: UpdateUserUuid):
+        user = self.user_repository.get_user(user_data.user_id)
+
+        if(user == None):
+            raise ValueError("Usuário não existe")
+        
+        return self.user_repository.update_user_uuid(user_data.user_id, user_data.uuid)
     
     @staticmethod
     def validate_responsible(self, user: UserDto):
@@ -81,11 +97,3 @@ class UserService():
 
             if(validate_rg.is_valid(user.rg) == False):
                 raise ValueError("RG inválido")
-
-    def update_user_uuid(self, user_data: UpdateUserUuid):
-        user = self.user_repository.get_user(user_data.user_id)
-
-        if(user == None):
-            raise ValueError("Usuário não existe")
-        
-        return self.user_repository.update_user_uuid(user_data.user_id, user_data.uuid)
