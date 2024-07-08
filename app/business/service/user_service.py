@@ -6,6 +6,7 @@ from presentation.dto.CreatePhone import CreatePhone
 from presentation.dto.UpdateUserUuid import UpdateUserUuid
 from validate_docbr import CPF
 from validate_rg import validate_rg
+import re
 
 class UserService():
     user_repository: UserRepository
@@ -47,46 +48,43 @@ class UserService():
     
     @staticmethod
     def validate_responsible(self, user: UserDto):
+        self.validate_email(self, user.email)
+
         if(user.user_type_id == 0):
             raise ValueError("Tipo de Usuário não encontrado")
-        
-        if(self.user_repository.get_user_by_email(user.email) != None):
-            raise ValueError("E-mail já cadastrado")
         
         if(self.user_repository.get_user_by_cpf(user.cpf) != None):
             raise ValueError("CPF já cadastrado")
         
-        if(CPF().validate(user.cpf) == False):
+        if(not CPF().validate(user.cpf)):
             raise ValueError("CPF inválido")
         
         if(user.rg != ""):
             if(self.user_repository.get_user_by_rg(user.rg) != None):
                 raise ValueError("RG já cadastrado")
 
-            if(validate_rg.is_valid(user.rg) == False):
+            if(not validate_rg.is_valid(user.rg)):
                 raise ValueError("RG inválido")
 
     @staticmethod
     def validate_administrator(self, user: UserDto):
+        self.validate_email(self, user.email)
+
         if(user.user_type_id == 0):
             raise ValueError("Tipo de Usuário não encontrado")
-        
-        if(self.user_repository.get_user_by_email(user.email) != None):
-            raise ValueError("E-mail já cadastrado")
         
         if(self.user_repository.get_user_by_cpf(user.cpf) != None):
             raise ValueError("CPF já cadastrado")
         
-        if(CPF().validate(user.cpf) == False):
+        if(not CPF().validate(user.cpf)):
             raise ValueError("CPF inválido")
 
     @staticmethod 
     def validate_driver(self, user: UserDto):
+        self.validate_email(self, user.email)
+
         if(user.user_type_id == 0):
             raise ValueError("Tipo de Usuário não encontrado")
-        
-        if(self.user_repository.get_user_by_email(user.email) != None):
-            raise ValueError("E-mail já cadastrado")
 
         if(self.user_repository.get_user_by_cnh(user.cnh) != None):
             raise ValueError("CNH já cadastrada")
@@ -94,12 +92,22 @@ class UserService():
         if(self.user_repository.get_user_by_cpf(user.cpf) != None):
             raise ValueError("CPF já cadastrado")
 
-        if(CPF().validate(user.cpf) == False):
+        if(not CPF().validate(user.cpf)):
             raise ValueError("CPF inválido")
         
         if(user.rg != ""):
             if(self.user_repository.get_user_by_rg(user.rg) != None):
                 raise ValueError("RG já cadastrado")
 
-            if(validate_rg.is_valid(user.rg) == False):
+            if(not validate_rg.is_valid(user.rg)):
                 raise ValueError("RG inválido")
+
+    @staticmethod
+    def validate_email(self, email: str):
+        regex = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+        
+        if(self.user_repository.get_user_by_email(email) != None):
+            raise ValueError("E-mail já cadastrado")
+        
+        if(not re.match(regex, email)):
+            raise ValueError("E-mail inválido")
