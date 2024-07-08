@@ -1,7 +1,6 @@
 from sqlalchemy.orm import Session
 from data.model.user_type_model import UserTypeModel
 from data.infrastructure.database import get_db
-from presentation.dto.UserDto import UserDto
 
 class UserTypeRepository():
     db: Session
