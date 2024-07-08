@@ -7,3 +7,4 @@ class UserDto(BaseModel):
     cnh: str
     rg: str
     user_type_id: int
+    phone: str

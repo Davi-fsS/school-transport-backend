@@ -24,9 +24,8 @@ class UserRepository():
     def get_user_by_rg(self, rg: str):
         return self.db.query(UserModel).filter(UserModel.rg == rg).first()
 
-    def create_user(self, user: UserDto):
+    def create_user(self, db_user: UserModel):
         try:
-            db_user = UserModel(**user.model_dump())
             self.db.add(db_user)
             self.db.commit()
             return db_user.id

@@ -11,10 +11,3 @@ class UserPhoneModel(Base):
     ddd = Column(String(2))
     phone = Column(String(15))
     creation_user = Column(Integer)
-
-    def __init__(self, user_id, ddi, ddd, phone, creation_user):
-        self.user_id = user_id
-        self.ddi = ddi
-        self.ddd = ddd
-        self.phone = phone
-        self.creation_user = creation_user

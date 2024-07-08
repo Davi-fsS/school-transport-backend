@@ -30,10 +30,7 @@ user_controller = UserController()
 user_type_controller = UserTypeController()
 user_phone_controller = UserPhoneController()
 
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
-
+# USER ENDPOINTS
 @app.post("/user/create",status_code=status.HTTP_201_CREATED)
 async def create_user(user: UserDto):
     try:
@@ -55,6 +52,7 @@ async def read_user_by_id(user_id: int):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuário não encontrado")
     return user
 
+# USER_TYPE ENDPOINTS
 @app.get("/user-type/by-id/{type_id}", status_code=status.HTTP_200_OK)
 async def read_user_type_by_id(type_id: int):
     user_type = user_type_controller.read_type(type_id)
@@ -62,6 +60,7 @@ async def read_user_type_by_id(type_id: int):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Tipo não encontrado")
     return user_type
 
+# USER_PHONE ENDPOINTS
 @app.post("/user-phone/create", status_code=status.HTTP_201_CREATED)
 async def create_user_phone(user_phone: CreatePhone):
     try:

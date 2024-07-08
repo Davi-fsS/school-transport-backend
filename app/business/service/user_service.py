@@ -1,17 +1,19 @@
 from data.repository.user_repository import UserRepository
-from data.repository.user_phone_repository import UserPhoneRepository
+from business.service.user_phone_service import UserPhoneService
 from presentation.dto.UserDto import UserDto
+from data.model.user_model import UserModel
+from presentation.dto.CreatePhone import CreatePhone
 from presentation.dto.UpdateUserUuid import UpdateUserUuid
 from validate_docbr import CPF
 from validate_rg import validate_rg
 
 class UserService():
     user_repository: UserRepository
-    user_phone_repository: UserPhoneRepository
+    user_phone_service: UserPhoneService
 
     def __init__(self):
         self.user_repository = UserRepository()
-        self.user_phone_repository = UserPhoneRepository()
+        self.user_phone_service = UserPhoneService()
 
     def get_user(self, user_id: int):
         return self.user_repository.get_user(user_id)
@@ -24,9 +26,13 @@ class UserService():
         else:
             self.validate_responsible(self, user)
 
-        user_id = self.user_repository.create_user(user)
+        user_body = UserModel(name=user.name, email=user.email, cpf=user.cpf, cnh=user.cnh, user_type_id=user.user_type_id, rg=user.rg)
+
+        user_id = self.user_repository.create_user(user_body)
     
-        self.user_phone_repository.create_phone(user_id, user)
+        phone_body = CreatePhone(user_id=user_id, phone=user.phone)
+
+        self.user_phone_service.create_phone(phone_body)
 
         return user_id
 

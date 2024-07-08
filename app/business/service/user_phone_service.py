@@ -9,6 +9,6 @@ class UserPhoneService():
         self.user_phone_repository = UserPhoneRepository()
 
     def create_phone(self, user_phone: CreatePhone):
-        user_phone_to_add = UserPhoneModel(user_phone.user_id, "", "", user_phone.phone, 2)
+        user_phone_to_add = UserPhoneModel(user_id=user_phone.user_id, phone=user_phone.phone, creation_user=2)
 
         return self.user_phone_repository.create_phone(user_phone_to_add)
