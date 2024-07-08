@@ -1,7 +1,9 @@
 from fastapi import FastAPI, status, HTTPException
 from presentation.controller.user_controller import UserController
 from presentation.controller.user_type_controller import UserTypeController
+from presentation.controller.user_phone_controller import UserPhoneController
 from presentation.dto.UserDto import UserDto
+from presentation.dto.CreatePhone import CreatePhone
 from presentation.dto.UpdateUserUuid import UpdateUserUuid
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -26,6 +28,7 @@ app.add_middleware(
 
 user_controller = UserController()
 user_type_controller = UserTypeController()
+user_phone_controller = UserPhoneController()
 
 @app.get("/")
 def read_root():
@@ -58,6 +61,13 @@ async def read_user_type_by_id(type_id: int):
     if user_type is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Tipo não encontrado")
     return user_type
+
+@app.post("/user-phone/create", status_code=status.HTTP_201_CREATED)
+async def create_user_phone(user_phone: CreatePhone):
+    try:
+        return user_phone_controller.create_phone(user_phone)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
 
 if __name__ == "_main_":
     import uvicorn

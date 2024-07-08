@@ -1,0 +1,14 @@
+from data.repository.user_phone_repository import UserPhoneRepository
+from presentation.dto.CreatePhone import CreatePhone
+from data.model.user_phone_model import UserPhoneModel
+
+class UserPhoneService():
+    user_phone_repository: UserPhoneRepository
+
+    def __init__(self):
+        self.user_phone_repository = UserPhoneRepository()
+
+    def create_phone(self, user_phone: CreatePhone):
+        user_phone_to_add = UserPhoneModel(user_phone.user_id, "", "", user_phone.phone, 2)
+
+        return self.user_phone_repository.create_phone(user_phone_to_add)
