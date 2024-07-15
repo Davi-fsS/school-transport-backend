@@ -8,3 +8,4 @@ class UserDto(BaseModel):
     rg: str
     user_type_id: int
     phone: str
+    address: str
