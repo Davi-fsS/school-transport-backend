@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from presentation.dto.CreatePoint import CreatePoint
 
 class UserDto(BaseModel):
     name: str
@@ -8,4 +9,4 @@ class UserDto(BaseModel):
     rg: str
     user_type_id: int
     phone: str
-    address: str
+    address: CreatePoint

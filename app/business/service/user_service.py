@@ -5,6 +5,7 @@ from business.service.user_point_service import UserPointService
 from presentation.dto.UserDto import UserDto
 from data.model.user_model import UserModel
 from data.model.point_model import PointModel
+from presentation.dto.CreatePoint import CreatePoint
 from presentation.dto.CreatePhone import CreatePhone
 from presentation.dto.UpdateUserUuid import UpdateUserUuid
 from validate_docbr import CPF
@@ -38,7 +39,7 @@ class UserService():
     
         self.creating_user_phone(self, user_id=user_id, phone=user.phone)
 
-        self.creating_user_point(user_id=user_id, name=user.name, address=user.address)
+        self.creating_user_point(user_id=user_id, user_name=user.name, point=user.address)
 
         return user_id
       
@@ -124,8 +125,8 @@ class UserService():
 
         self.user_phone_service.create_phone(phone_body)
 
-    def creating_user_point(self, user_id: int, name: str, address: str):
-        point_body = PointModel(name=f"Casa {name}", address=address, point_type_id=1, description=f"Endereço principal de {name}")
+    def creating_user_point(self, user_id: int, user_name: str, point : CreatePoint):
+        point_body = PointModel(name=f"Casa {user_name}", address=point.address, point_type_id=1, description=f"Endereço principal de {user_name}")
 
         point_id = self.point_service.create_point(point_body)
 
