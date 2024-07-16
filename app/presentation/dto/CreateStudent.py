@@ -2,4 +2,6 @@ from pydantic import BaseModel
 
 class CreateStudent(BaseModel):
     name: str
-    age: int
+    year: int
+    responsible_id: int
+    point_id: int

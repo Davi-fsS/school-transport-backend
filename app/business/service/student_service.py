@@ -9,6 +9,6 @@ class StudentService():
         self.student_repository = StudentRepository()
 
     def create_student(self, student: CreateStudent):
-        student = StudentModel(name=student.name, age=student.age, creation_user=2)
+        student = StudentModel(name=student.name, year=student.year, point_id=student.point_id, creation_user=2)
 
         return self.student_repository.create_student(student)

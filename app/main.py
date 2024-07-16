@@ -1,8 +1,10 @@
-from fastapi import FastAPI, status, HTTPException
+from fastapi import FastAPI, status, HTTPException, Header
 from presentation.controller.user_controller import UserController
 from presentation.controller.user_type_controller import UserTypeController
 from presentation.controller.user_phone_controller import UserPhoneController
+from presentation.controller.student_controller import StudentController
 from presentation.dto.UserDto import UserDto
+from presentation.dto.CreateStudent import CreateStudent
 from presentation.dto.CreatePhone import CreatePhone
 from presentation.dto.UpdateUserUuid import UpdateUserUuid
 from fastapi.middleware.cors import CORSMiddleware
@@ -29,6 +31,7 @@ app.add_middleware(
 user_controller = UserController()
 user_type_controller = UserTypeController()
 user_phone_controller = UserPhoneController()
+student_controller = StudentController()
 
 # USER ENDPOINTS
 @app.post("/user/create",status_code=status.HTTP_201_CREATED)
@@ -65,6 +68,14 @@ async def read_user_type_by_id(type_id: int):
 async def create_user_phone(user_phone: CreatePhone):
     try:
         return user_phone_controller.create_phone(user_phone)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    
+# STUDENT ENDPOINTS
+@app.post("/student/create",status_code=status.HTTP_201_CREATED)
+async def create_user(student: CreateStudent, token: str = Header(...)):
+    try:
+        return student_controller.create_student(token, student=student)
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
 
