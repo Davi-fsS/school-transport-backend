@@ -16,5 +16,4 @@ class StudentRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
-
     

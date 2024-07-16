@@ -8,6 +8,9 @@ class PointRepository():
     def __init__(self):
         self.db = next(get_db())
 
+    def get_point(self, point_id: int):
+        return self.db.query(PointModel).filter(PointModel.id == point_id).first()
+
     def create_point(self, db_point: PointModel):
         try:
             self.db.add(db_point)

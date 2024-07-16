@@ -73,9 +73,9 @@ async def create_user_phone(user_phone: CreatePhone):
     
 # STUDENT ENDPOINTS
 @app.post("/student/create",status_code=status.HTTP_201_CREATED)
-async def create_user(student: CreateStudent, token: str = Header(...)):
+async def create_user(student: CreateStudent):
     try:
-        return student_controller.create_student(token, student=student)
+        return student_controller.create_student(student=student)
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
 

@@ -17,3 +17,6 @@ class PointService():
         point_body = PointModel(name=f"Casa {point_name}", address=point.address, point_type_id=1, lat=coords["lat"], lng= coords["lng"] ,description=f"Endereço principal de {point_name}", creation_user=2)
 
         return self.point_repository.create_point(point_body)
+    
+    def get_point(self, point_id: int):
+        return self.point_repository.get_point(point_id=point_id)
