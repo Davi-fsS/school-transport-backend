@@ -29,15 +29,15 @@ class UserService():
     
     def create_user(self, user: UserDto):
         if(user.user_type_id == 1):
-            self.validate_administrator(self, user)
+            self.validate_administrator(user)
         elif(user.user_type_id == 2):
-            self.validate_driver(self, user)
+            self.validate_driver(user)
         else:
-            self.validate_responsible(self, user)
+            self.validate_responsible(user)
 
-        user_id = self.creating_user(self, user=user)
+        user_id = self.creating_user(user=user)
     
-        self.creating_user_phone(self, user_id=user_id, phone=user.phone)
+        self.creating_user_phone(user_id=user_id, phone=user.phone)
 
         self.creating_user_point(user_id=user_id, user_name=user.name, point=user.address)
 
@@ -52,7 +52,7 @@ class UserService():
         return self.user_repository.update_user_uuid(user_data.user_id, user_data.uuid)
     
     def validate_responsible(self, user: UserDto):
-        self.validate_email(self, user.email)
+        self.validate_email(user.email)
 
         if(user.user_type_id == 0):
             raise ValueError("Tipo de Usuário não encontrado")
@@ -71,7 +71,7 @@ class UserService():
                 raise ValueError("RG inválido")
 
     def validate_administrator(self, user: UserDto):
-        self.validate_email(self, user.email)
+        self.validate_email(user.email)
 
         if(user.user_type_id == 0):
             raise ValueError("Tipo de Usuário não encontrado")
@@ -83,7 +83,7 @@ class UserService():
             raise ValueError("CPF inválido")
 
     def validate_driver(self, user: UserDto):
-        self.validate_email(self, user.email)
+        self.validate_email(user.email)
 
         if(user.user_type_id == 0):
             raise ValueError("Tipo de Usuário não encontrado")
