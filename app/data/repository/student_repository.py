@@ -8,7 +8,7 @@ class StudentRepository():
     def __init__(self):
         self.db = next(get_db())
 
-    def create_user_point(self, db_student: StudentModel):
+    def create_student(self, db_student: StudentModel):
         try:
             self.db.add(db_student)
             self.db.commit()
