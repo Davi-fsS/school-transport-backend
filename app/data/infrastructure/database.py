@@ -6,7 +6,7 @@ import os
 
 load_dotenv()
 DB_URL = DB_URL = os.getenv("DB_URL")
-engine = create_engine("mysql+pymysql://avnadmin:AVNS_yBm5abDexKF2ThjVx_z@tcc-g06-ecm-2024-tcc-transporte-escolar.l.aivencloud.com:24617/tcc-g06", echo=True)
+engine = create_engine(DB_URL, echo=True)
 SessionLocal = sessionmaker(autoflush=False, bind=engine)
 
 Base = declarative_base()
