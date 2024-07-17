@@ -10,6 +10,9 @@ class UserController():
     
     def read_user(self, user_id: int):
         return self.user_service.get_user(user_id)
+    
+    def read_user_by_email(self, email: str):
+        return self.user_service.get_user_by_email(email)
 
     def create_user(self, user: UserDto):
         return self.user_service.create_user(user)

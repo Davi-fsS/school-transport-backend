@@ -27,6 +27,9 @@ class UserService():
     def get_user(self, user_id: int):
         return self.user_repository.get_user(user_id)
     
+    def get_user_by_email(self, email: str):
+        return self.user_repository.get_user_by_email(email)
+    
     def create_user(self, user: UserDto):
         if(user.user_type_id == 1):
             self.validate_administrator(user)
