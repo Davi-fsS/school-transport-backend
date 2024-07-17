@@ -113,7 +113,3 @@ async def get_students_by_responsible(responsible_id: int):
         return students
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
-
-if __name__ == "_main_":
-    import uvicorn
-    uvicorn.run(app, host="192.168.15.5", port=8000)
