@@ -18,6 +18,13 @@ class StudentRepository():
 
         return student
 
+    def get_students_by_student_list(self, student_id_list: List[int]):
+        try:
+            students = self.db.query(StudentModel).filter(StudentModel.id.in_(student_id_list)).all()
+            return students
+        except Exception as e:
+            raise ValueError("Erro ao buscar estudantes: " + str(e))
+
     def create_student_list(self, db_student_list: List[StudentModel]):
         created_ids = []
         try:

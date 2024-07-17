@@ -16,6 +16,11 @@ class UserStudentRepository():
             raise ValueError("Associação entre aluno e responsável não encontrada")
 
         return user_student 
+    
+    def get_students_by_responsible(self, responsible_id: int):
+        user_student_list = self.db.query(UserStudentModel).filter(UserStudentModel.user_id == responsible_id).all()
+
+        return user_student_list 
 
     def create_user_student(self, db_user_student: UserStudentModel):
         try:

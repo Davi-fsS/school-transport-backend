@@ -94,6 +94,18 @@ async def delete_student(student_id: int):
         return student_controller.delete_student(student_id=student_id)
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    
+@app.get("/student/get-by-responsible", status_code=status.HTTP_200_OK)
+async def get_students_by_responsible(responsible_id: int):
+    try:
+        students = student_controller.get_students_by_responsible(responsible_id=responsible_id)
+
+        if(len(students) == 0):
+            raise HTTPException(status_code=status.HTTP_204_NO_CONTENT, detail="Sem alunos cadastrados")
+        
+        return students
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
 
 if __name__ == "_main_":
     import uvicorn

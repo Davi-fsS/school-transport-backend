@@ -9,6 +9,9 @@ class StudentController():
     def __init__(self):
         self.student_service = StudentService()
     
+    def get_students_by_responsible(self, responsible_id: int):
+        return self.student_service.get_students_by_responsible(responsible_id=responsible_id)
+
     def create_student_list(self, student_list: List[CreateStudent]):
         return self.student_service.create_student_list(student_list=student_list)
     

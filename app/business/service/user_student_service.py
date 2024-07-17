@@ -8,6 +8,9 @@ class UserStudentService():
     def __init__(self):
         self.user_student_repository = UserStudentRepository()
 
+    def get_students_by_responsible(self, responsible_id: int):
+        return self.user_student_repository.get_students_by_responsible(responsible_id=responsible_id)
+
     def create_user_student(self, user_id: int, student_id: int):
         user_student_model = UserStudentModel(user_id=user_id, student_id=student_id, creation_user=2)
         

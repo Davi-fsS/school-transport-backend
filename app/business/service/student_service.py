@@ -19,6 +19,14 @@ class StudentService():
         self.point_service = PointService()
         self.user_student_service = UserStudentService()
 
+    def get_students_by_responsible(self, responsible_id: int):
+        user_students_by_responsible_list = self.user_student_service.get_students_by_responsible(responsible_id=responsible_id)
+
+        student_id_list = []
+        for user_student in user_students_by_responsible_list:
+            student_id_list.append(user_student.student_id)
+
+        return self.student_repository.get_students_by_student_list(student_id_list=student_id_list)
 
     def create_student_list(self, student_list: List[CreateStudent]):
         self.validate_create_student_list(student_list=student_list)
