@@ -14,3 +14,6 @@ class StudentController():
     
     def update_student(self, student: UpdateStudent):
         return self.student_service.update_student(student=student)
+   
+    def delete_student(self, student_id: int):
+        return self.student_service.delete_student(student_id=student_id)

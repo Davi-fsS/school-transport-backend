@@ -11,7 +11,12 @@ class StudentRepository():
         self.db = next(get_db())
 
     def get_student(self, student_id: int):
-        return self.db.query(StudentModel).filter(StudentModel.id == student_id).first()
+        student = self.db.query(StudentModel).filter(StudentModel.id == student_id).first()
+
+        if student is None:
+            raise ValueError("Aluno não encontrado")
+
+        return student
 
     def create_student_list(self, db_student_list: List[StudentModel]):
         created_ids = []
@@ -29,11 +34,17 @@ class StudentRepository():
     def update_student(self, student_update: UpdateStudent):
         try:
             student = self.get_student(student_update.id)
-            if student is None:
-                    raise ValueError("Usuário não encontrado")
-
             student.name = student_update.name
             student.year = student_update.year
+            self.db.commit()
+        except:
+            self.db.rollback()
+            raise ValueError("Erro ao salvar no sistema")
+        
+    def delete_student(self, student_id: int):
+        try:
+            student = self.get_student(student_id)
+            self.db.delete(student)
             self.db.commit()
         except:
             self.db.rollback()

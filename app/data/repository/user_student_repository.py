@@ -9,6 +9,14 @@ class UserStudentRepository():
     def __init__(self):
         self.db = next(get_db())
 
+    def get_user_student_by_student_id(self, student_id: int):
+        user_student = self.db.query(UserStudentModel).filter(UserStudentModel.student_id == student_id).first()
+
+        if user_student is None:
+            raise ValueError("Associação entre aluno e responsável não encontrada")
+
+        return user_student 
+
     def create_user_student(self, db_user_student: UserStudentModel):
         try:
             self.db.add(db_user_student)
@@ -31,4 +39,11 @@ class UserStudentRepository():
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
 
-    
+    def delete_user_student(self, student_id: int):
+        try:
+            user_student = self.get_user_student_by_student_id(student_id)
+            self.db.delete(user_student)
+            self.db.commit()
+        except:
+            self.db.rollback()
+            raise ValueError("Erro ao salvar no sistema")

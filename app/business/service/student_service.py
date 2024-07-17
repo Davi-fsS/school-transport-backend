@@ -31,6 +31,11 @@ class StudentService():
         self.validate_update_student(student=student)
 
         return self.student_repository.update_student(student_update=student)
+    
+    def delete_student(self, student_id: int):
+        self.user_student_service.delete_user_student(student_id=student_id)
+
+        return self.student_repository.delete_student(student_id=student_id)
 
     def validate_create_student_list(self, student_list: List[CreateStudent]):
         for student in student_list:
@@ -47,15 +52,12 @@ class StudentService():
                 raise ValueError("Ponto inválido")
 
     def validate_update_student(self, student: UpdateStudent):
-        if(self.student_repository.get_student(student_id=student.id) is None):
-            raise ValueError("Aluno informado não existe")
-
         if len(student.name) == 0:
             raise ValueError("Nome inválido")
 
         if student.year <= 0:
             raise ValueError("Idade inválida")
-   
+
     def creating_students(self, student_list: List[CreateStudent]):
         student_model_list = []
 
