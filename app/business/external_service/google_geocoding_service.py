@@ -7,7 +7,7 @@ class GoogleGeocodingService():
 
     def __init__(self):
         load_dotenv()
-        self.secret_key = os.getenv("GOOGLE_SECRET_KEY")
+        self.secret_key = "AIzaSyB65ouahlrzxKKS3X_VeMHKWZPYrJTJx6E"
 
     def get_geocode_by_address(self, address: str):
         params = {
