@@ -13,6 +13,23 @@ from typing import List
 
 app = FastAPI()
 
+origins = [
+    "http://localhost",
+    "http://localhost:3000",
+    "http://127.0.0.1:8000",
+    "http://127.0.0.1:3000",
+    "http://192.168.0.149",
+    "http://192.168.0.150"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 user_controller = UserController()
 user_type_controller = UserTypeController()
 user_phone_controller = UserPhoneController()
