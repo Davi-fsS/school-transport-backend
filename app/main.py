@@ -50,6 +50,13 @@ async def update_user_uuid(user_data: UpdateUserUuid):
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
 
+@app.get("/user/by-email", status_code=status.HTTP_200_OK)
+async def read_user_by_email(email: str):
+    user = user_controller.read_user_by_email(email)
+    if user is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuário não encontrado")
+    return user
+
 @app.get("/user/by-id/{user_id}", status_code=status.HTTP_200_OK)
 async def read_user_by_id(user_id: int):
     user = user_controller.read_user(user_id)
