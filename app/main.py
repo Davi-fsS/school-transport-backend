@@ -8,6 +8,7 @@ from presentation.dto.CreateStudent import CreateStudent
 from presentation.dto.CreatePhone import CreatePhone
 from presentation.dto.UpdateUserUuid import UpdateUserUuid
 from fastapi.middleware.cors import CORSMiddleware
+from typing import List
 
 app = FastAPI()
 
@@ -72,10 +73,10 @@ async def create_user_phone(user_phone: CreatePhone):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
     
 # STUDENT ENDPOINTS
-@app.post("/student/create",status_code=status.HTTP_201_CREATED)
-async def create_user(student: CreateStudent):
+@app.post("/student/create-list",status_code=status.HTTP_201_CREATED)
+async def create_user(student_list: List[CreateStudent]):
     try:
-        return student_controller.create_student(student=student)
+        return student_controller.create_student_list(student_list=student_list)
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
 

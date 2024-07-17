@@ -1,3 +1,4 @@
+from typing import List
 from data.repository.student_repository import StudentRepository
 from business.service.user_service import UserService
 from business.service.point_service import PointService
@@ -18,23 +19,31 @@ class StudentService():
         self.user_student_service = UserStudentService()
 
 
-    def create_student(self, student: CreateStudent):
-        self.validate_student(student=student)
+    def create_student_list(self, student_list: List[CreateStudent]):
+        self.validate_student(student_list=student_list)
 
-        student_model = StudentModel(name=student.name, year=student.year, point_id=student.point_id, creation_user=2)
+        student_id_list = self.creating_students(student_list=student_list)
 
-        student_id = self.student_repository.create_student(student_model)
-
-        self.user_student_service.create_user_student(student_id=student_id, user_id=student.responsible_id)
-
-        return student
+        self.user_student_service.create_user_student_list(student_id_list=student_id_list, user_id=student_list[0].responsible_id)
     
-    def validate_student(self, student: CreateStudent):
-        if student.year <= 0:
-            raise ValueError("Idade inválida")
-        
-        if self.user_service.get_user(student.responsible_id) is None:
-            raise ValueError("Responsável inválido")
-        
-        if self.point_service.get_point(student.point_id) is None:
-            raise ValueError("Ponto inválido")
+    def validate_student(self, student_list: List[CreateStudent]):
+        for student in student_list:
+            if student.year <= 0:
+                raise ValueError("Idade inválida")
+            
+            if self.user_service.get_user(student.responsible_id) is None:
+                raise ValueError("Responsável inválido")
+            
+            if self.point_service.get_point(student.point_id) is None:
+                raise ValueError("Ponto inválido")
+            
+    def creating_students(self, student_list: List[CreateStudent]):
+        student_model_list = []
+
+        for student in student_list:
+            student_model = StudentModel(name=student.name, year=student.year, point_id=student.point_id, creation_user=2)
+            student_model_list.append(student_model)
+
+        student_id = self.student_repository.create_student_list(student_model_list)
+
+        return student_id
