@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from data.model.user_student_model import UserStudentModel
 from data.infrastructure.database import get_db
 
-class StudentRepository():
+class UserStudentRepository():
     db: Session
 
     def __init__(self):
