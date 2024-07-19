@@ -128,7 +128,7 @@ async def create_vehicle(vehicle: CreateVehicle):
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
     
-@app.post("/vehicle/update",status_code=status.HTTP_200_OK)
+@app.put("/vehicle/update",status_code=status.HTTP_200_OK)
 async def update_vehicle(vehicle: UpdateVehicle):
     try:
         return vehicle_controller.update_vehicle(vehicle)

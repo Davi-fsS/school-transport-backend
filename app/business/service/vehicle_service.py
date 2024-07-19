@@ -1,5 +1,6 @@
 from data.repository.vehicle_repository import VehicleRepository
 from business.service.user_service import UserService
+from business.service.vehicle_type_service import VehicleTypeService
 from data.model.vehicle_model import VehicleModel
 from presentation.dto.CreateVehicle import CreateVehicle
 from presentation.dto.UpdateVehicle import UpdateVehicle
@@ -7,10 +8,12 @@ from presentation.dto.UpdateVehicle import UpdateVehicle
 class VehicleService():
     vehicle_repository: VehicleRepository
     user_service: UserService
+    vehicle_type_service: VehicleTypeService
 
     def __init__(self):
         self.vehicle_repository = VehicleRepository()
         self.user_service = UserService()
+        self.vehicle_type_service = VehicleTypeService()
 
     def create_vehicle(self, vehicle: CreateVehicle):
         self.validating_vehicle_create(vehicle)
@@ -43,6 +46,9 @@ class VehicleService():
         if(user.user_type_id != 2):
             raise ValueError("Usuário não é motorista")
         
+        if(self.vehicle_type_service.get_type(vehicle.vehicle_type_id) is None):
+            raise ValueError("Tipo de veículo inválido")
+        
     def validating_vehicle_update(self, vehicle: UpdateVehicle):
         if(self.vehicle_repository.get_vehicle(vehicle.id) is None):
             raise ValueError("Veículo não encontrado")
@@ -52,7 +58,7 @@ class VehicleService():
         
         if(self.vehicle_repository.get_vehicle_by_plate(vehicle.plate) is not None):
             raise ValueError("Veículo já registrado")
-        
+
         user = self.user_service.get_user(vehicle.user_id)
 
         if(user is None):
@@ -60,3 +66,6 @@ class VehicleService():
         
         if(user.user_type_id != 2):
             raise ValueError("Usuário não é motorista")
+        
+        if(self.vehicle_type_service.get_type(vehicle.vehicle_type_id) is None):
+            raise ValueError("Tipo de veículo inválido")
