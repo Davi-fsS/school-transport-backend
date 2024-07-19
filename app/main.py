@@ -3,11 +3,14 @@ from presentation.controller.user_controller import UserController
 from presentation.controller.user_type_controller import UserTypeController
 from presentation.controller.user_phone_controller import UserPhoneController
 from presentation.controller.student_controller import StudentController
+from presentation.controller.vehicle_controller import VehicleController
 from presentation.dto.UserDto import UserDto
 from presentation.dto.CreateStudent import CreateStudent
 from presentation.dto.CreatePhone import CreatePhone
 from presentation.dto.UpdateStudent import UpdateStudent
 from presentation.dto.UpdateUserUuid import UpdateUserUuid
+from presentation.dto.CreateVehicle import CreateVehicle
+from presentation.dto.UpdateVehicle import UpdateVehicle
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
 
@@ -36,6 +39,7 @@ user_controller = UserController()
 user_type_controller = UserTypeController()
 user_phone_controller = UserPhoneController()
 student_controller = StudentController()
+vehicle_controller = VehicleController()
 
 # USER ENDPOINTS
 @app.post("/user/create",status_code=status.HTTP_201_CREATED)
@@ -113,5 +117,39 @@ async def get_students_by_responsible(responsible_id: int):
             raise HTTPException(status_code=status.HTTP_204_NO_CONTENT, detail="Sem alunos cadastrados")
         
         return students
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    
+# VEHICLE ENDPOINTS
+@app.post("/vehicle/create",status_code=status.HTTP_201_CREATED)
+async def create_vehicle(vehicle: CreateVehicle):
+    try:
+        return vehicle_controller.create_vehicle(vehicle)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    
+@app.put("/vehicle/update",status_code=status.HTTP_200_OK)
+async def update_vehicle(vehicle: UpdateVehicle):
+    try:
+        return vehicle_controller.update_vehicle(vehicle)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    
+@app.delete("/vehicle/delete",status_code=status.HTTP_200_OK)
+async def delete_vehicle(vehicle_id: int):
+    try:
+        return vehicle_controller.delete_vehicle(vehicle_id)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    
+@app.get("/vehicle/get-by-driver",status_code=status.HTTP_200_OK)
+async def get_vehicle_by_driver(user_id: int):
+    try:
+        vehicle = vehicle_controller.get_vehicle_by_driver(user_id)
+
+        if(vehicle is None):
+            raise HTTPException(status_code=status.HTTP_204_NO_CONTENT, detail="Sem veículo cadastrado")
+
+        return vehicle
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
