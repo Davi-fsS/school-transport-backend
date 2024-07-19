@@ -43,4 +43,12 @@ class VehicleRepository():
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
 
+    def delete_vehicle(self, vehicle_id: int):
+        try:
+            vehicle = self.get_vehicle(vehicle_id)
+            self.db.delete(vehicle)
+            self.db.commit()
+        except:
+            self.db.rollback()
+            raise ValueError("Erro ao salvar no sistema")
     

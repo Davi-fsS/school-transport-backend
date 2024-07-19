@@ -13,3 +13,6 @@ class VehicleController():
     
     def update_vehicle(self, vehicle: UpdateVehicle):
         return self.vehicle_service.update_vehicle(vehicle)
+    
+    def delete_vehicle(self, vehicle_id: int):
+        return self.vehicle_service.delete_vehicle(vehicle_id)

@@ -31,6 +31,11 @@ class VehicleService():
 
         return self.vehicle_repository.update_vehicle(vehicle)
 
+    def delete_vehicle(self, vehicle_id: int):
+        self.validating_vehicle_delete(vehicle_id)
+
+        return self.vehicle_repository.delete_vehicle(vehicle_id)
+
     def validating_vehicle_create(self, vehicle: CreateVehicle):
         if(len(vehicle.plate) != 7):
             raise ValueError("Placa incorreta")
@@ -69,3 +74,7 @@ class VehicleService():
         
         if(self.vehicle_type_service.get_type(vehicle.vehicle_type_id) is None):
             raise ValueError("Tipo de veículo inválido")
+        
+    def validating_vehicle_delete(self, vehicle_id: int):
+        if(self.vehicle_repository.get_vehicle(vehicle_id) is None):
+            raise ValueError("Veículo não encontrado")
