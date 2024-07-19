@@ -10,6 +10,7 @@ from presentation.dto.CreatePhone import CreatePhone
 from presentation.dto.UpdateStudent import UpdateStudent
 from presentation.dto.UpdateUserUuid import UpdateUserUuid
 from presentation.dto.CreateVehicle import CreateVehicle
+from presentation.dto.UpdateVehicle import UpdateVehicle
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
 
@@ -124,5 +125,12 @@ async def get_students_by_responsible(responsible_id: int):
 async def create_vehicle(vehicle: CreateVehicle):
     try:
         return vehicle_controller.create_vehicle(vehicle)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    
+@app.post("/vehicle/update",status_code=status.HTTP_200_OK)
+async def update_vehicle(vehicle: UpdateVehicle):
+    try:
+        return vehicle_controller.update_vehicle(vehicle)
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
