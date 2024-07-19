@@ -8,6 +8,12 @@ class VehicleRepository():
     def __init__(self):
         self.db = next(get_db())
 
+    def get_vehicle_by_plate(self, plate: str):
+        vehicle = self.db.query(VehicleModel).filter(VehicleModel.plate == plate).first()
+        
+        return vehicle
+
+
     def create_vehicle(self, db_vehicle: VehicleModel):
         try:
             self.db.add(db_vehicle)
