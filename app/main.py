@@ -21,12 +21,12 @@ origins = [
     "http://192.168.0.149",
     "http://192.168.0.150",
     "https://school-transport-backend-3fec5c45f086.herokuapp.com",
-    "https://davi-fss.github.io/school-transport-frontend-web"
+    "https://davi-fss.github.io"
 ]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
