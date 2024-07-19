@@ -36,6 +36,11 @@ class VehicleService():
 
         return self.vehicle_repository.delete_vehicle(vehicle_id)
 
+    def get_vehicle_by_driver(self, user_id: int):
+        self.validating_vehicle_by_driver(user_id)
+
+        return self.vehicle_repository.get_vehicle_by_driver(user_id)
+
     def validating_vehicle_create(self, vehicle: CreateVehicle):
         if(len(vehicle.plate) != 7):
             raise ValueError("Placa incorreta")
@@ -50,6 +55,9 @@ class VehicleService():
         
         if(user.user_type_id != 2):
             raise ValueError("Usuário não é motorista")
+        
+        if(self.vehicle_repository.get_vehicle_by_driver(vehicle.user_id) is not None):
+            raise ValueError("Motorista já possuí veículo")
         
         if(self.vehicle_type_service.get_type(vehicle.vehicle_type_id) is None):
             raise ValueError("Tipo de veículo inválido")
@@ -72,9 +80,21 @@ class VehicleService():
         if(user.user_type_id != 2):
             raise ValueError("Usuário não é motorista")
         
+        if(self.vehicle_repository.get_vehicle_by_driver(vehicle.user_id) is not None):
+            raise ValueError("Motorista já possuí veículo")
+        
         if(self.vehicle_type_service.get_type(vehicle.vehicle_type_id) is None):
             raise ValueError("Tipo de veículo inválido")
         
     def validating_vehicle_delete(self, vehicle_id: int):
         if(self.vehicle_repository.get_vehicle(vehicle_id) is None):
             raise ValueError("Veículo não encontrado")
+        
+    def validating_vehicle_by_driver(self, user_id: int):
+        user = self.user_service.get_user(user_id)
+
+        if(user is None):
+            raise ValueError("Usuário não cadastrado")
+        
+        if(user.user_type_id != 2):
+            raise ValueError("Usuário não é motorista")

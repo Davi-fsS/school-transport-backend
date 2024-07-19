@@ -21,6 +21,12 @@ class VehicleRepository():
         vehicle = self.db.query(VehicleModel).filter(VehicleModel.plate == plate).first()
         
         return vehicle
+    
+    def get_vehicle_by_driver(self, user_id: int):
+        vehicle = self.db.query(VehicleModel).filter(VehicleModel.user_id == user_id).first()
+        
+        return vehicle
+
 
     def create_vehicle(self, db_vehicle: VehicleModel):
         try:

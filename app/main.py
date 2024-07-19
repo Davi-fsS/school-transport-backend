@@ -141,3 +141,10 @@ async def delete_vehicle(vehicle_id: int):
         return vehicle_controller.delete_vehicle(vehicle_id)
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    
+@app.get("/vehicle/get-by-driver",status_code=status.HTTP_200_OK)
+async def get_vehicle_by_driver(user_id: int):
+    try:
+        return vehicle_controller.get_vehicle_by_driver(user_id)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))

@@ -16,3 +16,6 @@ class VehicleController():
     
     def delete_vehicle(self, vehicle_id: int):
         return self.vehicle_service.delete_vehicle(vehicle_id)
+    
+    def get_vehicle_by_driver(self, user_id: int):
+        return self.vehicle_service.get_vehicle_by_driver(user_id)
