@@ -13,7 +13,7 @@ class VehicleService():
 
     def create_vehicle(self, vehicle: CreateVehicle):
         self.validating_vehicle_create(vehicle)
-        print(vehicle)
+
         vehicle_model = VehicleModel(plate=vehicle.plate, 
                                      vehicle_type_id=vehicle.vehicle_type_id,
                                      user_id=vehicle.user_id,
