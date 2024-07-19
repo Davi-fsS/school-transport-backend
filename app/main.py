@@ -145,6 +145,11 @@ async def delete_vehicle(vehicle_id: int):
 @app.get("/vehicle/get-by-driver",status_code=status.HTTP_200_OK)
 async def get_vehicle_by_driver(user_id: int):
     try:
-        return vehicle_controller.get_vehicle_by_driver(user_id)
+        vehicle = vehicle_controller.get_vehicle_by_driver(user_id)
+
+        if(vehicle is None):
+            raise HTTPException(status_code=status.HTTP_204_NO_CONTENT, detail="Sem veículo cadastrado")
+
+        return vehicle
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
