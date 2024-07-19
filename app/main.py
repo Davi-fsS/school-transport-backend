@@ -9,7 +9,7 @@ from presentation.dto.CreateStudent import CreateStudent
 from presentation.dto.CreatePhone import CreatePhone
 from presentation.dto.UpdateStudent import UpdateStudent
 from presentation.dto.UpdateUserUuid import UpdateUserUuid
-from data.model.vehicle_model import VehicleModel
+from presentation.dto.CreateVehicle import CreateVehicle
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
 
@@ -121,7 +121,7 @@ async def get_students_by_responsible(responsible_id: int):
     
 # VEHICLE ENDPOINTS
 @app.post("/vehicle/create",status_code=status.HTTP_201_CREATED)
-async def create_vehicle(vehicle: VehicleModel):
+async def create_vehicle(vehicle: CreateVehicle):
     try:
         return vehicle_controller.create_vehicle(vehicle)
     except ValueError as ve:
