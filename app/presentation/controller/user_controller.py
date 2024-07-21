@@ -26,3 +26,6 @@ class UserController():
     
     def update_user(self, user: UpdateUser):
         return self.user_service.update_user(user)
+    
+    def delete_user(self, user_id: int):
+        return self.user_service.delete_user(user_id)

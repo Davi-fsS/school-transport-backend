@@ -63,6 +63,11 @@ class UserService():
         
         self.user_repository.update_user(user_data)
     
+    def delete_user(self, user_id: int):
+        self.validating_delete_user(user_id)
+        
+        self.user_repository.delete_user(user_id)
+    
     def validate_responsible(self, user: UserDto):
         self.validate_email(user.email)
 
@@ -227,5 +232,9 @@ class UserService():
             self.validate_update_driver(user)
         else:
             self.validate_update_responsible(user)
+
+    def validating_delete_user(self, user_id: int):
+        if(self.user_repository.get_user(user_id) is None):
+            raise ValueError("Usuário não existe")
 
         

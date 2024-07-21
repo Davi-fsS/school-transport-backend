@@ -88,6 +88,13 @@ async def update_user(user: UpdateUser):
         return user_controller.update_user(user)
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    
+@app.delete("/user/delete",status_code=status.HTTP_200_OK)
+async def delete_user(user_id: int):
+    try:
+        return user_controller.delete_user(user_id)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
 
 # USER_TYPE ENDPOINTS
 @app.get("/user-type/by-id/{type_id}", status_code=status.HTTP_200_OK)
