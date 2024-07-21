@@ -9,10 +9,10 @@ class GoogleGeocodingService():
         load_dotenv()
         self.secret_key = os.getenv("GOOGLE_SECRET_KEY")
 
-    def get_geocode_by_address(self, address: str):
+    def get_geocode_by_address(self, address: str, city: str):
         params = {
             'key': self.secret_key,
-            'address': address.replace(' ', '+')
+            'address': address.replace(' ', '+') + "+" + city.replace(" ", "+")
         }
 
         base_url = "https://maps.googleapis.com/maps/api/geocode/json?"
