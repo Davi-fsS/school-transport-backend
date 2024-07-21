@@ -22,6 +22,9 @@ class PointService():
     
     def get_point(self, point_id: int):
         return self.point_repository.get_point(point_id=point_id)
+    
+    def get_all_school_list(self):
+        return self.point_repository.get_all_school_list()
 
     def create_school(self, school: CreateSchool):
         coords = self.google_geocoding_service.get_geocode_by_address(school.address, school.city)

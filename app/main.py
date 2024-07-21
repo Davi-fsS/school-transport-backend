@@ -180,3 +180,15 @@ async def delete_school(school_id: int):
         return point_controller.delete_school(school_id)
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    
+@app.get("/school/get-all-list",status_code=status.HTTP_200_OK)
+async def get_school_list():
+    try:
+        school_list = point_controller.get_all_school_list()
+
+        if(school_list is None):
+            raise HTTPException(status_code=status.HTTP_204_NO_CONTENT, detail="Sem escola cadastrada")
+
+        return school_list
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))

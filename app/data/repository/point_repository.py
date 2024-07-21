@@ -15,6 +15,9 @@ class PointRepository():
     
     def get_school(self, school_id: int):
         return self.db.query(PointModel).filter(PointModel.id == school_id and PointModel.point_type_id == 2).first()
+    
+    def get_all_school_list(self):
+        return self.db.query(PointModel).filter(PointModel.point_type_id == 2).all()
 
     def create_point(self, db_point: PointModel):
         try:
