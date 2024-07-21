@@ -11,19 +11,24 @@ class StudentRepository():
         self.db = next(get_db())
 
     def get_student(self, student_id: int):
-        student = self.db.query(StudentModel).filter(StudentModel.id == student_id).first()
+        try:
+            student = self.db.query(StudentModel).filter(StudentModel.id == student_id).first()
 
-        if student is None:
-            raise ValueError("Aluno não encontrado")
+            if student is None:
+                raise ValueError("Aluno não encontrado")
 
-        return student
-
+            return student
+        except:
+            self.db.rollback()
+            raise ValueError("Erro ao fazer a leitura no sistema")
+        
     def get_students_by_student_list(self, student_id_list: List[int]):
         try:
             students = self.db.query(StudentModel).filter(StudentModel.id.in_(student_id_list)).all()
             return students
-        except Exception as e:
-            raise ValueError("Erro ao buscar estudantes: " + str(e))
+        except:
+            self.db.rollback()
+            raise ValueError("Erro ao fazer a leitura no sistema")
 
     def create_student_list(self, db_student_list: List[StudentModel]):
         created_ids = []

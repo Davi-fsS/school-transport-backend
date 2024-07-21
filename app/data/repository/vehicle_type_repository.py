@@ -9,4 +9,8 @@ class VehicleTypeRepository():
         self.db = next(get_db())
 
     def get_type(self, type_id: int):
-        return self.db.query(VehicleTypeModel).filter(VehicleTypeModel.id == type_id).first()
+        try:
+            return self.db.query(VehicleTypeModel).filter(VehicleTypeModel.id == type_id).first()   
+        except:
+            self.db.rollback()
+            raise ValueError("Erro ao fazer a leitura no sistema")
