@@ -13,6 +13,7 @@ from presentation.dto.UpdateStudent import UpdateStudent
 from presentation.dto.UpdateUserUuid import UpdateUserUuid
 from presentation.dto.CreateVehicle import CreateVehicle
 from presentation.dto.UpdateVehicle import UpdateVehicle
+from presentation.dto.UpdateSchool import UpdateSchool
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
 
@@ -162,5 +163,12 @@ async def get_vehicle_by_driver(user_id: int):
 async def create_school(school: CreateSchool):
     try:
         return point_controller.create_school(school)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    
+@app.put("/school/update",status_code=status.HTTP_200_OK)
+async def update_school(school: UpdateSchool):
+    try:
+        return point_controller.update_school(school)
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
