@@ -45,4 +45,12 @@ class PointRepository():
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
 
+    def delete_school(self, school_id: int):
+        try:
+            student = self.get_school(school_id)
+            self.db.delete(student)
+            self.db.commit()
+        except:
+            self.db.rollback()
+            raise ValueError("Erro ao salvar no sistema")
     

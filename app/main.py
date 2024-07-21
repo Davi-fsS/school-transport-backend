@@ -159,6 +159,7 @@ async def get_vehicle_by_driver(user_id: int):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
     
 # SCHOOL ENDPOINTS
+
 @app.post("/school/create",status_code=status.HTTP_201_CREATED)
 async def create_school(school: CreateSchool):
     try:
@@ -170,5 +171,12 @@ async def create_school(school: CreateSchool):
 async def update_school(school: UpdateSchool):
     try:
         return point_controller.update_school(school)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    
+@app.delete("/school/delete",status_code=status.HTTP_200_OK)
+async def delete_school(school_id: int):
+    try:
+        return point_controller.delete_school(school_id)
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))

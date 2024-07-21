@@ -14,3 +14,6 @@ class PointController():
     
     def update_school(self, school: UpdateSchool):
         return self.point_service.update_school(school)
+    
+    def delete_school(self, school_id: int):
+        return self.point_service.delete_school(school_id)

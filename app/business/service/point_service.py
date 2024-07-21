@@ -37,6 +37,15 @@ class PointService():
 
         return self.point_repository.update_school(lat=coords["lat"], lng= coords["lng"], school_update=school)
     
+    def delete_school(self, school_id: int):
+        self.validating_school_delete(school_id)
+
+        return self.point_repository.delete_school(school_id)
+    
     def validating_school_update(self, school: UpdateSchool):
         if(self.point_repository.get_school(school_id=school.id) is None):
+            raise ValueError("Ponto inválido")
+        
+    def validating_school_delete(self, school_id: int):
+        if(self.point_repository.get_school(school_id) is None):
             raise ValueError("Ponto inválido")
