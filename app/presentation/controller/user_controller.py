@@ -11,6 +11,9 @@ class UserController():
     def read_user(self, user_id: int):
         return self.user_service.get_user(user_id)
     
+    def read_all_drivers(self):
+        return self.user_service.get_all_drivers()
+    
     def read_user_by_email(self, email: str):
         return self.user_service.get_user_by_email(email)
 

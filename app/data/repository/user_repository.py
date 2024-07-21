@@ -15,6 +15,13 @@ class UserRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
+        
+    def get_all_drivers(self):
+        try:
+            return self.db.query(UserModel).filter(UserModel.user_type_id == 2).all()
+        except:
+            self.db.rollback()
+            raise ValueError("Erro ao fazer a leitura no sistema")
 
     def get_user_by_email(self, email: str):
         try:

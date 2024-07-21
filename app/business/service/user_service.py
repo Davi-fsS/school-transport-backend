@@ -27,6 +27,9 @@ class UserService():
     def get_user(self, user_id: int):
         return self.user_repository.get_user(user_id)
     
+    def get_all_drivers(self):
+        return self.user_repository.get_all_drivers()
+    
     def get_user_by_email(self, email: str):
         return self.user_repository.get_user_by_email(email)
     
