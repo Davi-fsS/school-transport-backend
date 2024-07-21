@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from data.model.user_model import UserModel
 from data.infrastructure.database import get_db
-from presentation.dto.UserDto import UserDto
+from presentation.dto.UpdateUser import UpdateUser
 
 class UserRepository():
     db: Session
@@ -67,6 +67,21 @@ class UserRepository():
                     raise ValueError("Usuário não encontrado")
 
             user.uuid = uuid
+            self.db.commit()
+        except:
+            self.db.rollback()
+            raise ValueError("Erro ao salvar no sistema")
+        
+    def update_user(self, user_update: UpdateUser):
+        try:
+            user = self.get_user(user_update.id)
+
+            user.name = user_update.name
+            user.email = user_update.email
+            user.cpf = user_update.cpf
+            user.cnh = user_update.cnh
+            user.rg = user_update.rg
+
             self.db.commit()
         except:
             self.db.rollback()

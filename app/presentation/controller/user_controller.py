@@ -1,6 +1,7 @@
 from business.service.user_service import UserService
 from presentation.dto.UserDto import UserDto
 from presentation.dto.UpdateUserUuid import UpdateUserUuid
+from presentation.dto.UpdateUser import UpdateUser
 
 class UserController():
     user_service: UserService
@@ -22,3 +23,6 @@ class UserController():
     
     def update_user_uuid(self, user_data: UpdateUserUuid):
         return self.user_service.update_user_uuid(user_data)
+    
+    def update_user(self, user: UpdateUser):
+        return self.user_service.update_user(user)

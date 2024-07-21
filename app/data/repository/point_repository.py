@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from data.model.point_model import PointModel
 from presentation.dto.UpdateSchool import UpdateSchool
+from presentation.dto.UpdatePoint import UpdatePoint
 from data.infrastructure.database import get_db
 from datetime import datetime
 
@@ -40,6 +41,25 @@ class PointRepository():
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
         
+    def update_point(self, lat: float, lng: float, point_update: UpdatePoint):
+        try:
+            point = self.get_school(point_update.id)
+
+            point.name = point_update.name
+            point.address = point_update.address
+            point.city = point_update.city
+            point.neighborhood = point_update.neighborhood
+            point.state = point_update.state
+            point.description = point_update.description
+            point.lat = lat
+            point.lng = lng
+            point.change_date = datetime.now()
+
+            self.db.commit()
+        except:
+            self.db.rollback()
+            raise ValueError("Erro ao salvar no sistema")
+    
     def update_school(self, lat: float, lng: float, school_update: UpdateSchool):
         try:
             school = self.get_school(school_update.id)
