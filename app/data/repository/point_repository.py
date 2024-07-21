@@ -11,13 +11,25 @@ class PointRepository():
         self.db = next(get_db())
 
     def get_point(self, point_id: int):
-        return self.db.query(PointModel).filter(PointModel.id == point_id).first()
+        try:
+            return self.db.query(PointModel).filter(PointModel.id == point_id).first()
+        except:
+            self.db.rollback()
+            raise ValueError("Erro ao fazer a leitura no sistema")
     
     def get_school(self, school_id: int):
-        return self.db.query(PointModel).filter(PointModel.id == school_id and PointModel.point_type_id == 2).first()
-    
+        try:
+            return self.db.query(PointModel).filter(PointModel.id == school_id and PointModel.point_type_id == 2).first()
+        except:
+            self.db.rollback()
+            raise ValueError("Erro ao fazer a leitura no sistema")
+
     def get_all_school_list(self):
-        return self.db.query(PointModel).filter(PointModel.point_type_id == 2).all()
+        try:
+            return self.db.query(PointModel).filter(PointModel.point_type_id == 2).all()
+        except:
+            self.db.rollback()
+            raise ValueError("Erro ao fazer a leitura no sistema")
 
     def create_point(self, db_point: PointModel):
         try:

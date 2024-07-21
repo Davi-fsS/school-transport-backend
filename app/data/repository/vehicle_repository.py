@@ -10,23 +10,34 @@ class VehicleRepository():
         self.db = next(get_db())
 
     def get_vehicle(self, id: int):
-        vehicle = self.db.query(VehicleModel).filter(VehicleModel.id == id).first()
-        
-        if vehicle is None:
-            raise ValueError("Veículo não encontrado")
+        try:
+            vehicle = self.db.query(VehicleModel).filter(VehicleModel.id == id).first()
+            
+            if vehicle is None:
+                raise ValueError("Veículo não encontrado")
 
-        return vehicle
+            return vehicle
+        except:
+            self.db.rollback()
+            raise ValueError("Erro ao fazer a leitura no sistema")
 
     def get_vehicle_by_plate(self, plate: str):
-        vehicle = self.db.query(VehicleModel).filter(VehicleModel.plate == plate).first()
-        
-        return vehicle
-    
-    def get_vehicle_by_driver(self, user_id: int):
-        vehicle = self.db.query(VehicleModel).filter(VehicleModel.user_id == user_id).first()
-        
-        return vehicle
+        try:
+            vehicle = self.db.query(VehicleModel).filter(VehicleModel.plate == plate).first()
+            
+            return vehicle
+        except:
+            self.db.rollback()
+            raise ValueError("Erro ao fazer a leitura no sistema")    
 
+    def get_vehicle_by_driver(self, user_id: int):
+        try:
+            vehicle = self.db.query(VehicleModel).filter(VehicleModel.user_id == user_id).first()
+            
+            return vehicle
+        except:
+            self.db.rollback()
+            raise ValueError("Erro ao fazer a leitura no sistema")
 
     def create_vehicle(self, db_vehicle: VehicleModel):
         try:

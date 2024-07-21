@@ -10,17 +10,25 @@ class UserStudentRepository():
         self.db = next(get_db())
 
     def get_user_student_by_student_id(self, student_id: int):
-        user_student = self.db.query(UserStudentModel).filter(UserStudentModel.student_id == student_id).first()
+        try:
+            user_student = self.db.query(UserStudentModel).filter(UserStudentModel.student_id == student_id).first()
 
-        if user_student is None:
-            raise ValueError("Associação entre aluno e responsável não encontrada")
+            if user_student is None:
+                raise ValueError("Associação entre aluno e responsável não encontrada")
 
-        return user_student 
-    
+            return user_student 
+        except:
+            self.db.rollback()
+            raise ValueError("Erro ao fazer a leitura no sistema")    
+
     def get_students_by_responsible(self, responsible_id: int):
-        user_student_list = self.db.query(UserStudentModel).filter(UserStudentModel.user_id == responsible_id).all()
+        try:
+            user_student_list = self.db.query(UserStudentModel).filter(UserStudentModel.user_id == responsible_id).all()
 
-        return user_student_list 
+            return user_student_list 
+        except:
+            self.db.rollback()
+            raise ValueError("Erro ao fazer a leitura no sistema")
 
     def create_user_student(self, db_user_student: UserStudentModel):
         try:
