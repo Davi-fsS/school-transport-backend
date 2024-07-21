@@ -75,7 +75,7 @@ async def read_user_by_id(user_id: int):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuário não encontrado")
     return user
 
-@app.get("/user/gel-all-drivers", status_code=status.HTTP_200_OK)
+@app.get("/user/get-all-drivers", status_code=status.HTTP_200_OK)
 async def read_all_drivers():
     user = user_controller.read_all_drivers()
     if user is None:
