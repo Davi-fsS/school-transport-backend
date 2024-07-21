@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from data.model.user_model import UserModel
 from data.infrastructure.database import get_db
-from presentation.dto.UserDto import UserDto
+from presentation.dto.UpdateUser import UpdateUser
 
 class UserRepository():
     db: Session
@@ -12,6 +12,13 @@ class UserRepository():
     def get_user(self, user_id: int):
         try:
             return self.db.query(UserModel).filter(UserModel.id == user_id).first()
+        except:
+            self.db.rollback()
+            raise ValueError("Erro ao fazer a leitura no sistema")
+        
+    def get_all_drivers(self):
+        try:
+            return self.db.query(UserModel).filter(UserModel.user_type_id == 2).all()
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
@@ -60,6 +67,30 @@ class UserRepository():
                     raise ValueError("Usuário não encontrado")
 
             user.uuid = uuid
+            self.db.commit()
+        except:
+            self.db.rollback()
+            raise ValueError("Erro ao salvar no sistema")
+        
+    def update_user(self, user_update: UpdateUser):
+        try:
+            user = self.get_user(user_update.id)
+
+            user.name = user_update.name
+            user.email = user_update.email
+            user.cpf = user_update.cpf
+            user.cnh = user_update.cnh
+            user.rg = user_update.rg
+
+            self.db.commit()
+        except:
+            self.db.rollback()
+            raise ValueError("Erro ao salvar no sistema")
+        
+    def delete_user(self, user_id: int):
+        try:
+            user = self.get_user(user_id)
+            self.db.delete(user)
             self.db.commit()
         except:
             self.db.rollback()

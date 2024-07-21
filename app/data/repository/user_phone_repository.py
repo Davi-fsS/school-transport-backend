@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from data.model.user_phone_model import UserPhoneModel
 from data.infrastructure.database import get_db
-from presentation.dto.CreatePhone import CreatePhone
+from presentation.dto.UpdatePhone import UpdatePhone
 
 class UserPhoneRepository():
     db: Session
@@ -17,5 +17,4 @@ class UserPhoneRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
-
     

@@ -1,5 +1,6 @@
 from data.repository.user_phone_repository import UserPhoneRepository
 from presentation.dto.CreatePhone import CreatePhone
+from presentation.dto.UpdatePhone import UpdatePhone
 from data.model.user_phone_model import UserPhoneModel
 
 class UserPhoneService():

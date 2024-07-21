@@ -8,6 +8,7 @@ from data.model.point_model import PointModel
 from presentation.dto.CreatePoint import CreatePoint
 from presentation.dto.CreatePhone import CreatePhone
 from presentation.dto.UpdateUserUuid import UpdateUserUuid
+from presentation.dto.UpdateUser import UpdateUser
 from validate_docbr import CPF
 from validate_rg import validate_rg
 import re
@@ -26,6 +27,9 @@ class UserService():
 
     def get_user(self, user_id: int):
         return self.user_repository.get_user(user_id)
+    
+    def get_all_drivers(self):
+        return self.user_repository.get_all_drivers()
     
     def get_user_by_email(self, email: str):
         return self.user_repository.get_user_by_email(email)
@@ -53,6 +57,16 @@ class UserService():
             raise ValueError("Usuário não existe")
         
         return self.user_repository.update_user_uuid(user_data.user_id, user_data.uuid)
+    
+    def update_user(self, user_data: UpdateUser):
+        self.validating_update_user(user_data)
+        
+        self.user_repository.update_user(user_data)
+    
+    def delete_user(self, user_id: int):
+        self.validating_delete_user(user_id)
+        
+        self.user_repository.delete_user(user_id)
     
     def validate_responsible(self, user: UserDto):
         self.validate_email(user.email)
@@ -84,6 +98,43 @@ class UserService():
         
         if(not CPF().validate(user.cpf)):
             raise ValueError("CPF inválido")
+        
+    def validate_update_administrator(self, user: UpdateUser):
+        self.validate_update_email(user.email)
+
+        if(user.user_type_id == 0):
+            raise ValueError("Tipo de Usuário não encontrado")
+        
+        if(not CPF().validate(user.cpf)):
+            raise ValueError("CPF inválido")
+
+        db_user = self.user_repository.get_user_by_cpf(user.cpf)
+
+        if(db_user is not None and db_user.cpf == user.cpf):
+            raise ValueError("CPF já cadastrado")
+        
+    def validate_update_responsible(self, user: UpdateUser):
+        self.validate_update_email(user.email)
+
+        if(user.user_type_id == 0):
+            raise ValueError("Tipo de Usuário não encontrado")
+        
+        if(not CPF().validate(user.cpf)):
+            raise ValueError("CPF inválido")
+
+        if(not validate_rg.is_valid(user.rg)):
+            raise ValueError("RG inválido")
+        
+        db_user_cpf = self.user_repository.get_user_by_cpf(user.cpf)
+
+        if(db_user_cpf is not None and db_user_cpf.cpf == user.cpf):
+            raise ValueError("CPF já cadastrado")
+        
+        db_user_rg = self.user_repository.get_user_by_rg(user.rg)
+
+        if(db_user_rg is not None and db_user_rg.rg == user.rg):
+            raise ValueError("RG já cadastrado")
+
 
     def validate_driver(self, user: UserDto):
         self.validate_email(user.email)
@@ -106,11 +157,49 @@ class UserService():
 
             if(not validate_rg.is_valid(user.rg)):
                 raise ValueError("RG inválido")
+            
+    def validate_update_driver(self, user: UpdateUser):
+        self.validate_update_email(user.email)
+
+        if(user.user_type_id == 0):
+            raise ValueError("Tipo de Usuário não encontrado")
+
+        db_user_cnh = self.user_repository.get_user_by_cnh(user.cnh)
+
+        if(db_user_cnh is not None and db_user_cnh.cnh == user.cnh):
+            raise ValueError("CNH já cadastrada")
+        
+        if(not CPF().validate(user.cpf)):
+            raise ValueError("CPF inválido")
+
+        if(not validate_rg.is_valid(user.rg)):
+            raise ValueError("RG inválido")
+        
+        db_user_cpf = self.user_repository.get_user_by_cpf(user.cpf)
+
+        if(db_user_cpf is not None and db_user_cpf.cpf == user.cpf):
+            raise ValueError("CPF já cadastrado")
+        
+        db_user_rg = self.user_repository.get_user_by_rg(user.rg)
+
+        if(db_user_rg is not None and db_user_rg.rg == user.rg):
+            raise ValueError("RG já cadastrado")
 
     def validate_email(self, email: str):
         regex = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
         
         if(self.user_repository.get_user_by_email(email) != None):
+            raise ValueError("E-mail já cadastrado")
+        
+        if(not re.match(regex, email)):
+            raise ValueError("E-mail inválido")
+        
+    def validate_update_email(self, email: str):
+        regex = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+        
+        user_by_email = self.user_repository.get_user_by_email(email)
+
+        if(user_by_email is not None and user_by_email.email == email):
             raise ValueError("E-mail já cadastrado")
         
         if(not re.match(regex, email)):
@@ -132,3 +221,20 @@ class UserService():
         point_id = self.point_service.create_point(point_name=user_name, point=point)
 
         self.user_point_service.create_user_point(user_id=user_id, point_id=point_id, is_favorite=True)
+
+    def validating_update_user(self, user: UpdateUser):
+        if(self.user_repository.get_user(user.id) is None):
+            raise ValueError("Usuário não existe")
+        
+        if(user.user_type_id == 1):
+            self.validate_update_administrator(user)
+        elif(user.user_type_id == 2):
+            self.validate_update_driver(user)
+        else:
+            self.validate_update_responsible(user)
+
+    def validating_delete_user(self, user_id: int):
+        if(self.user_repository.get_user(user_id) is None):
+            raise ValueError("Usuário não existe")
+
+        

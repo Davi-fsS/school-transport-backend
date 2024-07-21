@@ -9,6 +9,7 @@ from presentation.dto.UserDto import UserDto
 from presentation.dto.CreateStudent import CreateStudent
 from presentation.dto.CreatePhone import CreatePhone
 from presentation.dto.CreateSchool import CreateSchool
+from presentation.dto.UpdateUser import UpdateUser
 from presentation.dto.UpdateStudent import UpdateStudent
 from presentation.dto.UpdateUserUuid import UpdateUserUuid
 from presentation.dto.CreateVehicle import CreateVehicle
@@ -73,6 +74,27 @@ async def read_user_by_id(user_id: int):
     if user is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuário não encontrado")
     return user
+
+@app.get("/user/get-all-drivers", status_code=status.HTTP_200_OK)
+async def read_all_drivers():
+    user = user_controller.read_all_drivers()
+    if user is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuário não encontrado")
+    return user
+
+@app.put("/user/update",status_code=status.HTTP_200_OK)
+async def update_user(user: UpdateUser):
+    try:
+        return user_controller.update_user(user)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    
+@app.delete("/user/delete",status_code=status.HTTP_200_OK)
+async def delete_user(user_id: int):
+    try:
+        return user_controller.delete_user(user_id)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
 
 # USER_TYPE ENDPOINTS
 @app.get("/user-type/by-id/{type_id}", status_code=status.HTTP_200_OK)
