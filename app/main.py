@@ -4,9 +4,11 @@ from presentation.controller.user_type_controller import UserTypeController
 from presentation.controller.user_phone_controller import UserPhoneController
 from presentation.controller.student_controller import StudentController
 from presentation.controller.vehicle_controller import VehicleController
+from presentation.controller.point_controller import PointController
 from presentation.dto.UserDto import UserDto
 from presentation.dto.CreateStudent import CreateStudent
 from presentation.dto.CreatePhone import CreatePhone
+from presentation.dto.CreateSchool import CreateSchool
 from presentation.dto.UpdateStudent import UpdateStudent
 from presentation.dto.UpdateUserUuid import UpdateUserUuid
 from presentation.dto.CreateVehicle import CreateVehicle
@@ -40,6 +42,7 @@ user_type_controller = UserTypeController()
 user_phone_controller = UserPhoneController()
 student_controller = StudentController()
 vehicle_controller = VehicleController()
+point_controller = PointController()
 
 # USER ENDPOINTS
 @app.post("/user/create",status_code=status.HTTP_201_CREATED)
@@ -151,5 +154,13 @@ async def get_vehicle_by_driver(user_id: int):
             raise HTTPException(status_code=status.HTTP_204_NO_CONTENT, detail="Sem veículo cadastrado")
 
         return vehicle
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    
+# SCHOOL ENDPOINTS
+@app.post("/school/create",status_code=status.HTTP_201_CREATED)
+async def create_school(school: CreateSchool):
+    try:
+        return point_controller.create_school(school)
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
