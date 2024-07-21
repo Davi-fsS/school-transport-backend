@@ -4,13 +4,16 @@ from presentation.controller.user_type_controller import UserTypeController
 from presentation.controller.user_phone_controller import UserPhoneController
 from presentation.controller.student_controller import StudentController
 from presentation.controller.vehicle_controller import VehicleController
+from presentation.controller.point_controller import PointController
 from presentation.dto.UserDto import UserDto
 from presentation.dto.CreateStudent import CreateStudent
 from presentation.dto.CreatePhone import CreatePhone
+from presentation.dto.CreateSchool import CreateSchool
 from presentation.dto.UpdateStudent import UpdateStudent
 from presentation.dto.UpdateUserUuid import UpdateUserUuid
 from presentation.dto.CreateVehicle import CreateVehicle
 from presentation.dto.UpdateVehicle import UpdateVehicle
+from presentation.dto.UpdateSchool import UpdateSchool
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
 
@@ -40,6 +43,7 @@ user_type_controller = UserTypeController()
 user_phone_controller = UserPhoneController()
 student_controller = StudentController()
 vehicle_controller = VehicleController()
+point_controller = PointController()
 
 # USER ENDPOINTS
 @app.post("/user/create",status_code=status.HTTP_201_CREATED)
@@ -151,5 +155,40 @@ async def get_vehicle_by_driver(user_id: int):
             raise HTTPException(status_code=status.HTTP_204_NO_CONTENT, detail="Sem veículo cadastrado")
 
         return vehicle
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    
+# SCHOOL ENDPOINTS
+
+@app.post("/school/create",status_code=status.HTTP_201_CREATED)
+async def create_school(school: CreateSchool):
+    try:
+        return point_controller.create_school(school)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    
+@app.put("/school/update",status_code=status.HTTP_200_OK)
+async def update_school(school: UpdateSchool):
+    try:
+        return point_controller.update_school(school)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    
+@app.delete("/school/delete",status_code=status.HTTP_200_OK)
+async def delete_school(school_id: int):
+    try:
+        return point_controller.delete_school(school_id)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    
+@app.get("/school/get-all-list",status_code=status.HTTP_200_OK)
+async def get_school_list():
+    try:
+        school_list = point_controller.get_all_school_list()
+
+        if(school_list is None):
+            raise HTTPException(status_code=status.HTTP_204_NO_CONTENT, detail="Sem escola cadastrada")
+
+        return school_list
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
