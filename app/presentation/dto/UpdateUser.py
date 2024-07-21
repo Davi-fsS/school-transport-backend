@@ -10,4 +10,3 @@ class UpdateUser(BaseModel):
     rg: str
     user_type_id: int
     phone: str
-    address: UpdatePoint
