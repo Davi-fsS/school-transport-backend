@@ -9,6 +9,13 @@ class UserPhoneRepository():
     def __init__(self):
         self.db = next(get_db())
 
+    def get_user_phone_list(self, user_id: int):
+        try:
+            return self.db.query(UserPhoneModel).filter(UserPhoneModel.user_id == user_id).all()
+        except:
+            self.db.rollback()
+            raise ValueError("Erro ao fazer a leitura no sistema")
+
     def create_phone(self, db_user_phone: UserPhoneModel):
         try:
             self.db.add(db_user_phone)

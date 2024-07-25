@@ -5,7 +5,7 @@ from presentation.controller.user_phone_controller import UserPhoneController
 from presentation.controller.student_controller import StudentController
 from presentation.controller.vehicle_controller import VehicleController
 from presentation.controller.point_controller import PointController
-from presentation.dto.UserDto import UserDto
+from presentation.dto.CreateUser import CreateUser
 from presentation.dto.CreateStudent import CreateStudent
 from presentation.dto.CreatePhone import CreatePhone
 from presentation.dto.CreateSchool import CreateSchool
@@ -48,7 +48,7 @@ point_controller = PointController()
 
 # USER ENDPOINTS
 @app.post("/user/create",status_code=status.HTTP_201_CREATED)
-async def create_user(user: UserDto):
+async def create_user(user: CreateUser):
     try:
         return user_controller.create_user(user)
     except ValueError as ve:
@@ -93,6 +93,13 @@ async def update_user(user: UpdateUser):
 async def delete_user(user_id: int):
     try:
         return user_controller.delete_user(user_id)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    
+@app.get("/user/details",status_code=status.HTTP_200_OK)
+async def user_details(user_id: int):
+    try:
+        return user_controller.user_details(user_id)
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
 

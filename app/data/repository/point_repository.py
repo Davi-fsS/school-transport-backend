@@ -4,12 +4,21 @@ from presentation.dto.UpdateSchool import UpdateSchool
 from presentation.dto.UpdatePoint import UpdatePoint
 from data.infrastructure.database import get_db
 from datetime import datetime
+from typing import List
 
 class PointRepository():
     db: Session
 
     def __init__(self):
         self.db = next(get_db())
+
+    def get_points_by_point_list(self, point_id_list: List[int]):
+        try:
+            points = self.db.query(PointModel).filter(PointModel.id.in_(point_id_list)).all()
+            return points
+        except:
+            self.db.rollback()
+            raise ValueError("Erro ao fazer a leitura no sistema")
 
     def get_point(self, point_id: int):
         try:
