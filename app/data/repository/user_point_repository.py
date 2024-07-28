@@ -8,6 +8,13 @@ class UserPointRepository():
     def __init__(self):
         self.db = next(get_db())
 
+    def get_user_point_list(self, user_id: int):
+        try:
+            return self.db.query(UserPointModel).filter(UserPointModel.user_id == user_id).all()
+        except:
+            self.db.rollback()
+            raise ValueError("Erro ao fazer a leitura no sistema")
+
     def create_user_point(self, db_user_point: UserPointModel):
         try:
             self.db.add(db_user_point)

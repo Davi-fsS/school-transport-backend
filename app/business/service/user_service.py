@@ -2,13 +2,15 @@ from data.repository.user_repository import UserRepository
 from business.service.user_phone_service import UserPhoneService
 from business.service.point_service import PointService
 from business.service.user_point_service import UserPointService
-from presentation.dto.UserDto import UserDto
+from presentation.dto.CreateUser import CreateUser
 from data.model.user_model import UserModel
 from data.model.point_model import PointModel
 from presentation.dto.CreatePoint import CreatePoint
+from presentation.dto.User import User
 from presentation.dto.CreatePhone import CreatePhone
 from presentation.dto.UpdateUserUuid import UpdateUserUuid
 from presentation.dto.UpdateUser import UpdateUser
+from presentation.dto.UserDetails import UserDetails
 from validate_docbr import CPF
 from validate_rg import validate_rg
 import re
@@ -34,7 +36,7 @@ class UserService():
     def get_user_by_email(self, email: str):
         return self.user_repository.get_user_by_email(email)
     
-    def create_user(self, user: UserDto):
+    def create_user(self, user: CreateUser):
         if(user.user_type_id == 1):
             self.validate_administrator(user)
         elif(user.user_type_id == 2):
@@ -67,8 +69,32 @@ class UserService():
         self.validating_delete_user(user_id)
         
         self.user_repository.delete_user(user_id)
+
+    def user_details(self, user_id: int):
+        self.validating_user_detail(user_id)
+        
+        user = self.user_repository.get_user(user_id)
+
+        user_dto = User(id=user.id, uuid=user.uuid, name=user.name, email=user.email, cpf=user.cpf, cnh=user.cnh, rg=user.rg, user_type_id=user.user_type_id)
+
+        user_phone = self.user_phone_service.get_user_phone_list(user_id)
+
+        user_points = self.user_point_service.get_user_point_list(user_id)
+
+        user_details = UserDetails(user=user_dto, phone=user_phone)
+        
+        if(len(user_points) > 1):
+            point_id_list = []
+            for user_point in user_points:
+                point_id_list.append(user_point.point_id)
+
+            points = self.point_service.get_point_list_by_user(point_id_list)
+
+            user_details.points = points
+
+        return user_details
     
-    def validate_responsible(self, user: UserDto):
+    def validate_responsible(self, user: CreateUser):
         self.validate_email(user.email)
 
         if(user.user_type_id == 0):
@@ -87,7 +113,7 @@ class UserService():
             if(not validate_rg.is_valid(user.rg)):
                 raise ValueError("RG inválido")
 
-    def validate_administrator(self, user: UserDto):
+    def validate_administrator(self, user: CreateUser):
         self.validate_email(user.email)
 
         if(user.user_type_id == 0):
@@ -136,7 +162,7 @@ class UserService():
             raise ValueError("RG já cadastrado")
 
 
-    def validate_driver(self, user: UserDto):
+    def validate_driver(self, user: CreateUser):
         self.validate_email(user.email)
 
         if(user.user_type_id == 0):
@@ -205,7 +231,7 @@ class UserService():
         if(not re.match(regex, email)):
             raise ValueError("E-mail inválido")
         
-    def creating_user(self, user: UserDto):
+    def creating_user(self, user: CreateUser):
         user_body = UserModel(name=user.name, email=user.email, cpf=user.cpf, cnh=user.cnh, user_type_id=user.user_type_id, rg=user.rg)
 
         user_id = self.user_repository.create_user(user_body)
@@ -236,5 +262,7 @@ class UserService():
     def validating_delete_user(self, user_id: int):
         if(self.user_repository.get_user(user_id) is None):
             raise ValueError("Usuário não existe")
-
         
+    def validating_user_detail(self, user_id : int):
+        if(self.user_repository.get_user(user_id) is None):
+            raise ValueError("Usuário não existe")

@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from presentation.dto.CreatePoint import CreatePoint
 
-class UserDto(BaseModel):
+class CreateUser(BaseModel):
     name: str
     email: str
     cpf: str

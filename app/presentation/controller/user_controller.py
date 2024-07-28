@@ -1,5 +1,5 @@
 from business.service.user_service import UserService
-from presentation.dto.UserDto import UserDto
+from presentation.dto.CreateUser import CreateUser
 from presentation.dto.UpdateUserUuid import UpdateUserUuid
 from presentation.dto.UpdateUser import UpdateUser
 
@@ -18,7 +18,7 @@ class UserController():
     def read_user_by_email(self, email: str):
         return self.user_service.get_user_by_email(email)
 
-    def create_user(self, user: UserDto):
+    def create_user(self, user: CreateUser):
         return self.user_service.create_user(user)
     
     def update_user_uuid(self, user_data: UpdateUserUuid):
@@ -29,3 +29,6 @@ class UserController():
     
     def delete_user(self, user_id: int):
         return self.user_service.delete_user(user_id)
+    
+    def user_details(self, user_id: int):
+        return self.user_service.user_details(user_id)
