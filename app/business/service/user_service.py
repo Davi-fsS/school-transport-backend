@@ -126,7 +126,7 @@ class UserService():
             raise ValueError("CPF inválido")
         
     def validate_update_administrator(self, user: UpdateUser):
-        self.validate_update_email(user.email)
+        self.validate_update_email(user.id, user.email)
 
         if(user.user_type_id == 0):
             raise ValueError("Tipo de Usuário não encontrado")
@@ -136,11 +136,11 @@ class UserService():
 
         db_user = self.user_repository.get_user_by_cpf(user.cpf)
 
-        if(db_user is not None and db_user.cpf == user.cpf):
+        if(db_user is not None and db_user.id != user.id):
             raise ValueError("CPF já cadastrado")
         
     def validate_update_responsible(self, user: UpdateUser):
-        self.validate_update_email(user.email)
+        self.validate_update_email(user.id, user.email)
 
         if(user.user_type_id == 0):
             raise ValueError("Tipo de Usuário não encontrado")
@@ -153,12 +153,12 @@ class UserService():
         
         db_user_cpf = self.user_repository.get_user_by_cpf(user.cpf)
 
-        if(db_user_cpf is not None and db_user_cpf.cpf == user.cpf):
+        if(db_user_cpf is not None and db_user_cpf.id != user.id):
             raise ValueError("CPF já cadastrado")
         
         db_user_rg = self.user_repository.get_user_by_rg(user.rg)
 
-        if(db_user_rg is not None and db_user_rg.rg == user.rg):
+        if(db_user_rg is not None and db_user_rg.id != user.id):
             raise ValueError("RG já cadastrado")
 
 
@@ -185,14 +185,14 @@ class UserService():
                 raise ValueError("RG inválido")
             
     def validate_update_driver(self, user: UpdateUser):
-        self.validate_update_email(user.email)
+        self.validate_update_email(user.id, user.email)
 
         if(user.user_type_id == 0):
             raise ValueError("Tipo de Usuário não encontrado")
 
         db_user_cnh = self.user_repository.get_user_by_cnh(user.cnh)
 
-        if(db_user_cnh is not None and db_user_cnh.cnh == user.cnh):
+        if(db_user_cnh is not None and db_user_cnh.id != user.id):
             raise ValueError("CNH já cadastrada")
         
         if(not CPF().validate(user.cpf)):
@@ -203,12 +203,12 @@ class UserService():
         
         db_user_cpf = self.user_repository.get_user_by_cpf(user.cpf)
 
-        if(db_user_cpf is not None and db_user_cpf.cpf == user.cpf):
+        if(db_user_cpf is not None and db_user_cpf.id != user.id):
             raise ValueError("CPF já cadastrado")
         
         db_user_rg = self.user_repository.get_user_by_rg(user.rg)
 
-        if(db_user_rg is not None and db_user_rg.rg == user.rg):
+        if(db_user_rg is not None and db_user_rg.id != user.id):
             raise ValueError("RG já cadastrado")
 
     def validate_email(self, email: str):
@@ -220,12 +220,12 @@ class UserService():
         if(not re.match(regex, email)):
             raise ValueError("E-mail inválido")
         
-    def validate_update_email(self, email: str):
+    def validate_update_email(self, id: int, email: str):
         regex = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
         
         user_by_email = self.user_repository.get_user_by_email(email)
 
-        if(user_by_email is not None and user_by_email.email == email):
+        if(user_by_email is not None and user_by_email.id != id):
             raise ValueError("E-mail já cadastrado")
         
         if(not re.match(regex, email)):
