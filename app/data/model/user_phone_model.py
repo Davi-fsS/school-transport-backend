@@ -7,7 +7,7 @@ class UserPhoneModel(Base):
     __tablename__ = "user_phone"
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer)
-    ddi = Column(String(4))
-    ddd = Column(String(2))
-    phone = Column(String(15))
+    ddi = Column(String(4), nullable=True)
+    ddd = Column(String(2), nullable=True)
+    phone = Column(String(15), nullable=True)
     creation_user = Column(Integer)

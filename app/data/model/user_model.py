@@ -6,7 +6,7 @@ from data.infrastructure.database import Base
 class UserModel(Base):
     __tablename__ = "user"
     id = Column(Integer, primary_key=True, index=True)
-    uuid = Column(String(36))
+    uuid = Column(String(36), nullable=True)
     name = Column(String(255))
     email = Column(String(255))
     cpf = Column(String(11))

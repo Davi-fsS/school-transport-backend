@@ -3,7 +3,7 @@ from presentation.dto.CreatePoint import CreatePoint
 
 class User(BaseModel):
     id: int
-    uuid: str = ""
+    uuid: str | None
     name: str = ""
     email: str = ""
     cpf: str = ""
