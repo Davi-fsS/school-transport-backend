@@ -16,10 +16,15 @@ class PointService():
         self.point_repository = PointRepository()
         self.google_geocoding_service = GoogleGeocodingService()
 
-    def create_point(self, point_name: str, point: CreatePoint):
+    def create_point(self, point: CreatePoint):
         coords = self.google_geocoding_service.get_geocode_by_address(point.address, point.city)
 
-        point_body = PointModel(name=f"Casa {point_name}", city=point.city, neighborhood=point.neighborhood, state=point.state, address=point.address, point_type_id=1, lat=coords["lat"], lng= coords["lng"] ,description=f"Endereço principal de {point_name}", creation_user=2)
+        point_body = {}
+
+        if(point.point_type_id == 1):
+            point_body = PointModel(name=f"Casa {point.name}", city=point.city, neighborhood=point.neighborhood, state=point.state, address=point.address, point_type_id=point.point_type_id, lat=coords["lat"], lng= coords["lng"] ,description=f"Endereço principal de {point.name}", creation_user=2)
+        else:
+            point_body = PointModel(name=point.name, city=point.city, neighborhood=point.neighborhood, state=point.state, address=point.address, point_type_id=point.point_type_id, lat=coords["lat"], lng= coords["lng"] ,description=point.description, creation_user=2)
 
         return self.point_repository.create_point(point_body)
     
@@ -43,34 +48,15 @@ class PointService():
 
         return points_list_dto
 
-
     def get_all_school_list(self):
         return self.point_repository.get_all_school_list()
-
-    def create_school(self, school: CreateSchool):
-        coords = self.google_geocoding_service.get_geocode_by_address(school.address, school.city)
-
-        point_body = PointModel(name=school.name, city=school.city, neighborhood=school.neighborhood, state=school.state, address=school.address, point_type_id=2, lat=coords["lat"], lng= coords["lng"] ,description=school.description, creation_user=2)
-
-        return self.point_repository.create_point(point_body)
     
-    def update_school(self, school: UpdateSchool):
-        self.validating_school_update(school)
+    def delete_point(self, point_id: int):
+        self.validating_point_delete(point_id)
 
-        coords = self.google_geocoding_service.get_geocode_by_address(school.address, school.city)
-
-        return self.point_repository.update_school(lat=coords["lat"], lng= coords["lng"], school_update=school)
-    
-    def delete_school(self, school_id: int):
-        self.validating_school_delete(school_id)
-
-        return self.point_repository.delete_school(school_id)
-    
-    def validating_school_update(self, school: UpdateSchool):
-        if(self.point_repository.get_school(school_id=school.id) is None):
-            raise ValueError("Ponto inválido")
+        return self.point_repository.delete_point(point_id)
         
-    def validating_school_delete(self, school_id: int):
+    def validating_point_delete(self, school_id: int):
         if(self.point_repository.get_school(school_id) is None):
             raise ValueError("Ponto inválido")
         
