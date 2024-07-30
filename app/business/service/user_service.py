@@ -244,7 +244,7 @@ class UserService():
         self.user_phone_service.create_phone(phone_body)
 
     def creating_user_point(self, user_id: int, user_name: str, point : CreatePoint):
-        point_id = self.point_service.create_point(point_name=user_name, point=point)
+        point_id = self.point_service.create_point(point=point)
 
         self.user_point_service.create_user_point(user_id=user_id, point_id=point_id, is_favorite=True)
 
