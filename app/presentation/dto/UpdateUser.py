@@ -6,6 +6,6 @@ class UpdateUser(BaseModel):
     name: str
     email: str
     cpf: str
-    cnh: str
-    rg: str
+    cnh: str | None
+    rg: str | None
     user_type_id: int
