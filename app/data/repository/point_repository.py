@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from sqlalchemy import and_
 from data.model.point_model import PointModel
 from presentation.dto.UpdateSchool import UpdateSchool
 from presentation.dto.UpdatePoint import UpdatePoint
@@ -15,6 +16,14 @@ class PointRepository():
     def get_points_by_point_list(self, point_id_list: List[int]):
         try:
             points = self.db.query(PointModel).filter(PointModel.id.in_(point_id_list)).all()
+            return points
+        except:
+            self.db.rollback()
+            raise ValueError("Erro ao fazer a leitura no sistema")
+        
+    def get_points_home_by_point_list(self, point_id_list: List[int]):
+        try:
+            points = self.db.query(PointModel).filter(and_(PointModel.id.in_(point_id_list), PointModel.point_type_id == 1)).all()
             return points
         except:
             self.db.rollback()
@@ -89,10 +98,10 @@ class PointRepository():
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
 
-    def delete_point(self, point_id: int):
+    def delete_point(self, school_id: int):
         try:
-            point = self.get_point(point_id)
-            self.db.delete(point)
+            student = self.get_school(school_id)
+            self.db.delete(student)
             self.db.commit()
         except:
             self.db.rollback()

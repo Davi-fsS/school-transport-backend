@@ -6,7 +6,7 @@ class Point(BaseModel):
     address: str
     lat: float
     lng: float
-    alt: float
+    alt: float | None
     city: str
     neighborhood: str
     state: str

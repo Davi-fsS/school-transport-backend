@@ -1,7 +1,6 @@
 from data.repository.point_repository import PointRepository
+from business.service.user_point_service import UserPointService
 from presentation.dto.CreatePoint import CreatePoint
-from presentation.dto.CreateSchool import CreateSchool
-from presentation.dto.UpdateSchool import UpdateSchool
 from presentation.dto.UpdatePoint import UpdatePoint
 from presentation.dto.Point import Point
 from data.model.point_model import PointModel
@@ -11,10 +10,12 @@ from typing import List
 class PointService():
     point_repository: PointRepository
     google_geocoding_service: GoogleGeocodingService
+    user_point_service: UserPointService
 
     def __init__(self):
         self.point_repository = PointRepository()
         self.google_geocoding_service = GoogleGeocodingService()
+        self.user_point_service = UserPointService()
 
     def create_point(self, point: CreatePoint):
         coords = self.google_geocoding_service.get_geocode_by_address(point.address, point.city)
@@ -38,6 +39,21 @@ class PointService():
     def get_point(self, point_id: int):
         return self.point_repository.get_point(point_id=point_id)
     
+    def get_point_home_by_user_id(self, user_id: int):
+        user_points = self.user_point_service.get_user_point_list(user_id)
+
+        if(len(user_points) > 0):
+            point_id_list = []
+            for user_point in user_points:
+                point_id_list.append(user_point.point_id)
+
+            points = self.get_point_home_list_by_user(point_id_list)
+
+            return points[0]
+        else:
+            raise ValueError("Responsável sem endereço registrado")
+
+
     def get_point_list_by_user(self, point_list: List[int]):
         points_list = self.point_repository.get_points_by_point_list(point_list)
 
@@ -46,6 +62,17 @@ class PointService():
             point_dto = Point(id=point.id, name=point.name, address=point.address, lat=point.lat, lng=point.lng, alt=point.alt, city=point.city, neighborhood=point.neighborhood, state=point.state, description=point.description, point_type_id=point.point_type_id)
             points_list_dto.append(point_dto)
 
+        return points_list_dto
+    
+    def get_point_home_list_by_user(self, point_list: List[int]):
+        points_list = self.point_repository.get_points_home_by_point_list(point_list)
+
+        points_list_dto = []
+        for point in points_list:
+            point_dto = Point(id=point.id, name=point.name, address=point.address, lat=point.lat, lng=point.lng, alt=point.alt, city=point.city, neighborhood=point.neighborhood, state=point.state, description=point.description, point_type_id=point.point_type_id)
+            points_list_dto.append(point_dto)
+
+        
         return points_list_dto
 
     def get_all_school_list(self):

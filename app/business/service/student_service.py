@@ -55,9 +55,6 @@ class StudentService():
             
             if self.user_service.get_user(student.responsible_id) is None:
                 raise ValueError("Responsável inválido")
-            
-            if self.point_service.get_point(student.point_id) is None:
-                raise ValueError("Ponto inválido")
 
     def validate_update_student(self, student: UpdateStudent):
         if len(student.name) == 0:
@@ -68,9 +65,10 @@ class StudentService():
 
     def creating_students(self, student_list: List[CreateStudent]):
         student_model_list = []
+        point = self.point_service.get_point_home_by_user_id(student_list[0].responsible_id)
 
         for student in student_list:
-            student_model = StudentModel(name=student.name, year=student.year, point_id=student.point_id, creation_user=2)
+            student_model = StudentModel(name=student.name, year=student.year, point_id=point.id, creation_user=2)
             student_model_list.append(student_model)
 
         student_id = self.student_repository.create_student_list(student_model_list)
