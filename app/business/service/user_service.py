@@ -83,7 +83,7 @@ class UserService():
 
         user_details = UserDetails(user=user_dto, phone=user_phone)
         
-        if(len(user_points) > 1):
+        if(len(user_points) > 0):
             point_id_list = []
             for user_point in user_points:
                 point_id_list.append(user_point.point_id)
