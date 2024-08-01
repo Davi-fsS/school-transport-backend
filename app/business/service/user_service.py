@@ -72,6 +72,8 @@ class UserService():
 
     def user_details(self, user_id: int):
         self.validating_user_detail(user_id)
+
+        points_dto = []
         
         user = self.user_repository.get_user(user_id)
 
@@ -80,8 +82,6 @@ class UserService():
         user_phone = self.user_phone_service.get_user_phone_list(user_id)
 
         user_points = self.user_point_service.get_user_point_list(user_id)
-
-        user_details = UserDetails(user=user_dto, phone=user_phone)
         
         if(len(user_points) > 0):
             point_id_list = []
@@ -90,7 +90,9 @@ class UserService():
 
             points = self.point_service.get_point_list_by_user(point_id_list)
 
-            user_details.points = points
+            points_dto = points
+
+        user_details = UserDetails(user=user_dto, phone=user_phone, points=points_dto)
 
         return user_details
     
