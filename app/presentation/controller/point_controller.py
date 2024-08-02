@@ -12,6 +12,12 @@ class PointController():
     def get_all_school_list(self):
         return self.point_service.get_all_school_list()
 
+    def get_point_by_id(self, point_id : int):
+        return self.point_service.get_point_by_id(point_id)
+    
+    def get_point_by_user_id(self, user_id : int):
+        return self.point_service.get_point_user_id(user_id)
+
     def create_point(self, point: CreatePoint):
         return self.point_service.create_point(point)
     

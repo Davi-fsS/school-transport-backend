@@ -17,6 +17,18 @@ class PointService():
         self.google_geocoding_service = GoogleGeocodingService()
         self.user_point_service = UserPointService()
 
+    def get_point_by_id(self, point_id : int):
+        return self.point_repository.get_point(point_id)
+    
+    def get_point_user_id(self, user_id : int):
+        user_points = self.user_point_service.get_user_point_list(user_id)
+
+        point_id_list = []
+        for user_point in user_points:
+            point_id_list.append(user_point.point_id)
+
+        return self.point_repository.get_points_home_by_point_list(point_id_list)
+
     def create_point(self, point: CreatePoint):
         coords = self.google_geocoding_service.get_geocode_by_address(point.address, point.city)
 

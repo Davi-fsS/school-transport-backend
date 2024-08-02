@@ -99,9 +99,7 @@ async def delete_user(user_id: int):
 @app.get("/user/details",status_code=status.HTTP_200_OK)
 async def user_details(user_id: int):
     try:
-        response = await user_controller.user_details(user_id)
-        response.headers["Cache-Control"] = "no-store"
-        return response
+        return user_controller.user_details(user_id)
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
 
@@ -118,6 +116,13 @@ async def read_user_type_by_id(type_id: int):
 async def create_user_phone(user_phone: CreatePhone):
     try:
         return user_phone_controller.create_phone(user_phone)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    
+@app.get("/user-phone/get-by-user", status_code=status.HTTP_200_OK)
+async def get_phone_by_user_id(user_id: int):
+    try:
+        return user_phone_controller.get_phone_by_user_id(user_id)
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
     
@@ -190,6 +195,20 @@ async def get_vehicle_by_driver(user_id: int):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
     
 #POINT ENDPOINTS
+@app.get("/point/get-by-id",status_code=status.HTTP_200_OK)
+async def get_point_by_id(point_id: int):
+    try:
+        return point_controller.get_point_by_id(point_id)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    
+@app.get("/point/get-by-user",status_code=status.HTTP_200_OK)
+async def get_by_user(user_id: int):
+    try:
+        return point_controller.get_point_by_user_id(user_id)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+
 @app.post("/point/create",status_code=status.HTTP_201_CREATED)
 async def create_point(point: CreatePoint):
     try:
