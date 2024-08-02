@@ -99,11 +99,13 @@ async def delete_user(user_id: int):
 @app.get("/user/details",status_code=status.HTTP_200_OK)
 async def user_details(user_id: int):
     try:
-        return user_controller.user_details(user_id)
+        response = await user_controller.user_details(user_id)
+        response.headers["Cache-Control"] = "no-store"
+        return response
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
 
-# USER_TYPE ENDPOINTS
+# USER_TYPE ENDPOINT
 @app.get("/user-type/by-id/{type_id}", status_code=status.HTTP_200_OK)
 async def read_user_type_by_id(type_id: int):
     user_type = user_type_controller.read_type(type_id)
