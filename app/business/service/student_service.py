@@ -68,7 +68,8 @@ class StudentService():
         point = self.point_service.get_point_home_by_user_id(student_list[0].responsible_id)
 
         for student in student_list:
-            if(student.id != None):
+            if(student.id == None):
+                print("passou aqui somente para", student.name)
                 student_model = StudentModel(name=student.name, year=student.year, point_id=point.id, creation_user=2)
                 student_model_list.append(student_model)
 
