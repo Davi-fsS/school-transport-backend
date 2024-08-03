@@ -68,8 +68,9 @@ class StudentService():
         point = self.point_service.get_point_home_by_user_id(student_list[0].responsible_id)
 
         for student in student_list:
-            student_model = StudentModel(name=student.name, year=student.year, point_id=point.id, creation_user=2)
-            student_model_list.append(student_model)
+            if(student.id != None):
+                student_model = StudentModel(name=student.name, year=student.year, point_id=point.id, creation_user=2)
+                student_model_list.append(student_model)
 
         student_id = self.student_repository.create_student_list(student_model_list)
 
