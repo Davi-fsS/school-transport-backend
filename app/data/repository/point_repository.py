@@ -74,6 +74,7 @@ class PointRepository():
             point.change_date = datetime.now()
 
             self.db.commit()
+            self.db.expire_all()
         except:
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
