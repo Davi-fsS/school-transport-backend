@@ -71,7 +71,7 @@ class VehicleService():
         
         vehicle_db = self.vehicle_repository.get_vehicle_by_plate(vehicle.plate)
 
-        if(vehicle.id != vehicle_db.id and vehicle_db is not None):
+        if(vehicle_db is not None and vehicle.id != vehicle_db.id):
             raise ValueError("Veículo já registrado")
 
         user = self.user_service.get_user(vehicle.user_id)
