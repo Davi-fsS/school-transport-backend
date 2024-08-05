@@ -52,8 +52,10 @@ class VehicleRepository():
         try:
             vehicle = self.get_vehicle(vehicle_update.id)
             vehicle.plate = vehicle_update.plate
-            vehicle.user_id = vehicle.user_id
-            vehicle.vehicle_type_id = vehicle.vehicle_type_id
+            vehicle.user_id = vehicle_update.user_id
+            vehicle.model = vehicle_update.model
+            vehicle.color = vehicle_update.color
+            vehicle.year = vehicle_update.year
             self.db.commit()
             return vehicle.id
         except:

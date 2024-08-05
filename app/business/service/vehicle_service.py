@@ -69,7 +69,9 @@ class VehicleService():
         if(len(vehicle.plate) != 7):
             raise ValueError("Placa incorreta")
         
-        if(self.vehicle_repository.get_vehicle_by_plate(vehicle.plate) is not None):
+        vehicle_db = self.vehicle_repository.get_vehicle_by_plate(vehicle.plate)
+
+        if(vehicle.id != vehicle_db.id and vehicle_db is not None):
             raise ValueError("Veículo já registrado")
 
         user = self.user_service.get_user(vehicle.user_id)
@@ -79,13 +81,7 @@ class VehicleService():
         
         if(user.user_type_id != 2):
             raise ValueError("Usuário não é motorista")
-        
-        if(self.vehicle_repository.get_vehicle_by_driver(vehicle.user_id) is not None):
-            raise ValueError("Motorista já possuí veículo")
-        
-        if(self.vehicle_type_service.get_type(vehicle.vehicle_type_id) is None):
-            raise ValueError("Tipo de veículo inválido")
-        
+                
     def validating_vehicle_delete(self, vehicle_id: int):
         if(self.vehicle_repository.get_vehicle(vehicle_id) is None):
             raise ValueError("Veículo não encontrado")
