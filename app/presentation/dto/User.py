@@ -7,6 +7,6 @@ class User(BaseModel):
     name: str = ""
     email: str = ""
     cpf: str = ""
-    cnh: str = ""
+    cnh: str | None
     rg: str = ""
     user_type_id: int
