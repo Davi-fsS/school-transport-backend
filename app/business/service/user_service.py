@@ -192,10 +192,11 @@ class UserService():
         if(user.user_type_id == 0):
             raise ValueError("Tipo de Usuário não encontrado")
 
-        db_user_cnh = self.user_repository.get_user_by_cnh(user.cnh)
+        if(user.cnh):
+            db_user_cnh = self.user_repository.get_user_by_cnh(user.cnh)
 
-        if(db_user_cnh is not None and db_user_cnh.id != user.id):
-            raise ValueError("CNH já cadastrada")
+            if(db_user_cnh is not None and db_user_cnh.id != user.id):
+                raise ValueError("CNH já cadastrada")
         
         if(not CPF().validate(user.cpf)):
             raise ValueError("CPF inválido")
