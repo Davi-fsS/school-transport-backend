@@ -21,6 +21,9 @@ class VehicleService():
         vehicle_model = VehicleModel(plate=vehicle.plate, 
                                      vehicle_type_id=vehicle.vehicle_type_id,
                                      user_id=vehicle.user_id,
+                                     model=vehicle.model,
+                                     color=vehicle.color,
+                                     year=vehicle.year,
                                      creation_user = 2
                                     )
 
