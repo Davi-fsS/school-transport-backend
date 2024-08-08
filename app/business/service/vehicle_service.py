@@ -135,5 +135,5 @@ class VehicleService():
         if(user is None):
             raise ValueError("Usuário não cadastrado")
         
-        if(user.user_type_id != 2):
+        if(user.user_type_id != 2 or user.user_type_id != 1):
             raise ValueError("Usuário não é motorista")
