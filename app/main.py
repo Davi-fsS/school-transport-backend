@@ -161,6 +161,13 @@ async def get_students_by_responsible(responsible_id: int):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
     
 # VEHICLE ENDPOINTS
+@app.get("/vehicle/get-all",status_code=status.HTTP_200_OK)
+async def get_all_vehicle():
+    try:
+        return vehicle_controller.get_all_vehicle()
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+
 @app.post("/vehicle/create",status_code=status.HTTP_201_CREATED)
 async def create_vehicle(vehicle: CreateVehicle):
     try:

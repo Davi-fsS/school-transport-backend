@@ -4,6 +4,8 @@ from business.service.vehicle_type_service import VehicleTypeService
 from data.model.vehicle_model import VehicleModel
 from presentation.dto.CreateVehicle import CreateVehicle
 from presentation.dto.UpdateVehicle import UpdateVehicle
+from presentation.dto.VehicleUser import VehicleUser
+from typing import List
 
 class VehicleService():
     vehicle_repository: VehicleRepository
@@ -14,6 +16,44 @@ class VehicleService():
         self.vehicle_repository = VehicleRepository()
         self.user_service = UserService()
         self.vehicle_type_service = VehicleTypeService()
+
+    def get_all_vehicle(self):
+        all_vehicles = self.vehicle_repository.get_all_vehicle()
+
+        if(len(all_vehicles) == 0):
+            raise ValueError("Não existe nenhum veículo")
+
+        user_id_list = self.get_user_list_by_vehicles(all_vehicles)
+
+        user_list = self.user_service.get_user_list_by_list(user_id_list)
+
+        all_vehicles_dto : List[VehicleUser] = []
+    
+        for vehicle in all_vehicles:
+            user = list(filter(lambda user: user.id == vehicle.user_id, user_list))[0]
+
+            vehicle_user = VehicleUser(
+                id = vehicle.id,
+                plate = vehicle.plate,
+                model=vehicle.model,
+                color=vehicle.color,
+                year=vehicle.year,
+                user_id=user.id,
+                user_name=user.name
+            )
+
+            all_vehicles_dto.append(vehicle_user)
+
+        return all_vehicles_dto
+    
+    def get_user_list_by_vehicles(self, all_vehicles: List[VehicleModel]):
+        user_id_list = []
+
+        for vehicle in all_vehicles:
+            user_id = vehicle.user_id
+            user_id_list.append(user_id)
+
+        return user_id_list
 
     def create_vehicle(self, vehicle: CreateVehicle):
         self.validating_vehicle_create(vehicle)

@@ -12,6 +12,7 @@ from presentation.dto.UpdateUserUuid import UpdateUserUuid
 from presentation.dto.UpdateUser import UpdateUser
 from presentation.dto.UserDetails import UserDetails
 from validate_docbr import CPF
+from typing import List
 from validate_rg import validate_rg
 import re
 
@@ -30,6 +31,9 @@ class UserService():
     def get_user(self, user_id: int):
         return self.user_repository.get_user(user_id)
     
+    def get_user_list_by_list(self, user_id_list: List[int]):
+        return self.user_repository.get_user_by_list(user_id_list)
+
     def get_all_drivers(self):
         return self.user_repository.get_all_drivers()
     

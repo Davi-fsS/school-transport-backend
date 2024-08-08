@@ -21,6 +21,15 @@ class VehicleRepository():
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
 
+    def get_all_vehicle(self):
+        try:
+            all_vehicle = self.db.query(VehicleModel).all()
+
+            return all_vehicle
+        except:
+            self.db.rollback()
+            raise ValueError("Erro ao fazer a leitura no sistema")
+
     def get_vehicle_by_plate(self, plate: str):
         try:
             vehicle = self.db.query(VehicleModel).filter(VehicleModel.plate == plate).first()

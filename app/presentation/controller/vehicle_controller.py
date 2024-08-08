@@ -8,6 +8,9 @@ class VehicleController():
     def __init__(self):
         self.vehicle_service = VehicleService()
     
+    def get_all_vehicle(self):
+        return self.vehicle_service.get_all_vehicle()
+
     def create_vehicle(self, vehicle: CreateVehicle):
         return self.vehicle_service.create_vehicle(vehicle)
     

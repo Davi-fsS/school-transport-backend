@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 from data.model.user_model import UserModel
 from data.infrastructure.database import get_db
 from presentation.dto.UpdateUser import UpdateUser
+from typing import List
 
 class UserRepository():
     db: Session
@@ -16,6 +17,13 @@ class UserRepository():
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
         
+    def get_user_by_list(self, user_id_list : List[int]):
+        try:
+            return self.db.query(UserModel).filter(UserModel.id.in_(user_id_list)).all()
+        except:
+            self.db.rollback()
+            raise ValueError("Erro ao fazer a leitura no sistema")
+
     def get_all_drivers(self):
         try:
             return self.db.query(UserModel).filter(UserModel.user_type_id == 2).all()
