@@ -4,7 +4,7 @@ from business.service.point_service import PointService
 from business.service.user_point_service import UserPointService
 from presentation.dto.CreateUser import CreateUser
 from data.model.user_model import UserModel
-from data.model.point_model import PointModel
+from data.repository.vehicle_repository import VehicleRepository
 from presentation.dto.CreatePoint import CreatePoint
 from presentation.dto.User import User
 from presentation.dto.CreatePhone import CreatePhone
@@ -21,12 +21,14 @@ class UserService():
     user_phone_service: UserPhoneService
     point_service: PointService
     user_point_service: UserPointService
+    vehicle_repository: VehicleRepository
 
     def __init__(self):
         self.user_repository = UserRepository()
         self.user_phone_service = UserPhoneService()
         self.point_service = PointService()
         self.user_point_service = UserPointService()
+        self.vehicle_repository = VehicleRepository()
 
     def get_user(self, user_id: int):
         return self.user_repository.get_user(user_id)
@@ -36,6 +38,25 @@ class UserService():
 
     def get_all_drivers(self):
         return self.user_repository.get_all_drivers()
+    
+    def get_drivers_without_vehicle(self):
+        all_drivers = self.user_repository.get_all_drivers()
+
+        vehicles = self.vehicle_repository.get_all_vehicle()
+
+        drivers_with_vehicles = []
+
+        for vehicle in vehicles:
+            driver_id = vehicle.user_id
+            drivers_with_vehicles.append(driver_id)
+
+        drivers_without_vehicles = []
+
+        for driver in all_drivers:
+            if driver.id not in drivers_with_vehicles:
+                drivers_without_vehicles.append(driver)
+        
+        return drivers_without_vehicles
     
     def get_user_by_email(self, email: str):
         return self.user_repository.get_user_by_email(email)

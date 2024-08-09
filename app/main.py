@@ -82,6 +82,13 @@ async def read_all_drivers():
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuário não encontrado")
     return user
 
+@app.get("/user/get-drivers-without-vehicle", status_code=status.HTTP_200_OK)
+async def read_drivers_without_vehicle():
+    user = user_controller.read_drivers_without_vehicle()
+    if user is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuário não encontrado")
+    return user
+
 @app.put("/user/update",status_code=status.HTTP_200_OK)
 async def update_user(user: UpdateUser):
     try:
