@@ -14,6 +14,7 @@ from presentation.dto.UpdateStudent import UpdateStudent
 from presentation.dto.UpdateUserUuid import UpdateUserUuid
 from presentation.dto.CreateVehicle import CreateVehicle
 from presentation.dto.UpdateVehicle import UpdateVehicle
+from presentation.dto.StudentAssociation import StudentAssociation
 from presentation.dto.UpdatePoint import UpdatePoint
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
@@ -164,6 +165,13 @@ async def get_students_by_responsible(responsible_id: int):
             raise HTTPException(status_code=status.HTTP_204_NO_CONTENT, detail="Sem alunos cadastrados")
         
         return students
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    
+@app.post("/student/association", status_code=status.HTTP_200_OK)
+async def create_student_association(association: StudentAssociation):
+    try:
+        return student_controller.create_association_student_responsible(association)
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
     

@@ -22,6 +22,15 @@ class StudentRepository():
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
         
+    def get_student_by_code(self, student_code: str):
+        try:
+            student = self.db.query(StudentModel).filter(StudentModel.code == student_code).first()
+
+            return student
+        except:
+            self.db.rollback()
+            raise ValueError("Erro ao fazer a leitura no sistema")
+        
     def get_students_by_student_list(self, student_id_list: List[int]):
         try:
             students = self.db.query(StudentModel).filter(StudentModel.id.in_(student_id_list)).all()

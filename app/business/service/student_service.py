@@ -3,6 +3,7 @@ from data.repository.student_repository import StudentRepository
 from business.service.user_service import UserService
 from business.service.point_service import PointService
 from presentation.dto.CreateStudent import CreateStudent
+from presentation.dto.StudentAssociation import StudentAssociation
 from presentation.dto.UpdateStudent import UpdateStudent
 from data.model.student_model import StudentModel
 from business.service.user_student_service import UserStudentService
@@ -27,6 +28,11 @@ class StudentService():
             student_id_list.append(user_student.student_id)
 
         return self.student_repository.get_students_by_student_list(student_id_list=student_id_list)
+
+    def create_association_student_responsible(self, association: StudentAssociation):
+        student = self.validating_association(association)
+
+        return self.user_student_service.create_user_student(user_id=association.responsible_id, student_id=student.id)
 
     def create_student_list(self, student_list: List[CreateStudent]):
         self.validate_create_student_list(student_list=student_list)
@@ -83,3 +89,19 @@ class StudentService():
         
         uuid_simples = responsible_uuid[:6]
         return f"{initials[0]}{uuid_simples}{initials[-1]}"
+    
+    def validating_association(self, association: StudentAssociation):
+        user = self.user_service.get_user(association.responsible_id)
+
+        if(user is None):
+            raise ValueError("Usuário não encontrado")
+        
+        if(user.user_type_id == 2):
+            raise ValueError("Usuário não é um responsável")
+        
+        student_with_code = self.student_repository.get_student_by_code(association.student_code)
+
+        if(student_with_code is None):
+            raise ValueError("Aluno não encontrado")
+        
+        return student_with_code

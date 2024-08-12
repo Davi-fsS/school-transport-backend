@@ -2,6 +2,7 @@ from typing import List
 from business.service.student_service import StudentService
 from presentation.dto.CreateStudent import CreateStudent
 from presentation.dto.UpdateStudent import UpdateStudent
+from presentation.dto.StudentAssociation import StudentAssociation
 
 class StudentController():
     student_service: StudentService
@@ -11,6 +12,9 @@ class StudentController():
     
     def get_students_by_responsible(self, responsible_id: int):
         return self.student_service.get_students_by_responsible(responsible_id=responsible_id)
+
+    def create_association_student_responsible(self, association: StudentAssociation):
+        return self.student_service.create_association_student_responsible(association)
 
     def create_student_list(self, student_list: List[CreateStudent]):
         return self.student_service.create_student_list(student_list=student_list)
