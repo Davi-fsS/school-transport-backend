@@ -13,6 +13,9 @@ class StudentController():
     def get_students_by_responsible(self, responsible_id: int):
         return self.student_service.get_students_by_responsible(responsible_id=responsible_id)
 
+    def get_student_by_code(self, code: str):
+        return self.student_service.get_student_by_code(code)
+
     def create_association_student_responsible(self, association: StudentAssociation):
         return self.student_service.create_association_student_responsible(association)
 

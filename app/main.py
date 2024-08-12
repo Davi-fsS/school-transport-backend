@@ -168,6 +168,13 @@ async def get_students_by_responsible(responsible_id: int):
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
     
+@app.get("/student/get-by-code", status_code=status.HTTP_200_OK)
+async def get_student_by_code(student_code: str):
+    try:
+        return student_controller.get_student_by_code(student_code)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+
 @app.post("/student/association", status_code=status.HTTP_200_OK)
 async def create_student_association(association: StudentAssociation):
     try:

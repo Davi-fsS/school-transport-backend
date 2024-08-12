@@ -28,11 +28,19 @@ class StudentService():
             student_id_list.append(user_student.student_id)
 
         return self.student_repository.get_students_by_student_list(student_id_list=student_id_list)
+    
+    def get_student_by_code(self, code: str):
+        student = self.student_repository.get_student_by_code(code)
+
+        if(student is None):
+            raise ValueError("Aluno não encontrado")
+        
+        return student
 
     def create_association_student_responsible(self, association: StudentAssociation):
-        student = self.validating_association(association)
+        self.validating_association(association)
 
-        return self.user_student_service.create_user_student(user_id=association.responsible_id, student_id=student.id)
+        return self.user_student_service.create_user_student(user_id=association.responsible_id, student_id=association.student_id)
 
     def create_student_list(self, student_list: List[CreateStudent]):
         self.validate_create_student_list(student_list=student_list)
@@ -98,10 +106,3 @@ class StudentService():
         
         if(user.user_type_id == 2):
             raise ValueError("Usuário não é um responsável")
-        
-        student_with_code = self.student_repository.get_student_by_code(association.student_code)
-
-        if(student_with_code is None):
-            raise ValueError("Aluno não encontrado")
-        
-        return student_with_code
