@@ -66,13 +66,20 @@ class StudentService():
     def creating_students(self, student_list: List[CreateStudent]):
         student_model_list = []
         point = self.point_service.get_point_home_by_user_id(student_list[0].responsible_id)
+        responsible_data = self.user_service.get_user(student_list[0].responsible_id)
 
         for student in student_list:
             if(student.id == None):
-                print("passou aqui somente para", student.name)
-                student_model = StudentModel(name=student.name, year=student.year, point_id=point.id, creation_user=2)
+                student_code = self.generate_student_code(student.name, responsible_data.uuid)
+                student_model = StudentModel(name=student.name, year=student.year, code=student_code, point_id=point.id, creation_user=2)
                 student_model_list.append(student_model)
 
         student_id = self.student_repository.create_student_list(student_model_list)
 
         return student_id
+    
+    def generate_student_code(self, name: str, responsible_uuid: str):
+        initials = "".join([separate_name[0].upper() for separate_name in name.split()])
+        
+        uuid_simples = responsible_uuid[:6]
+        return f"{initials[0]}{uuid_simples}{initials[-1]}"

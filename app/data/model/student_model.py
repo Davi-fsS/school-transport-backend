@@ -9,6 +9,7 @@ class StudentModel(Base):
     name = Column(String(255))
     year = Column(Integer)
     point_id = Column(Integer)
+    code=Column(String(255))
     creation_user = Column(Integer)
     change_date = Column(DateTime)
     change_user = Column(Integer)
