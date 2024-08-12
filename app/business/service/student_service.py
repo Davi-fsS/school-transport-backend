@@ -106,3 +106,15 @@ class StudentService():
         
         if(user.user_type_id == 2):
             raise ValueError("Usuário não é um responsável")
+        
+        user_student = self.user_student_service.get_students_by_responsible(association.responsible_id)
+
+        if(len(user_student) > 0):
+            student_ids_list = []
+
+            for student in user_student:
+                student_id = student.student_id
+                student_ids_list.append(student_id)
+
+            if(association.student_id in student_ids_list):
+                raise ValueError("Aluno já associado")
