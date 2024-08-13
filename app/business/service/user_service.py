@@ -263,41 +263,11 @@ class UserService():
             raise ValueError("E-mail inválido")
         
     def creating_user(self, user: CreateUser):
-        user_body : UserModel
-
-        if(user.user_type_id == 2):
-            driver_code = self.generate_driver_code(user.id, user.name)
-
-            user_body = UserModel(name=user.name, 
-                                  email=user.email, 
-                                  cpf=user.cpf, 
-                                  cnh=user.cnh, 
-                                  user_type_id=user.user_type_id, 
-                                  code=driver_code,
-                                  rg=user.rg)
-        
-        else:
-            user_body = UserModel(name=user.name, 
-                                  email=user.email, 
-                                  cpf=user.cpf, 
-                                  cnh=user.cnh, 
-                                  user_type_id=user.user_type_id, 
-                                  rg=user.rg)
-
+        user_body = UserModel(name=user.name, email=user.email, cpf=user.cpf, cnh=user.cnh, user_type_id=user.user_type_id, rg=user.rg)
 
         user_id = self.user_repository.create_user(user_body)
 
         return user_id
-
-    def generate_driver_code(self, user_id: int, name: str):
-        initials = "".join([separate_name[0].upper() for separate_name in name.split()])
-
-        vehicle = self.vehicle_repository.get_vehicle_by_driver(user_id)
-
-        if(vehicle is None):
-            return
-        
-        return f"${vehicle.plate[:2]}${initials[0]}${initials[1]}${vehicle.plate[4:]}"
 
     def creating_user_phone(self, user_id: int, phone: str):
         phone_body = CreatePhone(user_id=user_id, phone=phone)

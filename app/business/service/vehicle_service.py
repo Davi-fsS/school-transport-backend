@@ -73,12 +73,16 @@ class VehicleService():
         return self.vehicle_repository.create_vehicle(vehicle_model)
     
     def update_vehicle(self, vehicle: UpdateVehicle):
-        self.validating_vehicle_update(vehicle)
+        driver = self.validating_vehicle_update(vehicle)
+
+        self.creating_driver_code(driver, vehicle)
 
         return self.vehicle_repository.update_vehicle(vehicle)
 
     def delete_vehicle(self, vehicle_id: int):
-        self.validating_vehicle_delete(vehicle_id)
+        vehicle = self.validating_vehicle_delete(vehicle_id)
+
+        self.user_service.update_driver_code(vehicle.user_id, None)
 
         return self.vehicle_repository.delete_vehicle(vehicle_id)
 
@@ -129,10 +133,15 @@ class VehicleService():
         
         if(user.user_type_id != 2):
             raise ValueError("Usuário não é motorista")
+        
+        return user
                 
     def validating_vehicle_delete(self, vehicle_id: int):
-        if(self.vehicle_repository.get_vehicle(vehicle_id) is None):
+        vehicle = self.vehicle_repository.get_vehicle(vehicle_id)
+        if(vehicle is None):
             raise ValueError("Veículo não encontrado")
+        
+        return vehicle
         
     def validating_vehicle_by_driver(self, user_id: int):
         user = self.user_service.get_user(user_id)
@@ -144,11 +153,14 @@ class VehicleService():
             raise ValueError("Usuário não é motorista")
         
     def creating_driver_code(self, driver: UserModel, vehicle: CreateVehicle):
-        code = self.user_service.generate_driver_code(vehicle.plate, driver.name)
+        code = self.generate_driver_code(vehicle.plate, driver.name.upper())
 
         self.user_service.update_driver_code(driver.id, code)
 
     def generate_driver_code(self, plate: str, name: str):
         initials = "".join([separate_name[0].upper() for separate_name in name.split()])
+
+        if(len(initials) > 1):
+            return f"{initials[0]}{initials[1]}{plate}"
         
-        return f"${plate[:2]}${initials[0]}${initials[1]}${plate[4:]}"
+        return f"{name[0]}{name[1]}{plate}"
