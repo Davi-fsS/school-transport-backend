@@ -260,7 +260,7 @@ async def create_driver_association(association: DriverAssociation):
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
 
-@app.delete("/point/school-driver-disassociation",status_code=status.HTTP_201_CREATED)
+@app.delete("/point/school-driver-disassociation",status_code=status.HTTP_200_OK)
 async def delete_driver_association(disassociation: DriverAssociation):
     try:
         return point_controller.delete_driver_point_association(disassociation)
