@@ -12,6 +12,7 @@ class UserModel(Base):
     cpf = Column(String(11))
     cnh = Column(String(11), nullable=True)
     rg = Column(String(12), nullable=True)
+    code = Column(String(255), nullable=True)
     user_type_id = Column(Integer)
     creation_user = Column(Integer)
     change_date = Column(DateTime)

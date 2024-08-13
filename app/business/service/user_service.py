@@ -89,6 +89,9 @@ class UserService():
         self.validating_update_user(user_data)
         
         self.user_repository.update_user(user_data)
+
+    def update_driver_code(self, user_id: int, code: str):        
+        self.user_repository.update_user_code(user_id, code)
     
     def delete_user(self, user_id: int):
         self.validating_delete_user(user_id)

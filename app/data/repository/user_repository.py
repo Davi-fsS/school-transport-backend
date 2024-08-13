@@ -95,6 +95,17 @@ class UserRepository():
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
         
+    def update_user_code(self, user_update_id: int, code: str):
+        try:
+            user = self.get_user(user_update_id)
+
+            user.code = code
+
+            self.db.commit()
+        except:
+            self.db.rollback()
+            raise ValueError("Erro ao salvar no sistema")
+        
     def delete_user(self, user_id: int):
         try:
             user = self.get_user(user_id)
