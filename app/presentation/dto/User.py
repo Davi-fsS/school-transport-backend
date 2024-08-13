@@ -10,3 +10,4 @@ class User(BaseModel):
     cnh: str | None
     rg: str = ""
     user_type_id: int
+    code: str | None

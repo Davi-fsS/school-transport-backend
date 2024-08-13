@@ -105,7 +105,7 @@ class UserService():
         
         user = self.user_repository.get_user(user_id)
 
-        user_dto = User(id=user.id, uuid=user.uuid, name=user.name, email=user.email, cpf=user.cpf, cnh=user.cnh, rg=user.rg, user_type_id=user.user_type_id)
+        user_dto = User(id=user.id, code=user.code, uuid=user.uuid, name=user.name, email=user.email, cpf=user.cpf, cnh=user.cnh, rg=user.rg, user_type_id=user.user_type_id)
 
         user_phone = self.user_phone_service.get_user_phone_list(user_id)
 
