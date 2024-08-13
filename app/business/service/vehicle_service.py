@@ -2,6 +2,7 @@ from data.repository.vehicle_repository import VehicleRepository
 from business.service.user_service import UserService
 from business.service.vehicle_type_service import VehicleTypeService
 from data.model.vehicle_model import VehicleModel
+from data.model.user_model import UserModel
 from presentation.dto.CreateVehicle import CreateVehicle
 from presentation.dto.UpdateVehicle import UpdateVehicle
 from presentation.dto.VehicleUser import VehicleUser
@@ -56,7 +57,7 @@ class VehicleService():
         return user_id_list
 
     def create_vehicle(self, vehicle: CreateVehicle):
-        self.validating_vehicle_create(vehicle)
+        driver = self.validating_vehicle_create(vehicle)
 
         vehicle_model = VehicleModel(plate=vehicle.plate, 
                                      vehicle_type_id=vehicle.vehicle_type_id,
@@ -66,6 +67,8 @@ class VehicleService():
                                      year=vehicle.year,
                                      creation_user = 2
                                     )
+        
+        self.creating_driver_code(driver, vehicle)
 
         return self.vehicle_repository.create_vehicle(vehicle_model)
     
@@ -105,6 +108,8 @@ class VehicleService():
         if(self.vehicle_type_service.get_type(vehicle.vehicle_type_id) is None):
             raise ValueError("Tipo de veículo inválido")
         
+        return user
+
     def validating_vehicle_update(self, vehicle: UpdateVehicle):
         if(self.vehicle_repository.get_vehicle(vehicle.id) is None):
             raise ValueError("Veículo não encontrado")
@@ -137,3 +142,13 @@ class VehicleService():
         
         if(user.user_type_id != 2 and user.user_type_id != 1):
             raise ValueError("Usuário não é motorista")
+        
+    def creating_driver_code(self, driver: UserModel, vehicle: CreateVehicle):
+        code = self.user_service.generate_driver_code(vehicle.plate, driver.name)
+
+        self.user_service.update_driver_code(driver.id, code)
+
+    def generate_driver_code(self, plate: str, name: str):
+        initials = "".join([separate_name[0].upper() for separate_name in name.split()])
+        
+        return f"${plate[:2]}${initials[0]}${initials[1]}${plate[4:]}"
