@@ -1,6 +1,7 @@
 from data.repository.point_repository import PointRepository
 from business.service.user_point_service import UserPointService
 from presentation.dto.CreatePoint import CreatePoint
+from presentation.dto.DriverAssociation import DriverAssociation
 from presentation.dto.UpdatePoint import UpdatePoint
 from presentation.dto.Point import Point
 from data.model.point_model import PointModel
@@ -41,6 +42,30 @@ class PointService():
 
         return self.point_repository.create_point(point_body)
     
+    def create_driver_point_association(self, association: DriverAssociation):
+        self.validate_driver_point_association(association)
+
+        self.user_point_service.create_user_point(association.user_id, association.point_id, True)
+    
+    def validate_driver_point_association(self, association: DriverAssociation):
+        point = self.point_repository.get_point(association.point_id)
+
+        if(point.point_type_id != 2):
+            raise ValueError("Este ponto não é uma escola")
+
+        points_by_user = self.user_point_service.get_user_point_list(association.user_id)
+
+        points_ids_by_user = []
+
+        for point in points_by_user:
+            point_id = point.id
+            points_ids_by_user.append(point_id)
+
+        driver_with_school = self.point_repository.get_points_school_by_point_list(points_ids_by_user)
+
+        if(len(driver_with_school) != 0):
+            raise ValueError("Já existe uma escola associada ao seu usuário")
+
     def update_point(self, point: UpdatePoint):
         self.validating_point_update(point)
 

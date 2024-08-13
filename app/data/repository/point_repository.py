@@ -28,6 +28,14 @@ class PointRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
+        
+    def get_points_school_by_point_list(self, point_id_list: List[int]):
+        try:
+            points = self.db.query(PointModel).filter(and_(PointModel.id.in_(point_id_list), PointModel.point_type_id == 2)).all()
+            return points
+        except:
+            self.db.rollback()
+            raise ValueError("Erro ao fazer a leitura no sistema")
 
     def get_point(self, point_id: int):
         try:

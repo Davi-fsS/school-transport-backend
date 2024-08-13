@@ -1,6 +1,7 @@
 from typing import List
 from business.service.point_service import PointService
 from presentation.dto.CreatePoint import CreatePoint
+from presentation.dto.DriverAssociation import DriverAssociation
 from presentation.dto.UpdatePoint import UpdatePoint
 
 class PointController():
@@ -20,6 +21,9 @@ class PointController():
 
     def create_point(self, point: CreatePoint):
         return self.point_service.create_point(point)
+    
+    def create_driver_point_association(self, association: DriverAssociation):
+        return self.point_service.create_driver_point_association(association)
     
     def update_point(self, point: UpdatePoint):
         return self.point_service.update_point(point)

@@ -9,6 +9,7 @@ from presentation.dto.CreateUser import CreateUser
 from presentation.dto.CreateStudent import CreateStudent
 from presentation.dto.CreatePhone import CreatePhone
 from presentation.dto.CreatePoint import CreatePoint
+from presentation.dto.DriverAssociation import DriverAssociation
 from presentation.dto.UpdateUser import UpdateUser
 from presentation.dto.UpdateStudent import UpdateStudent
 from presentation.dto.UpdateUserUuid import UpdateUserUuid
@@ -242,6 +243,13 @@ async def get_by_user(user_id: int):
 async def create_point(point: CreatePoint):
     try:
         return point_controller.create_point(point)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    
+@app.post("/point/school-driver-association",status_code=status.HTTP_201_CREATED)
+async def create_driver_association(association: DriverAssociation):
+    try:
+        return point_controller.create_driver_point_association(association)
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
     
