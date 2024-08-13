@@ -18,6 +18,9 @@ class PointController():
     
     def get_point_by_user_id(self, user_id : int):
         return self.point_service.get_point_user_id(user_id)
+    
+    def get_school_by_user(self, user_id : int):
+        return self.point_service.get_school_by_user(user_id)
 
     def create_point(self, point: CreatePoint):
         return self.point_service.create_point(point)
