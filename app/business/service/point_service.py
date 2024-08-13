@@ -56,6 +56,17 @@ class PointService():
 
         self.user_point_service.create_user_point(association.user_id, association.point_id, True)
     
+    def delete_driver_point_association(self, disassociation: DriverAssociation):
+        self.validate_driver_point_disassociation(disassociation)
+
+        self.user_point_service.delete_user_point(disassociation.user_id, disassociation.point_id)
+    
+    def validate_driver_point_disassociation(self, disassociation: DriverAssociation):
+        point = self.point_repository.get_point(disassociation.point_id)
+
+        if(point.point_type_id != 2):
+            raise ValueError("Este ponto não é uma escola")
+
     def validate_driver_point_association(self, association: DriverAssociation):
         point = self.point_repository.get_point(association.point_id)
 

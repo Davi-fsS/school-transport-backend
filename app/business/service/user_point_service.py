@@ -15,3 +15,6 @@ class UserPointService():
     
     def get_user_point_list(self, user_id: int):
         return self.user_point_repository.get_user_point_list(user_id)
+    
+    def delete_user_point(self, user_id: int, point_id: int):
+        return self.user_point_repository.delete_user_point(user_id, point_id)

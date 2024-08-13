@@ -28,6 +28,9 @@ class PointController():
     def create_driver_point_association(self, association: DriverAssociation):
         return self.point_service.create_driver_point_association(association)
     
+    def delete_driver_point_association(self, disassociation: DriverAssociation):
+        return self.point_service.delete_driver_point_association(disassociation)
+    
     def update_point(self, point: UpdatePoint):
         return self.point_service.update_point(point)
     
