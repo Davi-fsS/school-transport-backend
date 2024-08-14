@@ -17,7 +17,7 @@ class UserPointRepository():
         
     def get_user_point(self, user_id: int, point_id: int):
         try:
-            return self.db.query(UserPointModel).filter(UserPointModel.user_id == user_id and UserPointModel.point_id == point_id).first()
+            return self.db.query(UserPointModel).filter(UserPointModel.user_id == user_id, UserPointModel.point_id == point_id).first()
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
