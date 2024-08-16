@@ -32,6 +32,9 @@ class UserService():
 
     def get_user(self, user_id: int):
         return self.user_repository.get_user(user_id)
+   
+    def get_user_by_code(self, code: str):
+        return self.user_repository.get_user_by_code(code)
     
     def get_user_list_by_list(self, user_id_list: List[int]):
         return self.user_repository.get_user_by_list(user_id_list)

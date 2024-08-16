@@ -42,6 +42,17 @@ class StudentService():
 
         return self.user_student_service.create_user_student(user_id=association.responsible_id, student_id=association.student_id)
 
+    def create_student(self, student: CreateStudent):
+        self.validate_create_student(student)
+
+        student_id = self.creating_student(student)
+
+        self.user_student_service.create_user_student(student_id=student_id, user_id=student.responsible_id)
+
+        driver = self.user_service.get_user_by_code(student.driver_code)
+
+        self.user_student_service.create_user_student(student_id=student_id, user_id=driver.id)
+
     def create_student_list(self, student_list: List[CreateStudent]):
         self.validate_create_student_list(student_list=student_list)
 
@@ -69,6 +80,16 @@ class StudentService():
             
             if self.user_service.get_user(student.responsible_id) is None:
                 raise ValueError("Responsável inválido")
+    
+    def validate_create_student(self, student: CreateStudent):
+        if len(student.name) == 0:
+            raise ValueError("Nome inválido")
+        
+        if student.year <= 0:
+            raise ValueError("Idade inválida")
+        
+        if self.user_service.get_user(student.responsible_id) is None:
+            raise ValueError("Responsável inválido")
 
     def validate_update_student(self, student: UpdateStudent):
         if len(student.name) == 0:
@@ -76,6 +97,17 @@ class StudentService():
 
         if student.year <= 0:
             raise ValueError("Idade inválida")
+
+    def creating_student(self, student: CreateStudent):
+        point = self.point_service.get_point_home_by_user_id(student.responsible_id)
+        responsible_data = self.user_service.get_user(student.responsible_id)
+
+        student_code = self.generate_student_code(student.name, responsible_data.uuid)
+        student_model = StudentModel(name=student.name, year=student.year, code=student_code, point_id=point.id, creation_user=2)
+
+        student_id = self.student_repository.create_student(student_model)
+
+        return student_id
 
     def creating_students(self, student_list: List[CreateStudent]):
         student_model_list = []

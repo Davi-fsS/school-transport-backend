@@ -39,6 +39,16 @@ class StudentRepository():
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
 
+    def create_student(self, student: StudentModel):
+        try:
+            self.db.add(student)
+            self.db.commit()
+            
+            return student.id
+        except:
+            self.db.rollback()
+            raise ValueError("Erro ao salvar no sistema")
+
     def create_student_list(self, db_student_list: List[StudentModel]):
         created_ids = []
         try:

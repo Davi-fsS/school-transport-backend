@@ -143,6 +143,13 @@ async def create_student(student_list: List[CreateStudent]):
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
 
+@app.post("/student/create",status_code=status.HTTP_201_CREATED)
+async def create_student(student: CreateStudent):
+    try:
+        return student_controller.create_student(student)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+
 @app.put("/student/update", status_code=status.HTTP_200_OK)
 async def update_student(student: UpdateStudent):
     try:

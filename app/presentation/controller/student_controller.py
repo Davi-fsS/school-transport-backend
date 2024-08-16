@@ -19,6 +19,9 @@ class StudentController():
     def create_association_student_responsible(self, association: StudentAssociation):
         return self.student_service.create_association_student_responsible(association)
 
+    def create_student(self, student: CreateStudent):
+        return self.student_service.create_student(student)
+
     def create_student_list(self, student_list: List[CreateStudent]):
         return self.student_service.create_student_list(student_list=student_list)
     
