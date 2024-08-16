@@ -2,9 +2,11 @@ from typing import List
 from data.repository.student_repository import StudentRepository
 from business.service.user_service import UserService
 from business.service.point_service import PointService
+from business.service.user_point_service import UserPointService
 from presentation.dto.CreateStudent import CreateStudent
 from presentation.dto.StudentAssociation import StudentAssociation
 from presentation.dto.UpdateStudent import UpdateStudent
+from presentation.dto.StudentDetails import StudentDetails
 from data.model.student_model import StudentModel
 from business.service.user_student_service import UserStudentService
 
@@ -13,12 +15,14 @@ class StudentService():
     user_service: UserService
     point_service: PointService
     user_student_service: UserStudentService
+    user_point_service: UserPointService
 
     def __init__(self):
         self.student_repository = StudentRepository()
         self.user_service = UserService()
         self.point_service = PointService()
         self.user_student_service = UserStudentService()
+        self.user_point_service = UserPointService()
 
     def get_students_by_responsible(self, responsible_id: int):
         user_students_by_responsible_list = self.user_student_service.get_students_by_responsible(responsible_id=responsible_id)
@@ -36,6 +40,54 @@ class StudentService():
             raise ValueError("Aluno não encontrado")
         
         return student
+    
+    def get_student_details(self, student_id: int):
+        student = self.student_repository.get_student(student_id)
+
+        if(student is None):
+            raise ValueError("Aluno não encontrado")
+        
+        student_driver = self.get_student_driver(student_id)
+
+        if(student_driver is None):
+            raise ValueError("Aluno não possui motorista")
+
+        student_school = self.get_student_school(student_driver.id)
+
+        if(student_school is None):
+            raise ValueError("Aluno não possui escola")
+        
+        student_dto = StudentDetails(school=student_school)
+        
+        return student_dto
+
+    def get_student_driver(self, student_id: int):
+        user_student_list = self.user_student_service.get_user_students_by_student_id(student_id)
+
+        user_id_list = []
+        for user_student in user_student_list:
+            user_id = user_student.user_id
+            user_id_list.append(user_id)
+
+        users = self.user_service.get_user_list_by_list(user_id_list)
+
+        for user in users:
+            if(user.user_type_id == 2):
+                return user
+            
+    def get_student_school(self, driver_id: int):
+        user_points = self.user_point_service.get_user_point_list(driver_id)
+
+        point_id_list = []
+        for user_point in user_points:
+            point_id = user_point.point_id
+            point_id_list.append(point_id)
+
+        points = self.point_service.get_point_list_by_user(point_id_list)
+
+        for point in points:
+            if(point.point_type_id == 2):
+                return point
 
     def create_association_student_responsible(self, association: StudentAssociation):
         self.validating_association(association)
