@@ -16,8 +16,17 @@ class StudentController():
     def get_student_by_code(self, code: str):
         return self.student_service.get_student_by_code(code)
 
+    def get_student_details(self, student_id: int):
+        return self.student_service.get_student_details(student_id)
+
     def create_association_student_responsible(self, association: StudentAssociation):
         return self.student_service.create_association_student_responsible(association)
+    
+    def disassociation_student_responsible(self, disassociation: StudentAssociation):
+        return self.student_service.disassociation_student_responsible(disassociation)
+
+    def create_student(self, student: CreateStudent):
+        return self.student_service.create_student(student)
 
     def create_student_list(self, student_list: List[CreateStudent]):
         return self.student_service.create_student_list(student_list=student_list)

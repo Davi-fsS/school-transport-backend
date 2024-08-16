@@ -143,6 +143,13 @@ async def create_student(student_list: List[CreateStudent]):
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
 
+@app.post("/student/create",status_code=status.HTTP_201_CREATED)
+async def create_student(student: CreateStudent):
+    try:
+        return student_controller.create_student(student)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+
 @app.put("/student/update", status_code=status.HTTP_200_OK)
 async def update_student(student: UpdateStudent):
     try:
@@ -175,11 +182,25 @@ async def get_student_by_code(student_code: str):
         return student_controller.get_student_by_code(student_code)
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    
+@app.get("/student/details", status_code=status.HTTP_200_OK)
+async def get_student_details(student_id: int):
+    try:
+        return student_controller.get_student_details(student_id)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
 
 @app.post("/student/association", status_code=status.HTTP_200_OK)
 async def create_student_association(association: StudentAssociation):
     try:
         return student_controller.create_association_student_responsible(association)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    
+@app.post("/student/disassociation", status_code=status.HTTP_200_OK)
+async def student_disassociation(disassociation: StudentAssociation):
+    try:
+        return student_controller.disassociation_student_responsible(disassociation)
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
     

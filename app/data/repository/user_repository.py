@@ -17,6 +17,13 @@ class UserRepository():
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
         
+    def get_user_by_code(self, code: str):
+        try:
+            return self.db.query(UserModel).filter(UserModel.code == code).first()
+        except:
+            self.db.rollback()
+            raise ValueError("Erro ao fazer a leitura no sistema")
+        
     def get_user_by_list(self, user_id_list : List[int]):
         try:
             return self.db.query(UserModel).filter(UserModel.id.in_(user_id_list)).all()
