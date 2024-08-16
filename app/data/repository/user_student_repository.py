@@ -32,6 +32,18 @@ class UserStudentRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")    
+        
+    def get_all_user_student_by_student_id(self, student_id: int):
+        try:
+            user_student = self.db.query(UserStudentModel).filter(UserStudentModel.student_id == student_id).all()
+
+            if user_student is None:
+                raise ValueError("Associação entre aluno e responsável não encontrada")
+
+            return user_student 
+        except:
+            self.db.rollback()
+            raise ValueError("Erro ao fazer a leitura no sistema")   
 
     def get_students_by_responsible(self, responsible_id: int):
         try:
@@ -64,11 +76,22 @@ class UserStudentRepository():
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
 
-    def delete_user_student(self, student_id: int):
+    def delete_user_student_by_student_id(self, student_id: int):
         try:
             user_student = self.get_user_student_by_student_id(student_id)
             self.db.delete(user_student)
             self.db.commit()
+        except:
+            self.db.rollback()
+            raise ValueError("Erro ao salvar no sistema")
+        
+    def delete_all_user_student_by_student_id(self, student_id: int):
+        try:
+            user_student_list = self.get_all_user_student_by_student_id(student_id)
+
+            for user_student in user_student_list:
+                self.db.delete(user_student)
+                self.db.commit()
         except:
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")

@@ -25,8 +25,8 @@ class UserStudentService():
         
         return self.user_student_repository.create_user_student_list(user_student_model_list)
 
-    def delete_user_student(self, student_id: int):
-        return self.user_student_repository.delete_user_student(student_id=student_id)
+    def delete_user_student_by_student_id(self, student_id: int):
+        return self.user_student_repository.delete_user_student_by_student_id(student_id=student_id)
     
     def delete_user_student(self, student_id: int, responsible_id: int):
         return self.user_student_repository.delete_user_student(student_id=student_id, responsible_id=responsible_id)

@@ -71,7 +71,7 @@ class StudentService():
         return self.student_repository.update_student(student_update=student)
     
     def delete_student(self, student_id: int):
-        self.user_student_service.delete_user_student(student_id=student_id)
+        self.user_student_service.delete_user_student_by_student_id(student_id=student_id)
 
         return self.student_repository.delete_student(student_id=student_id)
 
