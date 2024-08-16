@@ -1,9 +1,9 @@
 from pydantic import BaseModel
-from data.model.student_model import StudentModel
-from data.model.user_model import UserModel
 from presentation.dto.Point import Point
+from presentation.dto.Student import Student
+from presentation.dto.User import User
 
 class StudentDetails(BaseModel):
-    # student: StudentModel
+    student: Student
     school: Point
-    # driver: UserModel
+    driver: User

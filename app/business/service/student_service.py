@@ -7,6 +7,8 @@ from presentation.dto.CreateStudent import CreateStudent
 from presentation.dto.StudentAssociation import StudentAssociation
 from presentation.dto.UpdateStudent import UpdateStudent
 from presentation.dto.StudentDetails import StudentDetails
+from presentation.dto.User import User
+from presentation.dto.Student import Student
 from data.model.student_model import StudentModel
 from business.service.user_student_service import UserStudentService
 
@@ -47,19 +49,25 @@ class StudentService():
         if(student is None):
             raise ValueError("Aluno não encontrado")
         
+        student_dto = Student(name=student.name, year=student.year, code=student.code, creation_user=student.creation_user)
+        
         student_driver = self.get_student_driver(student_id)
 
         if(student_driver is None):
             raise ValueError("Aluno não possui motorista")
+        
+        student_driver_dto = User(id=student_driver.id, uuid=student_driver.uuid, name=student_driver.name,
+                                  email=student_driver.email, cpf=student_driver.cpf, cnh=student_driver.cnh,
+                                  rg=student_driver.rg, user_type_id=student_driver.user_type_id, code=student_driver.code)
 
-        student_school = self.get_student_school(student_driver.id)
+        student_school_dto = self.get_student_school(student_driver.id)
 
-        if(student_school is None):
+        if(student_school_dto is None):
             raise ValueError("Aluno não possui escola")
         
-        student_dto = StudentDetails(school=student_school)
+        student_details_dto = StudentDetails(school=student_school_dto, student=student_dto, driver=student_driver_dto)
         
-        return student_dto
+        return student_details_dto
 
     def get_student_driver(self, student_id: int):
         user_student_list = self.user_student_service.get_user_students_by_student_id(student_id)
