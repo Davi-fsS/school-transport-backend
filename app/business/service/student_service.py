@@ -41,7 +41,9 @@ class StudentService():
         if(student is None):
             raise ValueError("Aluno não encontrado")
         
-        return student
+        student_details = self.get_student_details(student.id)
+        
+        return student_details
     
     def get_student_details(self, student_id: int):
         student = self.student_repository.get_student(student_id)
