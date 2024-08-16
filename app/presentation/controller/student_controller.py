@@ -18,6 +18,9 @@ class StudentController():
 
     def create_association_student_responsible(self, association: StudentAssociation):
         return self.student_service.create_association_student_responsible(association)
+    
+    def disassociation_student_responsible(self, disassociation: StudentAssociation):
+        return self.student_service.disassociation_student_responsible(disassociation)
 
     def create_student(self, student: CreateStudent):
         return self.student_service.create_student(student)

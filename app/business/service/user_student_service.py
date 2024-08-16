@@ -27,3 +27,6 @@ class UserStudentService():
 
     def delete_user_student(self, student_id: int):
         return self.user_student_repository.delete_user_student(student_id=student_id)
+    
+    def delete_user_student(self, student_id: int, responsible_id: int):
+        return self.user_student_repository.delete_user_student(student_id=student_id, responsible_id=responsible_id)

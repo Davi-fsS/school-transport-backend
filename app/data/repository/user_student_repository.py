@@ -9,6 +9,18 @@ class UserStudentRepository():
     def __init__(self):
         self.db = next(get_db())
 
+    def get_user_student(self, student_id: int, responsible_id: int):
+        try:
+            user_student = self.db.query(UserStudentModel).filter(UserStudentModel.student_id == student_id, UserStudentModel.user_id == responsible_id).first()
+
+            if user_student is None:
+                raise ValueError("Associação entre aluno e responsável não encontrada")
+
+            return user_student 
+        except:
+            self.db.rollback()
+            raise ValueError("Erro ao fazer a leitura no sistema")  
+
     def get_user_student_by_student_id(self, student_id: int):
         try:
             user_student = self.db.query(UserStudentModel).filter(UserStudentModel.student_id == student_id).first()
@@ -55,6 +67,15 @@ class UserStudentRepository():
     def delete_user_student(self, student_id: int):
         try:
             user_student = self.get_user_student_by_student_id(student_id)
+            self.db.delete(user_student)
+            self.db.commit()
+        except:
+            self.db.rollback()
+            raise ValueError("Erro ao salvar no sistema")
+        
+    def delete_user_student(self, student_id: int, responsible_id: int):
+        try:
+            user_student = self.get_user_student(student_id, responsible_id)
             self.db.delete(user_student)
             self.db.commit()
         except:

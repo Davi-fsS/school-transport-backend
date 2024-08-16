@@ -42,6 +42,11 @@ class StudentService():
 
         return self.user_student_service.create_user_student(user_id=association.responsible_id, student_id=association.student_id)
 
+    def disassociation_student_responsible(self, disassociation: StudentAssociation):
+        self.validating_disassociation(disassociation)
+
+        return self.user_student_service.delete_user_student(student_id=disassociation.student_id, responsible_id=disassociation.responsible_id)
+
     def create_student(self, student: CreateStudent):
         self.validate_create_student(student)
 
@@ -150,3 +155,30 @@ class StudentService():
 
             if(association.student_id in student_ids_list):
                 raise ValueError("Aluno já associado")
+            
+    def validating_disassociation(self, disassociation: StudentAssociation):
+        user = self.user_service.get_user(disassociation.responsible_id)
+
+        if(user is None):
+            raise ValueError("Usuário não encontrado")
+        
+        if(user.user_type_id == 2):
+            raise ValueError("Usuário não é um responsável")
+        
+        student = self.student_repository.get_student(disassociation.student_id)
+
+        if(student.creation_user == disassociation.responsible_id):
+            raise ValueError("Não é possível desassociar")
+
+        user_student = self.user_student_service.get_students_by_responsible(disassociation.responsible_id)
+
+        if(len(user_student) > 0):
+            student_ids_list = []
+
+            for student in user_student:
+                student_id = student.student_id
+                student_ids_list.append(student_id)
+
+            if(disassociation.student_id not in student_ids_list):
+                raise ValueError("Aluno não associado")
+

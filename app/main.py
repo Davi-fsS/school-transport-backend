@@ -190,6 +190,13 @@ async def create_student_association(association: StudentAssociation):
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
     
+@app.post("/student/disassociation", status_code=status.HTTP_200_OK)
+async def student_disassociation(disassociation: StudentAssociation):
+    try:
+        return student_controller.disassociation_student_responsible(disassociation)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    
 # VEHICLE ENDPOINTS
 @app.get("/vehicle/get-all",status_code=status.HTTP_200_OK)
 async def get_all_vehicle():
