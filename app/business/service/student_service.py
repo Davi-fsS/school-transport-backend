@@ -108,7 +108,7 @@ class StudentService():
         responsible_data = self.user_service.get_user(student.responsible_id)
 
         student_code = self.generate_student_code(student.name, responsible_data.uuid)
-        student_model = StudentModel(name=student.name, year=student.year, code=student_code, point_id=point.id, creation_user=2)
+        student_model = StudentModel(name=student.name, year=student.year, code=student_code, point_id=point.id, creation_user=student.responsible_id)
 
         student_id = self.student_repository.create_student(student_model)
 
@@ -122,7 +122,7 @@ class StudentService():
         for student in student_list:
             if(student.id == None):
                 student_code = self.generate_student_code(student.name, responsible_data.uuid)
-                student_model = StudentModel(name=student.name, year=student.year, code=student_code, point_id=point.id, creation_user=2)
+                student_model = StudentModel(name=student.name, year=student.year, code=student_code, point_id=point.id, creation_user=student.responsible_id)
                 student_model_list.append(student_model)
 
         student_id = self.student_repository.create_student_list(student_model_list)
