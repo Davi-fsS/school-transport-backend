@@ -51,7 +51,7 @@ class StudentService():
         if(student is None):
             raise ValueError("Aluno não encontrado")
         
-        student_dto = Student(name=student.name, year=student.year, code=student.code, creation_user=student.creation_user)
+        student_dto = Student(id=student.id, name=student.name, year=student.year, code=student.code, creation_user=student.creation_user)
         
         student_driver = self.get_student_driver(student_id)
 
