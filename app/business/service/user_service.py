@@ -8,6 +8,8 @@ from data.repository.vehicle_repository import VehicleRepository
 from presentation.dto.CreatePoint import CreatePoint
 from presentation.dto.User import User
 from presentation.dto.CreatePhone import CreatePhone
+from presentation.dto.DriverDetails import DriverDetails
+from presentation.dto.Point import Point
 from presentation.dto.UpdateUserUuid import UpdateUserUuid
 from presentation.dto.UpdateUser import UpdateUser
 from presentation.dto.UserDetails import UserDetails
@@ -42,6 +44,30 @@ class UserService():
     def get_all_drivers(self):
         return self.user_repository.get_all_drivers()
     
+    def get_driver_detals_by_code(self, code: str):
+        user = self.user_repository.get_user_by_code(code)
+
+        if(user is None or user.user_type_id != 2):
+            raise ValueError("Motorista não existe")
+
+        user_dto = User(id=user.id, uuid=user.uuid, name=user.name, email=user.email, cpf=user.cpf, 
+                        cnh=user.cnh, rg=user.rg, user_type_id=user.user_type_id, code=user.code)
+
+        user_school = self.point_service.get_school_by_user(user.id)
+
+        if(user_school is None):
+            raise ValueError("Motorista não possui escola")
+
+        user_school_dto = Point(id=user_school.id, name=user_school.name, address=user_school.address, lat=user_school.lat,
+                                lng=user_school.lng, alt=user_school.alt, city=user_school.city, neighborhood=user_school.neighborhood,
+                                state=user_school.state, description=user_school.description, point_type_id=user_school.point_type_id)
+
+        user_phone = self.user_phone_service.get_user_phone_list(user.id)
+
+        driver_details_dto = DriverDetails(user=user_dto, school=user_school_dto, phone=user_phone)
+    
+        return driver_details_dto
+
     def get_drivers_without_vehicle(self):
         all_drivers = self.user_repository.get_all_drivers()
 

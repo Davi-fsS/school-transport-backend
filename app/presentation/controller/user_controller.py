@@ -15,6 +15,9 @@ class UserController():
     def read_all_drivers(self):
         return self.user_service.get_all_drivers()
     
+    def get_driver_detals_by_code(self, code: str):
+        return self.user_service.get_driver_detals_by_code(code)
+    
     def read_drivers_without_vehicle(self):
         return self.user_service.get_drivers_without_vehicle()
     

@@ -110,7 +110,6 @@ class PointService():
         else:
             raise ValueError("Responsável sem endereço registrado")
 
-
     def get_point_list_by_user(self, point_list: List[int]):
         points_list = self.point_repository.get_points_by_point_list(point_list)
 
@@ -131,6 +130,16 @@ class PointService():
 
         
         return points_list_dto
+
+    def get_point_school_list_by_user(self, point_list: List[int]):
+        point = self.point_repository.get_first_point_school_by_point_list(point_list)
+
+        point_dto = Point(id=point.id, name=point.name, address=point.address,
+                          lat=point.lat, lng=point.lng, city=point.city, description=point.description,
+                          neighborhood=point.neighborhood, state=point.state, point_type_id=point.point_type_id)
+
+        return point_dto
+
 
     def get_all_school_list(self):
         return self.point_repository.get_all_school_list()

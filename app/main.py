@@ -111,6 +111,13 @@ async def user_details(user_id: int):
         return user_controller.user_details(user_id)
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    
+@app.get("/user/driver-details-by-code",status_code=status.HTTP_200_OK)
+async def get_driver_detals_by_code(code: str):
+    try:
+        return user_controller.get_driver_detals_by_code(code)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
 
 # USER_TYPE ENDPOINT
 @app.get("/user-type/by-id/{type_id}", status_code=status.HTTP_200_OK)
