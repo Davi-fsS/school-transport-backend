@@ -9,3 +9,6 @@ class CoordinateController():
 
     def save_coordinate_mobile(self, coordinates: SaveCoordinate):
         return self.coordinate_service.save_coordinates_mobile(coordinates)
+    
+    def get_coordinates_by_schedule(self, schedule_id: int):
+        return self.coordinate_service.get_coordinates_by_schedule(schedule_id)

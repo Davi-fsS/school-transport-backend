@@ -331,3 +331,10 @@ async def save_coordinates_mobile(coordinates: SaveCoordinate):
         return coordinate_controller.save_coordinate_mobile(coordinates)
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    
+@app.get("/coordinate/get-by-schedule",status_code=status.HTTP_200_OK)
+async def get_coordinates_by_schedule(schedule_id: int):
+    try:
+        return coordinate_controller.get_coordinates_by_schedule(schedule_id)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
