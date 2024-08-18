@@ -7,7 +7,7 @@ class CoordinateModel(Base):
     id = Column(Integer, primary_key=True, index=True)
     lat = Column(Double)
     lng = Column(Double)
-    alt = Column(Double)
+    alt = Column(Double, nullable=True)
     coordinate_type_id = Column(Integer),
     register_data = Column(DateTime),
     schedule_id = Column(Integer)
