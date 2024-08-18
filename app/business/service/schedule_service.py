@@ -1,11 +1,14 @@
+from business.service.schedule_user_service import ScheduleUserService
 from presentation.dto.Schedule import Schedule
 from data.repository.schedule_repository import ScheduleRepository
 
 class ScheduleService():
     schedule_repository: ScheduleRepository
+    schedule_user_service: ScheduleUserService
 
     def __init__(self):
         self.schedule_repository = ScheduleRepository()
+        self.schedule_user_service = ScheduleUserService()
 
     def get_schedule_by_id(self, schedule_id: int):
         schedule = self.schedule_repository.get_schedule_by_id(schedule_id)
@@ -22,3 +25,5 @@ class ScheduleService():
     
     def get_schedule_details_by_schedule_id(self, schedule_id: int):
         schedule = self.get_schedule_by_id(schedule_id)
+
+        schedule_user = self.schedule_user_service.get_user_by_schedule_id(schedule_id)
