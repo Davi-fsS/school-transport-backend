@@ -1,5 +1,6 @@
 from pydantic import BaseModel
-from presentation.dto.CreatePoint import CreatePoint
+from presentation.dto.Phone import Phone
+from typing import List
 
 class User(BaseModel):
     id: int
@@ -11,3 +12,4 @@ class User(BaseModel):
     rg: str = ""
     user_type_id: int
     code: str | None
+    phones: List[Phone] | None

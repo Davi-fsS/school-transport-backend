@@ -11,6 +11,7 @@ from presentation.dto.User import User
 from presentation.dto.Student import Student
 from data.model.student_model import StudentModel
 from business.service.user_student_service import UserStudentService
+from business.service.user_phone_service import UserPhoneService
 
 class StudentService():
     student_repository: StudentRepository
@@ -18,6 +19,7 @@ class StudentService():
     point_service: PointService
     user_student_service: UserStudentService
     user_point_service: UserPointService
+    user_phone_service: UserPhoneService
 
     def __init__(self):
         self.student_repository = StudentRepository()
@@ -25,6 +27,7 @@ class StudentService():
         self.point_service = PointService()
         self.user_student_service = UserStudentService()
         self.user_point_service = UserPointService()
+        self.user_phone_service = UserPhoneService()
 
     def get_students_by_responsible(self, responsible_id: int):
         user_students_by_responsible_list = self.user_student_service.get_students_by_responsible(responsible_id=responsible_id)
@@ -57,10 +60,12 @@ class StudentService():
 
         if(student_driver is None):
             raise ValueError("Aluno não possui motorista")
-        
+
+        driver_phone = self.user_phone_service.get_user_phone_list(student_driver.id)
+
         student_driver_dto = User(id=student_driver.id, uuid=student_driver.uuid, name=student_driver.name,
                                   email=student_driver.email, cpf=student_driver.cpf, cnh=student_driver.cnh,
-                                  rg=student_driver.rg, user_type_id=student_driver.user_type_id, code=student_driver.code)
+                                  rg=student_driver.rg, user_type_id=student_driver.user_type_id, code=student_driver.code, phones=driver_phone)
 
         student_school_dto = self.get_student_school(student_driver.id)
 
