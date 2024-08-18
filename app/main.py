@@ -1,4 +1,5 @@
 from fastapi import FastAPI, status, HTTPException, Header
+from presentation.controller.coordinate_controller import CoordinateController
 from presentation.controller.user_controller import UserController
 from presentation.controller.user_type_controller import UserTypeController
 from presentation.controller.user_phone_controller import UserPhoneController
@@ -48,6 +49,7 @@ user_phone_controller = UserPhoneController()
 student_controller = StudentController()
 vehicle_controller = VehicleController()
 point_controller = PointController()
+coordinate_controller = CoordinateController()
 
 # USER ENDPOINTS
 @app.post("/user/create",status_code=status.HTTP_201_CREATED)
@@ -326,6 +328,6 @@ async def get_school_list():
 @app.post("/coordinate/save-coordinates-mobile",status_code=status.HTTP_201_CREATED)
 async def save_coordinates_mobile(coordinates: SaveCoordinate):
     try:
-        return point_controller.create_driver_point_association(association)
+        return coordinate_controller.save_coordinate_mobile(coordinates)
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))

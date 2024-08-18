@@ -1,6 +1,5 @@
 from sqlalchemy.orm import Session
 from data.infrastructure.database import get_db
-from presentation.dto.SaveCoordinate import SaveCoordinate
 from data.model.coordinate_model import CoordinateModel
 
 class CoordinateRepository():
