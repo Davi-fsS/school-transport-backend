@@ -12,9 +12,6 @@ class ScheduleRepository():
         try:
             schedule = self.db.query(ScheduleModel).filter(ScheduleModel.id == schedule_id).first()
 
-            if schedule is None:
-                raise ValueError("Viagem não encontrada")
-
             return schedule
         except:
             self.db.rollback()
