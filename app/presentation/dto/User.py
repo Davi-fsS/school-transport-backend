@@ -12,4 +12,4 @@ class User(BaseModel):
     rg: str = ""
     user_type_id: int
     code: str | None
-    phones: List[Phone] | None
+    phones: List[Phone] = []
