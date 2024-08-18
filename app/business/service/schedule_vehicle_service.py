@@ -13,7 +13,7 @@ class ScheduleVehicleService():
         self.vehicle_service = VehicleService()
         self.user_service = UserService()
 
-    def get_schedule_user_by_schedule_id(self, schedule_id: int):
+    def get_schedule_vehicle_by_schedule_id(self, schedule_id: int):
         return self.schedule_vehicle_repository.get_schedule_vehicle_by_schedule_id(schedule_id)
     
     def get_vehicle_by_schedule_id(self, schedule_id: int):

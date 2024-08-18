@@ -1,6 +1,7 @@
 from presentation.dto.ScheduleDetails import ScheduleDetails
 from business.service.schedule_user_service import ScheduleUserService
 from business.service.schedule_vehicle_service import ScheduleVehicleService
+from business.service.schedule_point_service import SchedulePointService
 from presentation.dto.Schedule import Schedule
 from data.repository.schedule_repository import ScheduleRepository
 
@@ -8,11 +9,13 @@ class ScheduleService():
     schedule_repository: ScheduleRepository
     schedule_user_service: ScheduleUserService
     schedule_vehicle_service: ScheduleVehicleService
+    schedule_point_service: SchedulePointService
 
     def __init__(self):
         self.schedule_repository = ScheduleRepository()
         self.schedule_user_service = ScheduleUserService()
         self.schedule_vehicle_service = ScheduleVehicleService()
+        self.schedule_point_service = SchedulePointService()
 
     def get_schedule_by_id(self, schedule_id: int):
         schedule = self.schedule_repository.get_schedule_by_id(schedule_id)
@@ -34,6 +37,9 @@ class ScheduleService():
 
         schedule_vehicle = self.schedule_vehicle_service.get_vehicle_by_schedule_id(schedule_id)
 
-        schedule_details = ScheduleDetails(schedule=schedule, driver=schedule_user, vehicle=schedule_vehicle)
+        schedule_points = self.schedule_point_service.get_points_by_schedule_id(schedule_id)
+
+        schedule_details = ScheduleDetails(schedule=schedule, driver=schedule_user, 
+                                           vehicle=schedule_vehicle, points=schedule_points)
 
         return schedule_details
