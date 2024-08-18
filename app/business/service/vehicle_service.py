@@ -18,6 +18,9 @@ class VehicleService():
         self.user_service = UserService()
         self.vehicle_type_service = VehicleTypeService()
 
+    def get_vehicle_by_id(self, vehicle_id: int):
+        return self.vehicle_repository.get_vehicle(vehicle_id)
+
     def get_all_vehicle(self):
         all_vehicles = self.vehicle_repository.get_all_vehicle()
 

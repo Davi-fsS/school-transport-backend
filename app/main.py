@@ -1,4 +1,6 @@
 from fastapi import FastAPI, status, HTTPException, Header
+from presentation.controller.schedule_controller import ScheduleController
+from presentation.controller.coordinate_controller import CoordinateController
 from presentation.controller.user_controller import UserController
 from presentation.controller.user_type_controller import UserTypeController
 from presentation.controller.user_phone_controller import UserPhoneController
@@ -16,6 +18,7 @@ from presentation.dto.UpdateUserUuid import UpdateUserUuid
 from presentation.dto.CreateVehicle import CreateVehicle
 from presentation.dto.UpdateVehicle import UpdateVehicle
 from presentation.dto.StudentAssociation import StudentAssociation
+from presentation.dto.SaveCoordinate import SaveCoordinate
 from presentation.dto.UpdatePoint import UpdatePoint
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
@@ -47,6 +50,8 @@ user_phone_controller = UserPhoneController()
 student_controller = StudentController()
 vehicle_controller = VehicleController()
 point_controller = PointController()
+coordinate_controller = CoordinateController()
+schedule_controller = ScheduleController()
 
 # USER ENDPOINTS
 @app.post("/user/create",status_code=status.HTTP_201_CREATED)
@@ -318,5 +323,28 @@ async def get_school_list():
             raise HTTPException(status_code=status.HTTP_204_NO_CONTENT, detail="Sem escola cadastrada")
 
         return school_list
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    
+#COORDINATE ENDPOINTS
+@app.post("/coordinate/save-coordinates-mobile",status_code=status.HTTP_201_CREATED)
+async def save_coordinates_mobile(coordinates: SaveCoordinate):
+    try:
+        return coordinate_controller.save_coordinate_mobile(coordinates)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    
+@app.get("/coordinate/get-by-schedule",status_code=status.HTTP_200_OK)
+async def get_coordinates_by_schedule(schedule_id: int):
+    try:
+        return coordinate_controller.get_coordinates_by_schedule(schedule_id)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    
+#SCHEDULE ENDPOINTS
+@app.get("/schedule/details",status_code=status.HTTP_200_OK)
+async def get_schedule_details(schedule_id: int):
+    try:
+        return schedule_controller.get_schedule_details_by_schedule_id(schedule_id)
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
