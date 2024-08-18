@@ -2,7 +2,7 @@ from sqlalchemy import Column, Integer, String, DateTime, Double
 
 from data.infrastructure.database import Base
 
-class PointTypeModel(Base):
+class CoordinateModel(Base):
     __tablename__ = "point"
     id = Column(Integer, primary_key=True, index=True)
     lat = Column(Double)
