@@ -16,6 +16,7 @@ from presentation.dto.UpdateUserUuid import UpdateUserUuid
 from presentation.dto.CreateVehicle import CreateVehicle
 from presentation.dto.UpdateVehicle import UpdateVehicle
 from presentation.dto.StudentAssociation import StudentAssociation
+from presentation.dto.SaveCoordinate import SaveCoordinate
 from presentation.dto.UpdatePoint import UpdatePoint
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
@@ -318,5 +319,13 @@ async def get_school_list():
             raise HTTPException(status_code=status.HTTP_204_NO_CONTENT, detail="Sem escola cadastrada")
 
         return school_list
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    
+#COORDINATE ENDPOINTS
+@app.post("/coordinate/save-coordinates-mobile",status_code=status.HTTP_201_CREATED)
+async def save_coordinates_mobile(coordinates: SaveCoordinate):
+    try:
+        return point_controller.create_driver_point_association(association)
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
