@@ -1,4 +1,5 @@
 from fastapi import FastAPI, status, HTTPException, Header
+from presentation.controller.schedule_controller import ScheduleController
 from presentation.controller.coordinate_controller import CoordinateController
 from presentation.controller.user_controller import UserController
 from presentation.controller.user_type_controller import UserTypeController
@@ -50,6 +51,7 @@ student_controller = StudentController()
 vehicle_controller = VehicleController()
 point_controller = PointController()
 coordinate_controller = CoordinateController()
+schedule_controller = ScheduleController()
 
 # USER ENDPOINTS
 @app.post("/user/create",status_code=status.HTTP_201_CREATED)
@@ -336,5 +338,13 @@ async def save_coordinates_mobile(coordinates: SaveCoordinate):
 async def get_coordinates_by_schedule(schedule_id: int):
     try:
         return coordinate_controller.get_coordinates_by_schedule(schedule_id)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    
+#SCHEDULE ENDPOINTS
+@app.get("/schedule/details",status_code=status.HTTP_200_OK)
+async def get_schedule_details(schedule_id: int):
+    try:
+        return schedule_controller.get_schedule_details_by_schedule_id(schedule_id)
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))

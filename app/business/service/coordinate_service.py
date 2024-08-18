@@ -33,9 +33,6 @@ class CoordinateService():
     
     def get_coordinates_by_schedule(self, schedule_id: int):
         schedule = self.schedule_service.get_schedule_by_id(schedule_id)
-
-        if(schedule is None):
-            raise ValueError("Viagem não encontrada")
         
         coordinates_by_schedule_id = self.coordinate_repository.get_list_coordinates_by_schedule_id(schedule_id)
 
