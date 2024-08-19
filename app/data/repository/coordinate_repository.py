@@ -16,12 +16,16 @@ class CoordinateRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
+        finally:
+            self.db.close()
         
     def get_list_coordinates_by_schedule_id(self, schedule_id: int):
         try:
             coords = self.db.query(CoordinateModel).filter(CoordinateModel.schedule_id == schedule_id).all()
-            
+
             return coords        
         except:
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
+        finally:
+            self.db.close()

@@ -164,6 +164,11 @@ class StudentService():
             raise ValueError("Responsável inválido")
 
     def validate_update_student(self, student: UpdateStudent):
+        student_db = self.student_repository.get_student(student_id=student.id)
+
+        if(student_db is None):
+            raise ValueError("Aluno não existe")
+        
         if len(student.name) == 0:
             raise ValueError("Nome inválido")
 

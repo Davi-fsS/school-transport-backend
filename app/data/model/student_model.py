@@ -10,6 +10,7 @@ class StudentModel(Base):
     year = Column(Integer)
     point_id = Column(Integer)
     code=Column(String(255))
+    disabled=Column(Boolean, default=False)
     creation_user = Column(Integer)
     change_date = Column(DateTime)
     change_user = Column(Integer)

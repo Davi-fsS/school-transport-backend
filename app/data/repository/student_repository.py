@@ -12,7 +12,7 @@ class StudentRepository():
 
     def get_student(self, student_id: int):
         try:
-            student = self.db.query(StudentModel).filter(StudentModel.id == student_id).first()
+            student = self.db.query(StudentModel).filter(StudentModel.id == student_id, StudentModel.disabled == False).first()
 
             if student is None:
                 raise ValueError("Aluno não encontrado")
@@ -21,23 +21,29 @@ class StudentRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
+        finally:
+            self.db.close()
         
     def get_student_by_code(self, student_code: str):
         try:
-            student = self.db.query(StudentModel).filter(StudentModel.code == student_code).first()
+            student = self.db.query(StudentModel).filter(StudentModel.code == student_code, StudentModel.disabled == False).first()
 
             return student
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
+        finally:
+            self.db.close()
         
     def get_students_by_student_list(self, student_id_list: List[int]):
         try:
-            students = self.db.query(StudentModel).filter(StudentModel.id.in_(student_id_list)).all()
+            students = self.db.query(StudentModel).filter(StudentModel.id.in_(student_id_list), StudentModel.disabled == False).all()
             return students
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
+        finally:
+            self.db.close()
 
     def create_student(self, student: StudentModel):
         try:
@@ -48,6 +54,8 @@ class StudentRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
+        finally:
+            self.db.close()
 
     def create_student_list(self, db_student_list: List[StudentModel]):
         created_ids = []
@@ -61,6 +69,8 @@ class StudentRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
+        finally:
+            self.db.close()
         
     def update_student(self, student_update: UpdateStudent):
         try:
@@ -71,13 +81,17 @@ class StudentRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
+        finally:
+            self.db.close()
         
     def delete_student(self, student_id: int):
         try:
             student = self.get_student(student_id)
-            self.db.delete(student)
+            student.disabled = True
             self.db.commit()
         except:
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
+        finally:
+            self.db.close()
     

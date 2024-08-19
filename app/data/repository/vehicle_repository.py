@@ -20,6 +20,8 @@ class VehicleRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
+        finally:
+            self.db.close()
 
     def get_all_vehicle(self):
         try:
@@ -29,6 +31,8 @@ class VehicleRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
+        finally:
+            self.db.close()
 
     def get_vehicle_by_plate(self, plate: str):
         try:
@@ -38,6 +42,8 @@ class VehicleRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")    
+        finally:
+            self.db.close()
 
     def get_vehicle_by_driver(self, user_id: int):
         try:
@@ -47,6 +53,8 @@ class VehicleRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
+        finally:
+            self.db.close()
 
     def create_vehicle(self, db_vehicle: VehicleModel):
         try:
@@ -56,6 +64,8 @@ class VehicleRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
+        finally:
+            self.db.close()
         
     def update_vehicle(self, vehicle_update: UpdateVehicle):
         try:
@@ -70,6 +80,8 @@ class VehicleRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
+        finally:
+            self.db.close()
 
     def delete_vehicle(self, vehicle_id: int):
         try:
@@ -79,4 +91,6 @@ class VehicleRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
+        finally:
+            self.db.close()
     
