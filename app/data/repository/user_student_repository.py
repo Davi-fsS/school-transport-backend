@@ -85,6 +85,17 @@ class UserStudentRepository():
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
         
+    def delete_user_student_list_by_student_id(self, student_id: int):
+        try:
+            user_student_list = self.get_all_user_student_by_student_id(student_id)
+
+            for user_student in user_student_list:
+                user_student.disabled = True
+                self.db.commit()
+        except:
+            self.db.rollback()
+            raise ValueError("Erro ao salvar no sistema")
+        
     def delete_all_user_student_by_student_id(self, student_id: int):
         try:
             user_student_list = self.get_all_user_student_by_student_id(student_id)
