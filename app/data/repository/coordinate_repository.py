@@ -16,8 +16,6 @@ class CoordinateRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
-        finally:
-            self.db.close()
         
     def get_list_coordinates_by_schedule_id(self, schedule_id: int):
         try:
@@ -27,5 +25,3 @@ class CoordinateRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
-        finally:
-            self.db.close()

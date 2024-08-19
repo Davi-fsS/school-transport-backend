@@ -14,5 +14,3 @@ class SchedulePointRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
-        finally:
-            self.db.close()

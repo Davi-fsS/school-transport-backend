@@ -20,9 +20,7 @@ class PointRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
-        finally:
-            self.db.close()
-        
+            
     def get_points_home_by_point_list(self, point_id_list: List[int]):
         try:
             points = self.db.query(PointModel).filter(and_(PointModel.id.in_(point_id_list), PointModel.point_type_id == 1)).all()
@@ -30,9 +28,7 @@ class PointRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
-        finally:
-            self.db.close()
-        
+            
     def get_points_school_by_point_list(self, point_id_list: List[int]):
         try:
             points = self.db.query(PointModel).filter(and_(PointModel.id.in_(point_id_list), PointModel.point_type_id == 2)).all()
@@ -40,9 +36,7 @@ class PointRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
-        finally:
-            self.db.close()
-        
+            
     def get_first_point_school_by_point_list(self, point_id_list: List[int]):
         try:
             points = self.db.query(PointModel).filter(and_(PointModel.id.in_(point_id_list), PointModel.point_type_id == 2)).first()
@@ -50,36 +44,28 @@ class PointRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
-        finally:
-            self.db.close()
-
+        
     def get_point(self, point_id: int):
         try:
             return self.db.query(PointModel).filter(PointModel.id == point_id).first()
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
-        finally:
-            self.db.close()
-    
+        
     def get_school(self, school_id: int):
         try:
             return self.db.query(PointModel).filter(PointModel.id == school_id and PointModel.point_type_id == 2).first()
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
-        finally:
-            self.db.close()
-
+        
     def get_all_school_list(self):
         try:
             return self.db.query(PointModel).filter(PointModel.point_type_id == 2).all()
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
-        finally:
-            self.db.close()
-
+        
     def create_point(self, db_point: PointModel):
         try:
             self.db.add(db_point)
@@ -88,9 +74,7 @@ class PointRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
-        finally:
-            self.db.close()
-        
+            
     def update_point(self, lat: float, lng: float, point_update: UpdatePoint):
         try:
             point = self.get_school(point_update.id)
@@ -110,9 +94,7 @@ class PointRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
-        finally:
-            self.db.close()
-    
+        
     def update_school(self, lat: float, lng: float, school_update: UpdateSchool):
         try:
             school = self.get_school(school_update.id)
@@ -132,9 +114,7 @@ class PointRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
-        finally:
-            self.db.close()
-
+        
     def delete_point(self, school_id: int):
         try:
             student = self.get_school(school_id)
@@ -143,6 +123,4 @@ class PointRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
-        finally:
-            self.db.close()
     

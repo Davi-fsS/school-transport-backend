@@ -15,73 +15,49 @@ class UserRepository():
             return self.db.query(UserModel).filter(UserModel.id == user_id).first()
         except:
             self.db.rollback()
-            raise ValueError("Erro ao fazer a leitura no sistema")
-        finally:
-            self.db.close()
-        
+            raise ValueError("Erro ao fazer a leitura no sistema")        
     def get_user_by_code(self, code: str):
         try:
             return self.db.query(UserModel).filter(UserModel.code == code).first()
         except:
             self.db.rollback()
-            raise ValueError("Erro ao fazer a leitura no sistema")
-        finally:
-            self.db.close()
-        
+            raise ValueError("Erro ao fazer a leitura no sistema")        
     def get_user_by_list(self, user_id_list : List[int]):
         try:
             return self.db.query(UserModel).filter(UserModel.id.in_(user_id_list)).all()
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
-        finally:
-            self.db.close()
-
     def get_all_drivers(self):
         try:
             return self.db.query(UserModel).filter(UserModel.user_type_id == 2).all()
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
-        finally:
-            self.db.close()
-
     def get_user_by_email(self, email: str):
         try:
             return self.db.query(UserModel).filter(UserModel.email == email).first()
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")    
-        finally:
-            self.db.close()
-
     def get_user_by_cnh(self, cnh: str):
         try:
             return self.db.query(UserModel).filter(UserModel.cnh == cnh).first()
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")    
-        finally:
-            self.db.close()
-
     def get_user_by_cpf(self, cpf: str):
         try:
             return self.db.query(UserModel).filter(UserModel.cpf == cpf).first()
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
-        finally:
-            self.db.close()
-
     def get_user_by_rg(self, rg: str):
         try:
             return self.db.query(UserModel).filter(UserModel.rg == rg).first()
         except:
             self.db.rollback()
-            raise ValueError("Erro ao fazer a leitura no sistema")
-        finally:
-            self.db.close()
-        
+            raise ValueError("Erro ao fazer a leitura no sistema")        
     def create_user(self, db_user: UserModel):
         try:
             self.db.add(db_user)
@@ -90,9 +66,6 @@ class UserRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
-        finally:
-            self.db.close()
-
     def update_user_uuid(self, id: int, uuid: str):
         try:
             user = self.get_user(id)
@@ -103,10 +76,7 @@ class UserRepository():
             self.db.commit()
         except:
             self.db.rollback()
-            raise ValueError("Erro ao salvar no sistema")
-        finally:
-            self.db.close()
-        
+            raise ValueError("Erro ao salvar no sistema")        
     def update_user(self, user_update: UpdateUser):
         try:
             user = self.get_user(user_update.id)
@@ -120,10 +90,7 @@ class UserRepository():
             self.db.commit()
         except:
             self.db.rollback()
-            raise ValueError("Erro ao salvar no sistema")
-        finally:
-            self.db.close()
-        
+            raise ValueError("Erro ao salvar no sistema")        
     def update_user_code(self, user_update_id: int, code: str):
         try:
             user = self.get_user(user_update_id)
@@ -143,5 +110,3 @@ class UserRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
-        finally:
-            self.db.close()

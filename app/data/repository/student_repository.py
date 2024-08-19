@@ -21,8 +21,6 @@ class StudentRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
-        finally:
-            self.db.close()
         
     def get_student_by_code(self, student_code: str):
         try:
@@ -32,8 +30,6 @@ class StudentRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
-        finally:
-            self.db.close()
         
     def get_students_by_student_list(self, student_id_list: List[int]):
         try:
@@ -42,8 +38,6 @@ class StudentRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
-        finally:
-            self.db.close()
 
     def create_student(self, student: StudentModel):
         try:
@@ -54,8 +48,6 @@ class StudentRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
-        finally:
-            self.db.close()
 
     def create_student_list(self, db_student_list: List[StudentModel]):
         created_ids = []
@@ -69,8 +61,6 @@ class StudentRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
-        finally:
-            self.db.close()
         
     def update_student(self, student_update: UpdateStudent):
         try:
