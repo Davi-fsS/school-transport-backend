@@ -73,25 +73,22 @@ class StudentRepository():
             self.db.close()
         
     def update_student(self, student_update: UpdateStudent):
-        try:
-            student = self.get_student(student_update.id)
-            student.name = student_update.name
-            student.year = student_update.year
-            self.db.commit()
-        except:
-            self.db.rollback()
-            raise ValueError("Erro ao salvar no sistema")
-        finally:
-            self.db.close()
+        with next(get_db()) as session:
+            try:
+                student = self.get_student(student_update.id)
+                student.name = student_update.name
+                student.year = student_update.year
+                session.commit()
+            except:
+                session.rollback()
+                raise ValueError("Erro ao salvar no sistema")
         
     def delete_student(self, student_id: int):
-        try:
-            student = self.get_student(student_id)
-            student.disabled = True
-            self.db.commit()
-        except:
-            self.db.rollback()
-            raise ValueError("Erro ao salvar no sistema")
-        finally:
-            self.db.close()
-    
+        with next(get_db()) as session:
+            try:
+                student = self.get_student(student_id)
+                student.disabled = True
+                session.commit()
+            except:
+                session.rollback()
+                raise ValueError("Erro ao salvar no sistema")        
