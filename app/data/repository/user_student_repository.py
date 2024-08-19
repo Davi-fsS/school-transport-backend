@@ -11,7 +11,7 @@ class UserStudentRepository():
 
     def get_user_student(self, student_id: int, responsible_id: int):
         try:
-            user_student = self.db.query(UserStudentModel).filter(UserStudentModel.student_id == student_id, UserStudentModel.user_id == responsible_id).first()
+            user_student = self.db.query(UserStudentModel).filter(UserStudentModel.student_id == student_id, UserStudentModel.user_id == responsible_id, UserStudentModel.disabled == False).first()
 
             if user_student is None:
                 raise ValueError("Associação entre aluno e responsável não encontrada")
@@ -23,7 +23,7 @@ class UserStudentRepository():
 
     def get_user_student_by_student_id(self, student_id: int):
         try:
-            user_student = self.db.query(UserStudentModel).filter(UserStudentModel.student_id == student_id).first()
+            user_student = self.db.query(UserStudentModel).filter(UserStudentModel.student_id == student_id, UserStudentModel.disabled == False).first()
 
             if user_student is None:
                 raise ValueError("Associação entre aluno e responsável não encontrada")
@@ -32,9 +32,10 @@ class UserStudentRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")    
+        
     def get_all_user_student_by_student_id(self, student_id: int):
         try:
-            user_student = self.db.query(UserStudentModel).filter(UserStudentModel.student_id == student_id).all()
+            user_student = self.db.query(UserStudentModel).filter(UserStudentModel.student_id == student_id, UserStudentModel.disabled == False).all()
 
             if user_student is None:
                 raise ValueError("Associação entre aluno e responsável não encontrada")
@@ -46,12 +47,13 @@ class UserStudentRepository():
 
     def get_students_by_responsible(self, responsible_id: int):
         try:
-            user_student_list = self.db.query(UserStudentModel).filter(UserStudentModel.user_id == responsible_id).all()
+            user_student_list = self.db.query(UserStudentModel).filter(UserStudentModel.user_id == responsible_id, UserStudentModel.disabled == False).all()
 
             return user_student_list 
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
+        
     def create_user_student(self, db_user_student: UserStudentModel):
         try:
             self.db.add(db_user_student)
@@ -60,6 +62,7 @@ class UserStudentRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
+        
     def create_user_student_list(self, db_user_student_list: List[UserStudentModel]):
         created_ids = []
         try:
@@ -72,28 +75,31 @@ class UserStudentRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
+        
     def delete_user_student_by_student_id(self, student_id: int):
         try:
             user_student = self.get_user_student_by_student_id(student_id)
-            self.db.delete(user_student)
+            user_student.disabled = True
             self.db.commit()
         except:
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
+        
     def delete_all_user_student_by_student_id(self, student_id: int):
         try:
             user_student_list = self.get_all_user_student_by_student_id(student_id)
 
             for user_student in user_student_list:
-                self.db.delete(user_student)
+                user_student.disabled = True
                 self.db.commit()
         except:
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
+        
     def delete_user_student(self, student_id: int, responsible_id: int):
         try:
             user_student = self.get_user_student(student_id, responsible_id)
-            self.db.delete(user_student)
+            user_student.disabled = True
             self.db.commit()
         except:
             self.db.rollback()

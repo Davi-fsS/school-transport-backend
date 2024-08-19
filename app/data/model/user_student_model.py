@@ -8,6 +8,7 @@ class UserStudentModel(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer)
     student_id = Column(Integer)
+    disabled=Column(Boolean, default=False)
     creation_user = Column(Integer)
     change_date = Column(DateTime)
     change_user = Column(Integer)
