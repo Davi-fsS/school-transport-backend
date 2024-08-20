@@ -20,6 +20,7 @@ from presentation.dto.UpdateVehicle import UpdateVehicle
 from presentation.dto.StudentAssociation import StudentAssociation
 from presentation.dto.SaveCoordinate import SaveCoordinate
 from presentation.dto.UpdatePoint import UpdatePoint
+from presentation.dto.CreateSchedule import CreateSchedule
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
 
@@ -346,5 +347,12 @@ async def get_coordinates_by_schedule(schedule_id: int):
 async def get_schedule_details(schedule_id: int):
     try:
         return schedule_controller.get_schedule_details_by_schedule_id(schedule_id)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    
+@app.post("/schedule/create",status_code=status.HTTP_201_CREATED)
+async def create_schedule(schedule: CreateSchedule):
+    try:
+        return schedule_controller.create_schedule(schedule)
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
