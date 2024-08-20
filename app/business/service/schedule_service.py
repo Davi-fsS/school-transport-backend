@@ -58,38 +58,38 @@ class ScheduleService():
 
         return schedule_details
     
-    # def create_schedule(self, schedule: CreateSchedule):
-    #     driver = self.validate_create_schedule(schedule)
+    def create_schedule(self, schedule: CreateSchedule):
+        driver = self.validate_create_schedule(schedule)
 
-    #     vehicle = self.vehicle_service.get_vehicle_by_driver(driver.id)
+        vehicle = self.vehicle_service.get_vehicle_by_driver(driver.id)
 
-    #     if(vehicle is None):
-    #         raise ValueError("Motorista não possui veículo")
+        if(vehicle is None):
+            raise ValueError("Motorista não possui veículo")
         
-    #     students_points = self.point_service.get_point_user_id(driver.id)
+        students_points = self.point_service.get_point_user_id(driver.id)
 
-    #     if(len(students_points) == 0):
-    #         raise ValueError("Viagem não possuí nenhum ponto de parada")
+        if(len(students_points) == 0):
+            raise ValueError("Viagem não possuí nenhum ponto de parada")
 
-    #     school = self.point_service.get_school_by_user(driver.id)
+        school = self.point_service.get_school_by_user(driver.id)
 
-    #     if(school is None):
-    #         raise ValueError("Motorista não possui escola")
+        if(school is None):
+            raise ValueError("Motorista não possui escola")
 
-    #     if(schedule.schedule_type == 1):
-    #         return self.schedule_repository.create_schedule_destiny_school(schedule, driver, vehicle, students_points, school)
-    #     elif(schedule.schedule_type == 2):
-    #         return self.schedule_repository.create_schedule_origin_school(schedule, driver, vehicle, students_points, school)
-    #     else:
-    #         raise ValueError("Tipo de viagem inválida")
+        if(schedule.schedule_type == 1):
+            return self.schedule_repository.create_schedule_destiny_school(schedule, driver, vehicle, students_points, school)
+        elif(schedule.schedule_type == 2):
+            return self.schedule_repository.create_schedule_origin_school(schedule, driver, vehicle, students_points, school)
+        else:
+            raise ValueError("Tipo de viagem inválida")
 
-    # def validate_create_schedule(self, schedule: CreateSchedule):
-    #     user = self.user_repository.get_user(schedule.user_id)
+    def validate_create_schedule(self, schedule: CreateSchedule):
+        user = self.user_repository.get_user(schedule.user_id)
 
-    #     if(user is None):
-    #         raise ValueError("Usuário inválido")
+        if(user is None):
+            raise ValueError("Usuário inválido")
 
-    #     if(user.user_type_id == 3):
-    #         raise ValueError("Usuário não é um motorista")
+        if(user.user_type_id == 3):
+            raise ValueError("Usuário não é um motorista")
         
-    #     return user
+        return user
