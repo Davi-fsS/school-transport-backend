@@ -18,3 +18,6 @@ class UserPointService():
     
     def delete_user_point(self, user_id: int, point_id: int):
         return self.user_point_repository.delete_user_point(user_id, point_id)
+    
+    def delete_user_point_list_by_point(self, point_id: int):
+        return self.user_point_repository.delete_user_point_list_by_point(point_id)

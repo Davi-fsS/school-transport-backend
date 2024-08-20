@@ -15,7 +15,7 @@ class PointRepository():
 
     def get_points_by_point_list(self, point_id_list: List[int]):
         try:
-            points = self.db.query(PointModel).filter(PointModel.id.in_(point_id_list)).all()
+            points = self.db.query(PointModel).filter(PointModel.id.in_(point_id_list), PointModel.disabled == False).all()
             return points
         except:
             self.db.rollback()
@@ -23,7 +23,7 @@ class PointRepository():
             
     def get_points_home_by_point_list(self, point_id_list: List[int]):
         try:
-            points = self.db.query(PointModel).filter(and_(PointModel.id.in_(point_id_list), PointModel.point_type_id == 1)).all()
+            points = self.db.query(PointModel).filter(and_(PointModel.id.in_(point_id_list), PointModel.point_type_id == 1, PointModel.disabled == False)).all()
             return points
         except:
             self.db.rollback()
@@ -31,7 +31,7 @@ class PointRepository():
             
     def get_points_school_by_point_list(self, point_id_list: List[int]):
         try:
-            points = self.db.query(PointModel).filter(and_(PointModel.id.in_(point_id_list), PointModel.point_type_id == 2)).all()
+            points = self.db.query(PointModel).filter(and_(PointModel.id.in_(point_id_list), PointModel.point_type_id == 2, PointModel.disabled == False)).all()
             return points
         except:
             self.db.rollback()
@@ -39,7 +39,7 @@ class PointRepository():
             
     def get_first_point_school_by_point_list(self, point_id_list: List[int]):
         try:
-            points = self.db.query(PointModel).filter(and_(PointModel.id.in_(point_id_list), PointModel.point_type_id == 2)).first()
+            points = self.db.query(PointModel).filter(and_(PointModel.id.in_(point_id_list), PointModel.point_type_id == 2, PointModel.disabled == False)).first()
             return points
         except:
             self.db.rollback()
@@ -47,21 +47,21 @@ class PointRepository():
         
     def get_point(self, point_id: int):
         try:
-            return self.db.query(PointModel).filter(PointModel.id == point_id).first()
+            return self.db.query(PointModel).filter(PointModel.id == point_id, PointModel.disabled == False).first()
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
         
     def get_school(self, school_id: int):
         try:
-            return self.db.query(PointModel).filter(PointModel.id == school_id and PointModel.point_type_id == 2).first()
+            return self.db.query(PointModel).filter(PointModel.id == school_id, PointModel.point_type_id == 2, PointModel.disabled == False).first()
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
         
     def get_all_school_list(self):
         try:
-            return self.db.query(PointModel).filter(PointModel.point_type_id == 2).all()
+            return self.db.query(PointModel).filter(PointModel.point_type_id == 2, PointModel.disabled == False).all()
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
@@ -115,10 +115,10 @@ class PointRepository():
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
         
-    def delete_point(self, school_id: int):
+    def delete_point(self, point_id: int):
         try:
-            student = self.get_school(school_id)
-            self.db.delete(student)
+            point = self.get_school(point_id)
+            point.disabled = True
             self.db.commit()
         except:
             self.db.rollback()

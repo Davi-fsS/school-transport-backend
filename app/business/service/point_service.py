@@ -147,6 +147,8 @@ class PointService():
     def delete_point(self, point_id: int):
         self.validating_point_delete(point_id)
 
+        self.user_point_service.delete_user_point_list_by_point(point_id)
+
         return self.point_repository.delete_point(point_id)
         
     def validating_point_delete(self, school_id: int):

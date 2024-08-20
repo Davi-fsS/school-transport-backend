@@ -16,6 +16,7 @@ class PointModel(Base):
     state = Column(String(255))
     description = Column(String(255))
     point_type_id = Column(Integer)
+    disabled = Column(Boolean, default=False)
     creation_user = Column(Integer)
     change_date = Column(DateTime)
     change_user = Column(Integer)
