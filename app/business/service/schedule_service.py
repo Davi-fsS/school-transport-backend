@@ -92,21 +92,4 @@ class ScheduleService():
         if(user.user_type_id == 3):
             raise ValueError("Usuário não é um motorista")
         
-        return user        
-    
-    def create_schedule_origin_school(self, schedule: CreateSchedule):
-        driver = self.validate_create_schedule(schedule)
-
-        vehicle = self.vehicle_service.get_vehicle_by_driver(driver.id)
-
-        if(vehicle is None):
-            raise ValueError("Motorista não possui veículo")
-        
-        students_points = self.point_service.get_point_user_id(driver.id)
-
-        school = self.point_service.get_school_by_user(driver.id)
-
-        if(len(students_points) == 0):
-            raise ValueError("Viagem não possuí nenhum ponto de parada")
-
-        return 
+        return user

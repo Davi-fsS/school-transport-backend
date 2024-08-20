@@ -51,7 +51,7 @@ class ScheduleRepository():
 
             schedule_point_school = SchedulePointModel(schedule_id=schedule.id, point_id=school.id, description=f"Destino: Escola {school.name}" ,creation_user=driver.id)
 
-            self.db(schedule_point_school)
+            self.db.add(schedule_point_school)
 
             self.db.commit()
             return schedule.id
@@ -80,7 +80,7 @@ class ScheduleRepository():
 
             schedule_point_school = SchedulePointModel(schedule_id=schedule.id, point_id=school.id, description=f"Origem: Escola {school.name}" ,creation_user=driver.id)
 
-            self.db(schedule_point_school)
+            self.db.add(schedule_point_school)
 
             for point in points:
                 schedule_point = SchedulePointModel(schedule_id=schedule.id, point_id=point.id,creation_user=driver.id, initial_date=creation_date)
