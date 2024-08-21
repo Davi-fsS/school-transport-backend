@@ -44,6 +44,10 @@ class UserStudentRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
+        
+    def get_user_students_by_student_list(self, student_list : List[int]):
+        user_student_list = self.db.query(UserStudentModel).filter(UserStudentModel.student_id.in_(student_list), UserStudentModel.disabled == False).all()
+        return user_student_list
 
     def get_students_by_responsible(self, responsible_id: int):
         try:

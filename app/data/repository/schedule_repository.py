@@ -36,6 +36,7 @@ class ScheduleRepository():
                                     schedule_type_id=1, creation_user=driver.id)
             
             self.db.add(schedule)
+            self.db.flush()
 
             schedule_vehicle = ScheduleVehicleModel(schedule_id=schedule.id, vehicle_id=vehicle.id, creation_user= driver.id)
 
@@ -44,7 +45,7 @@ class ScheduleRepository():
             schedule_user = ScheduleUserModel(schedule_id=schedule.id, user_id=driver.id, creation_user=driver.id)
 
             self.db.add(schedule_user)
-
+            
             for point in points:
                 schedule_point = SchedulePointModel(schedule_id=schedule.id, point_id=point.id, creation_user=driver.id)
                 self.db.add(schedule_point)
@@ -66,9 +67,10 @@ class ScheduleRepository():
             schedule = ScheduleModel(name=schedule.schedule_name, initial_date=creation_date,
                                     end_date = schedule.end_date, real_initial_date = creation_date,
                                     description=f"Viagem de volta de {school.name} - {creation_date.date()}",
-                                    schedule_type_id=1, creation_user=driver.id)
+                                    schedule_type_id=2, creation_user=driver.id)
             
             self.db.add(schedule)
+            self.db.flush()
 
             schedule_vehicle = ScheduleVehicleModel(schedule_id=schedule.id, vehicle_id=vehicle.id, creation_user= driver.id)
 
@@ -78,7 +80,7 @@ class ScheduleRepository():
 
             self.db.add(schedule_user)
 
-            schedule_point_school = SchedulePointModel(schedule_id=schedule.id, point_id=school.id, description=f"Origem: Escola {school.name}" ,creation_user=driver.id)
+            schedule_point_school = SchedulePointModel(schedule_id=schedule.id, point_id=school.id, description=f"Origem: Escola {school.name}" ,creation_user=driver.id, initial_date=creation_date)
 
             self.db.add(schedule_point_school)
 

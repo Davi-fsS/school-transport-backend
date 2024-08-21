@@ -30,6 +30,15 @@ class PointService():
 
         return self.point_repository.get_first_point_school_by_point_list(point_id_list)
     
+    def get_points_by_user_list(self, user_list: List[int]):
+        user_points = self.user_point_service.get_user_point_list_by_user_list(user_list)
+
+        point_id_list = []
+        for user_point in user_points:
+            point_id_list.append(user_point.point_id)
+        
+        return self.point_repository.get_points_home_by_point_list(point_id_list)
+    
     def get_point_user_id(self, user_id : int):
         user_points = self.user_point_service.get_user_point_list(user_id)
 

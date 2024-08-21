@@ -1,4 +1,6 @@
 from datetime import datetime
+from business.service.user_point_service import UserPointService
+from business.service.user_student_service import UserStudentService
 from data.model.schedule_vehicle_model import ScheduleVehicleModel
 from data.model.schedule_model import ScheduleModel
 from business.service.point_service import PointService
@@ -21,6 +23,8 @@ class ScheduleService():
     user_repository: UserRepository
     vehicle_service: VehicleService
     point_service: PointService
+    user_student_service: UserStudentService
+    user_point_service: UserPointService
 
     def __init__(self):
         self.schedule_repository = ScheduleRepository()
@@ -30,6 +34,8 @@ class ScheduleService():
         self.user_repository = UserRepository()
         self.vehicle_service = VehicleService()
         self.point_service = PointService()
+        self.user_student_service = UserStudentService()
+        self.user_point_service = UserPointService()
 
     def get_schedule_by_id(self, schedule_id: int):
         schedule = self.schedule_repository.get_schedule_by_id(schedule_id)
@@ -66,8 +72,34 @@ class ScheduleService():
         if(vehicle is None):
             raise ValueError("Motorista não possui veículo")
         
-        students_points = self.point_service.get_point_user_id(driver.id)
+        driver_student_list = self.user_student_service.get_students_by_responsible(driver.id)
 
+        student_list = []
+
+        for driver_student in driver_student_list:
+            student_id = driver_student.student_id
+            student_list.append(student_id)
+
+        responsible_from_students = self.user_student_service.get_user_students_by_student_list(student_list)
+
+        responsible_list = []
+
+        for responsible in responsible_from_students:
+            if(responsible.user_id != driver.id):
+                responsible_id = responsible.user_id
+                responsible_list.append(responsible_id)
+        
+        user_points = self.user_point_service.get_user_point_list_by_user_list(responsible_list)
+
+        points = []
+
+        for user_point in user_points:
+            if(user_point.favorite == True):
+                point_id = user_point.point_id
+                points.append(point_id)
+
+        students_points = self.point_service.get_point_home_list_by_user(points)
+        
         if(len(students_points) == 0):
             raise ValueError("Viagem não possuí nenhum ponto de parada")
 

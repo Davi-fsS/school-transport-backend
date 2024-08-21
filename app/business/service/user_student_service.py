@@ -11,6 +11,9 @@ class UserStudentService():
     def get_students_by_responsible(self, responsible_id: int):
         return self.user_student_repository.get_students_by_responsible(responsible_id=responsible_id)
     
+    def get_user_students_by_student_list(self, student_list: List[int]):
+        return self.user_student_repository.get_user_students_by_student_list(student_list)
+    
     def get_user_students_by_student_id(self, student_id: int):
         return self.user_student_repository.get_all_user_student_by_student_id(student_id)
 

@@ -1,3 +1,4 @@
+from typing import List
 from data.repository.user_point_repository import UserPointRepository
 from presentation.dto.CreatePhone import CreatePhone
 from data.model.user_point_model import UserPointModel
@@ -15,6 +16,9 @@ class UserPointService():
     
     def get_user_point_list(self, user_id: int):
         return self.user_point_repository.get_user_point_list(user_id)
+    
+    def get_user_point_list_by_user_list(self, user_list: List[int]):
+        return self.user_point_repository.get_user_point_list_by_user_list(user_list)
     
     def delete_user_point(self, user_id: int, point_id: int):
         return self.user_point_repository.delete_user_point(user_id, point_id)

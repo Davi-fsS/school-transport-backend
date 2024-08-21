@@ -1,3 +1,4 @@
+from typing import List
 from sqlalchemy.orm import Session
 from data.model.user_point_model import UserPointModel
 from data.infrastructure.database import get_db
@@ -11,6 +12,13 @@ class UserPointRepository():
     def get_user_point_list(self, user_id: int):
         try:
             return self.db.query(UserPointModel).filter(UserPointModel.user_id == user_id, UserPointModel.disabled == False).all()
+        except:
+            self.db.rollback()
+            raise ValueError("Erro ao fazer a leitura no sistema")
+        
+    def get_user_point_list_by_user_list(self, user_list: List[int]):
+        try:
+            return self.db.query(UserPointModel).filter(UserPointModel.user_id.in_(user_list), UserPointModel.disabled == False).all()
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
