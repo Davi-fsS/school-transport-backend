@@ -146,9 +146,10 @@ class VehicleService():
         return self.vehicle_repository.delete_vehicle(vehicle_id)
 
     def get_vehicle_by_driver(self, user_id: int):
-        self.validating_vehicle_by_driver(user_id)
-
         return self.vehicle_repository.get_vehicle_by_driver(user_id)
+    
+    def get_vehicle_list_by_driver(self, user_id: int):
+        return self.vehicle_repository.get_vehicle_list_by_driver(user_id)
 
     def validating_vehicle_create(self, vehicle: CreateVehicle):
         if(len(vehicle.plate) != 7):
@@ -220,3 +221,4 @@ class VehicleService():
             return f"{initials[0]}{initials[1]}{plate}"
         
         return f"{name[0]}{name[1]}{plate}"
+        self.validating_vehicle_by_driver(user_id)

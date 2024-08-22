@@ -29,3 +29,6 @@ class VehicleController():
     
     def get_vehicle_by_driver(self, user_id: int):
         return self.vehicle_service.get_vehicle_by_driver(user_id)
+    
+    def get_vehicle_list_by_driver(self, user_id: int):
+        return self.vehicle_service.get_vehicle_list_by_driver(user_id)

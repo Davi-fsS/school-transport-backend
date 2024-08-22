@@ -48,6 +48,15 @@ class VehicleRepository():
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
         
+    def get_vehicle_list_by_driver(self, user_id: int):
+        try:
+            vehicle_list = self.db.query(VehicleModel).filter(VehicleModel.user_id == user_id, VehicleModel.disabled == False).all()
+            
+            return vehicle_list
+        except:
+            self.db.rollback()
+            raise ValueError("Erro ao fazer a leitura no sistema")
+        
     def create_vehicle(self, db_vehicle: VehicleModel):
         try:
             self.db.add(db_vehicle)
