@@ -21,6 +21,9 @@ class PointController():
     
     def get_school_by_user(self, user_id : int):
         return self.point_service.get_school_by_user(user_id)
+    
+    def get_school_by_driver(self, user_id : int):
+        return self.point_service.get_school_by_driver(user_id)
 
     def create_point(self, point: CreatePoint):
         return self.point_service.create_point(point)

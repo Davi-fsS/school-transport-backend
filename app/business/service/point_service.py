@@ -1,3 +1,5 @@
+from data.repository.user_repository import UserRepository
+from data.repository.vehicle_repository import VehicleRepository
 from data.repository.point_repository import PointRepository
 from business.service.user_point_service import UserPointService
 from presentation.dto.CreatePoint import CreatePoint
@@ -12,11 +14,15 @@ class PointService():
     point_repository: PointRepository
     google_geocoding_service: GoogleGeocodingService
     user_point_service: UserPointService
+    vehicle_repository: VehicleRepository
+    user_repository: UserRepository
 
     def __init__(self):
         self.point_repository = PointRepository()
         self.google_geocoding_service = GoogleGeocodingService()
         self.user_point_service = UserPointService()
+        self.vehicle_repository = VehicleRepository()
+        self.user_repository = UserRepository()
 
     def get_point_by_id(self, point_id : int):
         return self.point_repository.get_point(point_id)
@@ -30,6 +36,23 @@ class PointService():
         point_id_list = []
         for user_point in user_points:
             point_id_list.append(user_point.point_id)
+
+        return self.point_repository.get_first_point_school_by_point_list(point_id_list)
+    
+    def get_school_by_driver(self, user_id : int):
+        user = self.user_repository.get_user(user_id)
+
+        if user is None:
+            raise ValueError("Usuário não existe")
+
+        if user.user_type_id == 3:
+            raise ValueError("Usuário não é um motorista")
+        
+        vehicles = self.vehicle_repository.get_vehicle_list_by_driver(user.id)
+
+        point_id_list = []
+        for point in vehicles:
+            point_id_list.append(point.point_id)
 
         return self.point_repository.get_first_point_school_by_point_list(point_id_list)
     
