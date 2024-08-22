@@ -11,7 +11,7 @@ class VehicleRepository():
 
     def get_vehicle(self, id: int):
         try:
-            vehicle = self.db.query(VehicleModel).filter(VehicleModel.id == id).first()
+            vehicle = self.db.query(VehicleModel).filter(VehicleModel.id == id, VehicleModel.disabled == False).first()
             
             if vehicle is None:
                 raise ValueError("Veículo não encontrado")
@@ -23,7 +23,7 @@ class VehicleRepository():
         
     def get_all_vehicle(self):
         try:
-            all_vehicle = self.db.query(VehicleModel).all()
+            all_vehicle = self.db.query(VehicleModel.disabled == False).all()
 
             return all_vehicle
         except:
@@ -32,7 +32,7 @@ class VehicleRepository():
         
     def get_vehicle_by_plate(self, plate: str):
         try:
-            vehicle = self.db.query(VehicleModel).filter(VehicleModel.plate == plate).first()
+            vehicle = self.db.query(VehicleModel).filter(VehicleModel.plate == plate, VehicleModel.disabled == False).first()
             
             return vehicle
         except:
@@ -41,7 +41,7 @@ class VehicleRepository():
         
     def get_vehicle_by_driver(self, user_id: int):
         try:
-            vehicle = self.db.query(VehicleModel).filter(VehicleModel.user_id == user_id).first()
+            vehicle = self.db.query(VehicleModel).filter(VehicleModel.user_id == user_id, VehicleModel.disabled == False).first()
             
             return vehicle
         except:
@@ -86,7 +86,7 @@ class VehicleRepository():
     def delete_vehicle(self, vehicle_id: int):
         try:
             vehicle = self.get_vehicle(vehicle_id)
-            self.db.delete(vehicle)
+            vehicle.disabled = True
             self.db.commit()
         except:
             self.db.rollback()
