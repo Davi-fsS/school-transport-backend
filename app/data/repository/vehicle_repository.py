@@ -20,6 +20,15 @@ class VehicleRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
+    
+    def get_vehicle_by_code(self, code: str):
+        try:
+            vehicle = self.db.query(VehicleModel).filter(VehicleModel.code == code, VehicleModel.disabled == False).first()
+            
+            return vehicle
+        except:
+            self.db.rollback()
+            raise ValueError("Erro ao fazer a leitura no sistema")
         
     def get_all_vehicle(self):
         try:
