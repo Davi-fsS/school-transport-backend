@@ -62,25 +62,26 @@ class VehicleService():
     def create_vehicle(self, vehicle: CreateVehicle):
         driver = self.validating_vehicle_create(vehicle)
 
+        code = self.creating_driver_code(driver, vehicle)
+
         vehicle_model = VehicleModel(plate=vehicle.plate, 
                                      vehicle_type_id=vehicle.vehicle_type_id,
                                      user_id=vehicle.user_id,
                                      model=vehicle.model,
                                      color=vehicle.color,
                                      year=vehicle.year,
-                                     creation_user = 2
+                                     creation_user = 2,
+                                     code=code
                                     )
         
-        self.creating_driver_code(driver, vehicle)
-
         return self.vehicle_repository.create_vehicle(vehicle_model)
     
     def update_vehicle(self, vehicle: UpdateVehicle):
         driver = self.validating_vehicle_update(vehicle)
 
-        self.creating_driver_code(driver, vehicle)
+        code = self.creating_driver_code(driver, vehicle)
 
-        return self.vehicle_repository.update_vehicle(vehicle)
+        return self.vehicle_repository.update_vehicle(vehicle, code)
 
     def delete_vehicle(self, vehicle_id: int):
         vehicle = self.validating_vehicle_delete(vehicle_id)
@@ -106,12 +107,9 @@ class VehicleService():
         if(user is None):
             raise ValueError("Usuário não cadastrado")
         
-        if(user.user_type_id != 2):
+        if(user.user_type_id == 3):
             raise ValueError("Usuário não é motorista")
-        
-        if(self.vehicle_repository.get_vehicle_by_driver(vehicle.user_id) is not None):
-            raise ValueError("Motorista já possuí veículo")
-        
+                
         if(self.vehicle_type_service.get_type(vehicle.vehicle_type_id) is None):
             raise ValueError("Tipo de veículo inválido")
         
@@ -134,7 +132,7 @@ class VehicleService():
         if(user is None):
             raise ValueError("Usuário não cadastrado")
         
-        if(user.user_type_id != 2):
+        if(user.user_type_id == 3):
             raise ValueError("Usuário não é motorista")
         
         return user
@@ -158,7 +156,7 @@ class VehicleService():
     def creating_driver_code(self, driver: UserModel, vehicle: CreateVehicle):
         code = self.generate_driver_code(vehicle.plate, driver.name.upper())
 
-        self.user_service.update_driver_code(driver.id, code)
+        return code
 
     def generate_driver_code(self, plate: str, name: str):
         initials = "".join([separate_name[0].upper() for separate_name in name.split()])

@@ -14,6 +14,8 @@ class VehicleModel(Base):
     chassi = Column(String(255), nullable=True)
     renavam = Column(String(255), nullable=True)
     user_id = Column(Integer)
+    code = Column(String(255), nullable=True)
+    point_id = Column(Integer)
     creation_user = Column(Integer)
     change_date = Column(DateTime)
     change_user = Column(Integer)
