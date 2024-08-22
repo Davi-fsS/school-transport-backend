@@ -110,6 +110,33 @@ class VehicleService():
             raise ValueError("Ponto informado não é uma escola")
         
         return self.vehicle_repository.associate_vehicle_point(association.vehicle_id, association.point_id)
+    
+    def vehicle_disassociation_point(self, disassociation: VehiclePointAssociation):
+        vehicle = self.vehicle_repository.get_vehicle(disassociation.vehicle_id)
+
+        if(vehicle is None):
+            raise ValueError("Veículo não existe")
+        
+        if(vehicle.point_id != disassociation.point_id):
+            raise ValueError("Ponto para desassociação está incorreto")
+        
+        user_associated_to_vehicle = self.user_service.get_user(vehicle.user_id)
+
+        if(user_associated_to_vehicle is None):
+            raise ValueError("Usuário do veículo não existe")
+        
+        if(user_associated_to_vehicle.user_type_id == 3):
+            raise ValueError("Usuário do veículo não é um motorista")
+
+        point = self.point_service.get_point(disassociation.point_id)
+
+        if(point is None):
+            raise ValueError("Ponto não existe")
+
+        if(point.point_type_id != 2):
+            raise ValueError("Ponto informado não é uma escola")
+        
+        return self.vehicle_repository.disassociate_vehicle_point(disassociation.vehicle_id)
 
     def delete_vehicle(self, vehicle_id: int):
         vehicle = self.validating_vehicle_delete(vehicle_id)

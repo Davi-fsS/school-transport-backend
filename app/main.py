@@ -266,6 +266,13 @@ async def vehicle_association_point(association: VehiclePointAssociation):
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
     
+@app.put("/vehicle/disassociate-point",status_code=status.HTTP_200_OK)
+async def vehicle_disassociation_point(disassociation: VehiclePointAssociation):
+    try:
+        return vehicle_controller.vehicle_disassociation_point(disassociation)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    
 #POINT ENDPOINTS
 @app.get("/point/get-by-id",status_code=status.HTTP_200_OK)
 async def get_point_by_id(point_id: int):

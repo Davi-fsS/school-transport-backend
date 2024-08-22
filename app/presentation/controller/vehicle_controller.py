@@ -21,6 +21,9 @@ class VehicleController():
     def vehicle_association_point(self, association: VehiclePointAssociation):
         return self.vehicle_service.vehicle_association_point(association)
     
+    def vehicle_disassociation_point(self,disassociation: VehiclePointAssociation):
+        return self.vehicle_service.vehicle_disassociation_point(disassociation)
+    
     def delete_vehicle(self, vehicle_id: int):
         return self.vehicle_service.delete_vehicle(vehicle_id)
     

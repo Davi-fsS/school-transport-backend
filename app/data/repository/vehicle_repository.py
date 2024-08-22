@@ -82,6 +82,17 @@ class VehicleRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
+    
+    def disassociate_vehicle_point(self, vehicle_id: int):
+        try:
+            vehicle = self.get_vehicle(vehicle_id)
+            vehicle.point_id = None
+
+            self.db.commit()
+            return vehicle.id
+        except:
+            self.db.rollback()
+            raise ValueError("Erro ao salvar no sistema")
         
     def delete_vehicle(self, vehicle_id: int):
         try:
