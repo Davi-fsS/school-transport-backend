@@ -1,4 +1,5 @@
 from fastapi import FastAPI, status, HTTPException, Header
+from presentation.dto.VehiclePointAssociation import VehiclePointAssociation
 from presentation.controller.schedule_controller import ScheduleController
 from presentation.controller.coordinate_controller import CoordinateController
 from presentation.controller.user_controller import UserController
@@ -255,6 +256,32 @@ async def get_vehicle_by_driver(user_id: int):
             raise HTTPException(status_code=status.HTTP_204_NO_CONTENT, detail="Sem veículo cadastrado")
 
         return vehicle
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+
+@app.get("/vehicle/get-list-by-driver",status_code=status.HTTP_200_OK)
+async def get_vehicle_list_by_driver(user_id: int):
+    try:
+        vehicle = vehicle_controller.get_vehicle_list_by_driver(user_id)
+
+        if(vehicle is None):
+            raise HTTPException(status_code=status.HTTP_204_NO_CONTENT, detail="Sem veículo cadastrado")
+
+        return vehicle
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    
+@app.put("/vehicle/associate-point",status_code=status.HTTP_200_OK)
+async def vehicle_association_point(association: VehiclePointAssociation):
+    try:
+        return vehicle_controller.vehicle_association_point(association)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    
+@app.put("/vehicle/disassociate-point",status_code=status.HTTP_200_OK)
+async def vehicle_disassociation_point(disassociation: VehiclePointAssociation):
+    try:
+        return vehicle_controller.vehicle_disassociation_point(disassociation)
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
     

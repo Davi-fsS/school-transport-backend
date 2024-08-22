@@ -1,3 +1,5 @@
+from business.service.point_service import PointService
+from presentation.dto.VehiclePointAssociation import VehiclePointAssociation
 from data.repository.vehicle_repository import VehicleRepository
 from business.service.user_service import UserService
 from business.service.vehicle_type_service import VehicleTypeService
@@ -12,11 +14,13 @@ class VehicleService():
     vehicle_repository: VehicleRepository
     user_service: UserService
     vehicle_type_service: VehicleTypeService
+    point_service: PointService
 
     def __init__(self):
         self.vehicle_repository = VehicleRepository()
         self.user_service = UserService()
         self.vehicle_type_service = VehicleTypeService()
+        self.point_service = PointService()
 
     def get_vehicle_by_id(self, vehicle_id: int):
         return self.vehicle_repository.get_vehicle(vehicle_id)
@@ -62,25 +66,77 @@ class VehicleService():
     def create_vehicle(self, vehicle: CreateVehicle):
         driver = self.validating_vehicle_create(vehicle)
 
+        code = self.creating_driver_code(driver, vehicle)
+
         vehicle_model = VehicleModel(plate=vehicle.plate, 
                                      vehicle_type_id=vehicle.vehicle_type_id,
                                      user_id=vehicle.user_id,
                                      model=vehicle.model,
                                      color=vehicle.color,
                                      year=vehicle.year,
-                                     creation_user = 2
+                                     creation_user = 2,
+                                     code=code
                                     )
         
-        self.creating_driver_code(driver, vehicle)
-
         return self.vehicle_repository.create_vehicle(vehicle_model)
     
     def update_vehicle(self, vehicle: UpdateVehicle):
         driver = self.validating_vehicle_update(vehicle)
 
-        self.creating_driver_code(driver, vehicle)
+        code = self.creating_driver_code(driver, vehicle)
 
-        return self.vehicle_repository.update_vehicle(vehicle)
+        return self.vehicle_repository.update_vehicle(vehicle, code)
+    
+    def vehicle_association_point(self, association: VehiclePointAssociation):
+        vehicle = self.vehicle_repository.get_vehicle(association.vehicle_id)
+
+        if(vehicle is None):
+            raise ValueError("Veículo não existe")
+        
+        user_associated_to_vehicle = self.user_service.get_user(vehicle.user_id)
+
+        if(user_associated_to_vehicle is None):
+            raise ValueError("Usuário do veículo não existe")
+        
+        if(user_associated_to_vehicle.user_type_id == 3):
+            raise ValueError("Usuário do veículo não é um motorista")
+
+        point = self.point_service.get_point(association.point_id)
+
+        if(point is None):
+            raise ValueError("Ponto não existe")
+
+        if(point.point_type_id != 2):
+            raise ValueError("Ponto informado não é uma escola")
+        
+        return self.vehicle_repository.associate_vehicle_point(association.vehicle_id, association.point_id)
+    
+    def vehicle_disassociation_point(self, disassociation: VehiclePointAssociation):
+        vehicle = self.vehicle_repository.get_vehicle(disassociation.vehicle_id)
+
+        if(vehicle is None):
+            raise ValueError("Veículo não existe")
+        
+        if(vehicle.point_id != disassociation.point_id):
+            raise ValueError("Ponto para desassociação está incorreto")
+        
+        user_associated_to_vehicle = self.user_service.get_user(vehicle.user_id)
+
+        if(user_associated_to_vehicle is None):
+            raise ValueError("Usuário do veículo não existe")
+        
+        if(user_associated_to_vehicle.user_type_id == 3):
+            raise ValueError("Usuário do veículo não é um motorista")
+
+        point = self.point_service.get_point(disassociation.point_id)
+
+        if(point is None):
+            raise ValueError("Ponto não existe")
+
+        if(point.point_type_id != 2):
+            raise ValueError("Ponto informado não é uma escola")
+        
+        return self.vehicle_repository.disassociate_vehicle_point(disassociation.vehicle_id)
 
     def delete_vehicle(self, vehicle_id: int):
         vehicle = self.validating_vehicle_delete(vehicle_id)
@@ -90,9 +146,10 @@ class VehicleService():
         return self.vehicle_repository.delete_vehicle(vehicle_id)
 
     def get_vehicle_by_driver(self, user_id: int):
-        self.validating_vehicle_by_driver(user_id)
-
         return self.vehicle_repository.get_vehicle_by_driver(user_id)
+    
+    def get_vehicle_list_by_driver(self, user_id: int):
+        return self.vehicle_repository.get_vehicle_list_by_driver(user_id)
 
     def validating_vehicle_create(self, vehicle: CreateVehicle):
         if(len(vehicle.plate) != 7):
@@ -106,12 +163,9 @@ class VehicleService():
         if(user is None):
             raise ValueError("Usuário não cadastrado")
         
-        if(user.user_type_id != 2):
+        if(user.user_type_id == 3):
             raise ValueError("Usuário não é motorista")
-        
-        if(self.vehicle_repository.get_vehicle_by_driver(vehicle.user_id) is not None):
-            raise ValueError("Motorista já possuí veículo")
-        
+                
         if(self.vehicle_type_service.get_type(vehicle.vehicle_type_id) is None):
             raise ValueError("Tipo de veículo inválido")
         
@@ -134,7 +188,7 @@ class VehicleService():
         if(user is None):
             raise ValueError("Usuário não cadastrado")
         
-        if(user.user_type_id != 2):
+        if(user.user_type_id == 3):
             raise ValueError("Usuário não é motorista")
         
         return user
@@ -158,7 +212,7 @@ class VehicleService():
     def creating_driver_code(self, driver: UserModel, vehicle: CreateVehicle):
         code = self.generate_driver_code(vehicle.plate, driver.name.upper())
 
-        self.user_service.update_driver_code(driver.id, code)
+        return code
 
     def generate_driver_code(self, plate: str, name: str):
         initials = "".join([separate_name[0].upper() for separate_name in name.split()])
@@ -167,3 +221,4 @@ class VehicleService():
             return f"{initials[0]}{initials[1]}{plate}"
         
         return f"{name[0]}{name[1]}{plate}"
+        self.validating_vehicle_by_driver(user_id)

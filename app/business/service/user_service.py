@@ -45,24 +45,29 @@ class UserService():
         return self.user_repository.get_all_drivers()
     
     def get_driver_detals_by_code(self, code: str):
-        user = self.user_repository.get_user_by_code(code)
+        vehicle = self.vehicle_repository.get_vehicle_by_code(code)
 
-        if(user is None or user.user_type_id != 2):
+        if(vehicle is None):
+            raise ValueError("Veículo não encontrado")
+        
+        user_from_vehicle = self.user_repository.get_user(vehicle.user_id)
+
+        if(user_from_vehicle is None or user_from_vehicle.user_type_id == 3):
             raise ValueError("Motorista não existe")
 
-        user_dto = User(id=user.id, uuid=user.uuid, name=user.name, email=user.email, cpf=user.cpf, 
-                        cnh=user.cnh, rg=user.rg, user_type_id=user.user_type_id, code=user.code)
+        user_dto = User(id=user_from_vehicle.id, uuid=user_from_vehicle.uuid, name=user_from_vehicle.name, email=user_from_vehicle.email, cpf=user_from_vehicle.cpf, 
+                        cnh=user_from_vehicle.cnh, rg=user_from_vehicle.rg, user_type_id=user_from_vehicle.user_type_id, code=user_from_vehicle.code)
 
-        user_school = self.point_service.get_school_by_user(user.id)
+        school = self.point_service.get_school_by_id(vehicle.point_id)
 
-        if(user_school is None):
+        if(school is None):
             raise ValueError("Motorista não possui escola")
 
-        user_school_dto = Point(id=user_school.id, name=user_school.name, address=user_school.address, lat=user_school.lat,
-                                lng=user_school.lng, alt=user_school.alt, city=user_school.city, neighborhood=user_school.neighborhood,
-                                state=user_school.state, description=user_school.description, point_type_id=user_school.point_type_id)
+        user_school_dto = Point(id=school.id, name=school.name, address=school.address, lat=school.lat,
+                                lng=school.lng, alt=school.alt, city=school.city, neighborhood=school.neighborhood,
+                                state=school.state, description=school.description, point_type_id=school.point_type_id)
 
-        user_phone = self.user_phone_service.get_user_phone_list(user.id)
+        user_phone = self.user_phone_service.get_user_phone_list(user_from_vehicle.id)
 
         driver_details_dto = DriverDetails(user=user_dto, school=user_school_dto, phone=user_phone)
     
