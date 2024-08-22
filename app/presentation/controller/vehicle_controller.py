@@ -1,3 +1,4 @@
+from presentation.dto.VehiclePointAssociation import VehiclePointAssociation
 from business.service.vehicle_service import VehicleService
 from presentation.dto.CreateVehicle import CreateVehicle
 from presentation.dto.UpdateVehicle import UpdateVehicle
@@ -16,6 +17,9 @@ class VehicleController():
     
     def update_vehicle(self, vehicle: UpdateVehicle):
         return self.vehicle_service.update_vehicle(vehicle)
+    
+    def vehicle_association_point(self, association: VehiclePointAssociation):
+        return self.vehicle_service.vehicle_association_point(association)
     
     def delete_vehicle(self, vehicle_id: int):
         return self.vehicle_service.delete_vehicle(vehicle_id)
