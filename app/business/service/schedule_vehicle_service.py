@@ -34,6 +34,6 @@ class ScheduleVehicleService():
 
         vehicle_dto = Vehicle(id=vehicle.id, plate=vehicle.plate, color=vehicle.color,
                            vehicle_type_id=vehicle.vehicle_type_id, model=vehicle.model,
-                           year=vehicle.year)
+                           year=vehicle.year, code=vehicle.code)
         
         return vehicle_dto

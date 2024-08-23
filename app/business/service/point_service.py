@@ -1,3 +1,5 @@
+from presentation.dto.Vehicle import Vehicle
+from presentation.dto.VehiclePoint import VehiclePoint
 from data.repository.user_repository import UserRepository
 from data.repository.vehicle_repository import VehicleRepository
 from data.repository.point_repository import PointRepository
@@ -40,6 +42,8 @@ class PointService():
         return self.point_repository.get_first_point_school_by_point_list(point_id_list)
     
     def get_school_by_driver(self, user_id : int):
+        vehicle_point_list_dto: List[VehiclePoint] = []
+
         user = self.user_repository.get_user(user_id)
 
         if user is None:
@@ -50,11 +54,21 @@ class PointService():
         
         vehicles = self.vehicle_repository.get_vehicle_list_by_driver(user.id)
 
-        point_id_list = []
-        for point in vehicles:
-            point_id_list.append(point.point_id)
+        points = self.point_repository.get_all_school_list()
 
-        return self.point_repository.get_first_point_school_by_point_list(point_id_list)
+        for vehicle in vehicles:
+            for point in points:
+                if(point.id == vehicle.point_id):
+                    point_dto = Point(id=point.id, name=point.name, address=point.address, lat=point.lat, lng=point.lng,
+                                      city=point.city, neighborhood=point.neighborhood, state=point.state, description=point.description,
+                                      alt=point.alt,point_type_id=point.point_type_id)
+                    
+                    vehicle_dto = Vehicle(id=vehicle.id, plate=vehicle.plate, vehicle_type_id=vehicle.vehicle_type_id,
+                                        color=vehicle.color, model=vehicle.model, year=vehicle.year, code=vehicle.code)
+
+                    vehicle_point_list_dto.append(VehiclePoint(vehicle=vehicle_dto, school=point_dto))
+
+        return vehicle_point_list_dto
     
     def get_points_by_user_list(self, user_list: List[int]):
         user_points = self.user_point_service.get_user_point_list_by_user_list(user_list)

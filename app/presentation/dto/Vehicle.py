@@ -7,4 +7,5 @@ class Vehicle(BaseModel):
     color: str
     model: str
     year: str
+    code: str
 
