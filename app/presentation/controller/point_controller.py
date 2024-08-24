@@ -22,6 +22,9 @@ class PointController():
     def get_school_by_user(self, user_id : int):
         return self.point_service.get_school_by_user(user_id)
     
+    def get_school_associated_by_driver(self, user_id : int):
+        return self.point_service.get_school_associated_by_driver(user_id)
+   
     def get_school_by_driver(self, user_id : int):
         return self.point_service.get_school_by_driver(user_id)
 

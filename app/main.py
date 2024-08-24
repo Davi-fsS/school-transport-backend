@@ -307,6 +307,13 @@ async def get_school(user_id: int):
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
     
+@app.get("/point/get-school-associated-by-driver",status_code=status.HTTP_200_OK)
+async def get_school_associated_by_driver(user_id: int):
+    try:
+        return point_controller.get_school_associated_by_driver(user_id)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    
 @app.get("/point/get-school-by-driver",status_code=status.HTTP_200_OK)
 async def get_school_by_driver(user_id: int):
     try:
