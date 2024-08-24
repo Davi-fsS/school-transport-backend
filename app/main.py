@@ -1,4 +1,5 @@
 from fastapi import FastAPI, status, HTTPException, Header
+from presentation.controller.vehicle_point_controller import VehiclePointController
 from presentation.dto.VehiclePointAssociation import VehiclePointAssociation
 from presentation.controller.schedule_controller import ScheduleController
 from presentation.controller.coordinate_controller import CoordinateController
@@ -54,6 +55,7 @@ vehicle_controller = VehicleController()
 point_controller = PointController()
 coordinate_controller = CoordinateController()
 schedule_controller = ScheduleController()
+vehicle_point_controller = VehiclePointController()
 
 # USER ENDPOINTS
 @app.post("/user/create",status_code=status.HTTP_201_CREATED)
@@ -368,6 +370,14 @@ async def get_school_list():
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
     
+#VEHICLE POINT ENDPOINTS
+@app.get("/vehicle-point/get-association",status_code=status.HTTP_200_OK)
+async def get_association(vehicle_id: int, point_id: int):
+    try:
+        return vehicle_point_controller.get_vehicle_point_association(vehicle_id, point_id)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+
 #COORDINATE ENDPOINTS
 @app.post("/coordinate/save-coordinates-mobile",status_code=status.HTTP_201_CREATED)
 async def save_coordinates_mobile(coordinates: SaveCoordinate):
