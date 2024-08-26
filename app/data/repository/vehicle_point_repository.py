@@ -40,11 +40,12 @@ class VehiclePointRepository():
 
             vehicle_point.vehicle_id = update_body.vehicle_id
             vehicle_point.point_id = update_body.point_id
+            vehicle_point.change_user = update_body.user_id
             vehicle_point.change_date = datetime.now()
             vehicle_point.code = code
 
             self.db.commit()
-            return vehicle_point.id
+            return vehicle_point.code
         except:
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")

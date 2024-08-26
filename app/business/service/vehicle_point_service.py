@@ -137,6 +137,9 @@ class VehiclePointService():
 
         if vehicle_point is None:
             raise ValueError("Associação não existe")
+        
+        if vehicle_point.vehicle_id == update_body.vehicle_id and vehicle_point.point_id == update_body.point_id:
+            raise ValueError("Associação já existe")
 
         user = self.user_service.get_user(update_body.user_id)
 
@@ -146,9 +149,9 @@ class VehiclePointService():
         if user.user_type_id == 3:
             raise ValueError("Usuário não é um motorista")
         
-        vehicle = self.vehicle_service.get_vehicle_by_id(update_body.vehicle_id)
+        vehicle_body = self.vehicle_service.get_vehicle_by_id(update_body.vehicle_id)
 
-        if vehicle is None:
+        if vehicle_body is None:
             raise ValueError("Veículo não existe")
 
         vehicles = self.vehicle_service.get_vehicle_list_by_driver(user.id)
@@ -163,12 +166,12 @@ class VehiclePointService():
         if update_body.vehicle_id not in vehicle_id_list:
             raise ValueError("Veículo não pertence a este motorista")
         
-        point = self.point_service.get_point_by_id(update_body.point_id)
+        point_body = self.point_service.get_point_by_id(update_body.point_id)
 
-        if point is None:
+        if point_body is None:
             raise ValueError("Ponto não existe")
         
-        if point.point_type_id == 1:
+        if point_body.point_type_id == 1:
             raise ValueError("Ponto não é uma escola")
         
         points = self.point_service.get_school_by_driver(user.id)
@@ -187,11 +190,13 @@ class VehiclePointService():
 
         if vehicle_point_with_these_combination is not None:
             raise ValueError("Associação já existe")
-        
-        vehicle_point_code = self.generate_code(user.name, vehicle.plate, point.name)
+                
+        vehicle_point_code = self.generate_code(user.name, vehicle_body.plate, point_body.name)
 
-        return self.vehicle_point_repository.update_vehicle_point()
+        return self.vehicle_point_repository.update_vehicle_point(update_body, vehicle_point_code)
 
 
     def generate_code(self, user_name: str, vehicle_plate: str, school_name: str):
-        return f"{user_name[:2]}{vehicle_plate[:2]}{school_name[:2]}{vehicle_plate[-2:]}".upper()
+        name = ''.join([palavra[0] for palavra in user_name.split()])
+        school = ''.join([palavra[0] for palavra in school_name.split()]) 
+        return f"{name[:2]}{vehicle_plate[:2]}{school}{vehicle_plate[-2:]}".upper()
