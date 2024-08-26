@@ -1,4 +1,6 @@
 from typing import List
+from data.model.vehicle_point_model import VehiclePointModel
+from presentation.dto.CreateVehiclePoint import CreateVehiclePoint
 from presentation.dto.Vehicle import Vehicle
 from presentation.dto.Point import Point
 from presentation.dto.PointVehicle import PointVehicle
@@ -69,3 +71,65 @@ class VehiclePointService():
 
         return point_vehicles_list
                     
+    def create_vehicle_point(self, vehicle_point: CreateVehiclePoint):
+        user = self.user_service.get_user(vehicle_point.user_id)
+
+        if user is None:
+            raise ValueError("Usuário inválido")
+        
+        if user.user_type_id == 3:
+            raise ValueError("Usuário não é um motorista")
+        
+        vehicle = self.vehicle_service.get_vehicle_by_id(vehicle_point.vehicle_id)
+
+        if vehicle is None:
+            raise ValueError("Veículo não existe")
+
+        vehicles = self.vehicle_service.get_vehicle_list_by_driver(user.id)
+
+        if len(vehicles) == 0:
+            raise ValueError("Nenhum veículo associado ao motorista")
+        
+        vehicle_id_list = []
+        for vehicle in vehicles:
+            vehicle_id_list.append(vehicle.id)
+        
+        if vehicle_point.vehicle_id not in vehicle_id_list:
+            raise ValueError("Veículo não pertence a este motorista")
+        
+        point = self.point_service.get_point_by_id(vehicle_point.point_id)
+
+        if point is None:
+            raise ValueError("Ponto não existe")
+        
+        if point.point_type_id == 1:
+            raise ValueError("Ponto não é uma escola")
+        
+        points = self.point_service.get_school_by_driver(user.id)
+
+        if len(points) == 0:
+            raise ValueError("Nenhum ponto associado ao motorista")
+        
+        point_id_list = []
+        for point in points:
+            point_id_list.append(point.id)
+
+        if vehicle_point.point_id not in point_id_list:
+            raise ValueError("Escola não pertence a este motorista")
+        
+        vehicle_point_with_these_combination = self.vehicle_point_repository.get_vehicle_point_association(vehicle_point.vehicle_id, point_id=vehicle_point.point_id)
+
+        if vehicle_point_with_these_combination is not None:
+            raise ValueError("Associação já existe")
+        
+        vehicle_point_code = self.generate_code(user.name, vehicle.plate, point.name)
+        
+        vehicle_point_create = VehiclePointModel(vehicle_id=vehicle_point.vehicle_id,
+                                                 point_id=vehicle_point.point_id,
+                                                 creation_user=user.id,
+                                                 code=vehicle_point_code)
+
+        return self.vehicle_point_repository.create_vehicle_point(vehicle_point_create)
+    
+    def generate_code(self, user_name: str, vehicle_plate: str, school_name: str):
+        return f"{user_name[:2]}{vehicle_plate[:2]}{school_name[:2]}{vehicle_plate[-2:]}".upper()

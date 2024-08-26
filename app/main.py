@@ -1,4 +1,5 @@
 from fastapi import FastAPI, status, HTTPException, Header
+from presentation.dto.CreateVehiclePoint import CreateVehiclePoint
 from presentation.controller.vehicle_point_controller import VehiclePointController
 from presentation.dto.VehiclePointAssociation import VehiclePointAssociation
 from presentation.controller.schedule_controller import ScheduleController
@@ -382,6 +383,13 @@ async def get_association(vehicle_id: int, point_id: int):
 async def get_association_by_user(user_id: int):
     try:
         return vehicle_point_controller.get_association_by_user(user_id)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+
+@app.post("/vehicle-point/create",status_code=status.HTTP_201_CREATED)
+async def create_vehicle_point(vehicle_point: CreateVehiclePoint):
+    try:
+        return vehicle_point_controller.create_vehicle_point(vehicle_point)
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
 

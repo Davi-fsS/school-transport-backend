@@ -1,3 +1,4 @@
+from presentation.dto.CreateVehiclePoint import CreateVehiclePoint
 from business.service.vehicle_point_service import VehiclePointService
 
 class VehiclePointController():
@@ -11,3 +12,6 @@ class VehiclePointController():
     
     def get_association_by_user(self, user_id: int):
         return self.vehicle_point_service.get_association_by_user(user_id)
+    
+    def create_vehicle_point(self, vehicle_point: CreateVehiclePoint):
+        return self.vehicle_point_service.create_vehicle_point(vehicle_point)

@@ -23,3 +23,12 @@ class VehiclePointRepository():
     
     def get_vehicle_point_association_by_point_list(self, point_list: List[int]):
         return self.db.query(VehiclePointModel).filter(VehiclePointModel.point_id.in_(point_list), VehiclePointModel.disabled == False).all()
+    
+    def create_vehicle_point(self, vehicle_point_model: VehiclePointModel):
+        try:
+            self.db.add(vehicle_point_model)
+            self.db.commit()
+            return vehicle_point_model.id
+        except:
+            self.db.rollback()
+            raise ValueError("Erro ao salvar no sistema")
