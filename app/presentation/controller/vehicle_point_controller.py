@@ -1,3 +1,4 @@
+from presentation.dto.UpdateVehiclePoint import UpdateVehiclePoint
 from presentation.dto.CreateVehiclePoint import CreateVehiclePoint
 from business.service.vehicle_point_service import VehiclePointService
 
@@ -15,3 +16,6 @@ class VehiclePointController():
     
     def create_vehicle_point(self, vehicle_point: CreateVehiclePoint):
         return self.vehicle_point_service.create_vehicle_point(vehicle_point)
+    
+    def update_vehicle_point(self, update_vehicle_point: UpdateVehiclePoint):
+        return self.vehicle_point_service.update_vehicle_point(update_vehicle_point)
