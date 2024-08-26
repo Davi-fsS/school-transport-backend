@@ -378,6 +378,13 @@ async def get_association(vehicle_id: int, point_id: int):
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
 
+@app.get("/vehicle-point/get-association-by-user",status_code=status.HTTP_200_OK)
+async def get_association_by_user(user_id: int):
+    try:
+        return vehicle_point_controller.get_association_by_user(user_id)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+
 #COORDINATE ENDPOINTS
 @app.post("/coordinate/save-coordinates-mobile",status_code=status.HTTP_201_CREATED)
 async def save_coordinates_mobile(coordinates: SaveCoordinate):
