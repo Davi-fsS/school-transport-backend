@@ -49,3 +49,18 @@ class VehiclePointRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
+        
+    def delete_vehicle_point(self, vehicle_point_id: int):
+        try:
+            vehicle_point = self.get_vehicle_point_by_id(vehicle_point_id)
+
+            if vehicle_point is None:
+                raise ValueError("Associação não existe")
+            
+            vehicle_point.disabled = True
+            vehicle_point.change_date = datetime.now()
+
+            self.db.commit()
+        except:
+            self.db.rollback()
+            raise ValueError("Erro ao salvar no sistema")

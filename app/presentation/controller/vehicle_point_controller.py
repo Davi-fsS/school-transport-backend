@@ -19,3 +19,6 @@ class VehiclePointController():
     
     def update_vehicle_point(self, update_vehicle_point: UpdateVehiclePoint):
         return self.vehicle_point_service.update_vehicle_point(update_vehicle_point)
+    
+    def delete_vehicle_point(self, vehicle_point_id: int):
+        return self.vehicle_point_service.delete_vehicle_point(vehicle_point_id)

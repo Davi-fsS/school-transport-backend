@@ -401,6 +401,13 @@ async def update_vehicle_point(update_vehicle_point: UpdateVehiclePoint):
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
 
+@app.delete("/vehicle-point/delete",status_code=status.HTTP_200_OK)
+async def delete_vehicle_point(vehicle_point_id: int):
+    try:
+        return vehicle_point_controller.delete_vehicle_point(vehicle_point_id)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+
 #COORDINATE ENDPOINTS
 @app.post("/coordinate/save-coordinates-mobile",status_code=status.HTTP_201_CREATED)
 async def save_coordinates_mobile(coordinates: SaveCoordinate):
