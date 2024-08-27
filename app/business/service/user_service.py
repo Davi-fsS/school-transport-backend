@@ -1,3 +1,4 @@
+from presentation.dto.Vehicle import Vehicle
 from data.repository.vehicle_point_repository import VehiclePointRepository
 from data.repository.user_repository import UserRepository
 from business.service.user_phone_service import UserPhoneService
@@ -61,6 +62,9 @@ class UserService():
         if vehicle is None:
             raise ValueError("Veículo não encontrado")
         
+        vehicle_dto = Vehicle(id=vehicle.id, plate=vehicle.plate, vehicle_type_id=vehicle.vehicle_type_id, color=vehicle.color,
+                              model=vehicle.model, year=vehicle.year, code=vehicle.code)
+        
         user_from_vehicle = self.user_repository.get_user(vehicle.user_id)
 
         user_dto = User(id=user_from_vehicle.id, uuid=user_from_vehicle.uuid, name=user_from_vehicle.name, email=user_from_vehicle.email, cpf=user_from_vehicle.cpf, 
@@ -77,7 +81,7 @@ class UserService():
 
         user_phone = self.user_phone_service.get_user_phone_list(user_from_vehicle.id)
 
-        driver_details_dto = DriverDetails(user=user_dto, school=user_school_dto, phone=user_phone)
+        driver_details_dto = DriverDetails(user=user_dto, school=user_school_dto, phone=user_phone, vehicle=vehicle_dto)
     
         return driver_details_dto
 
