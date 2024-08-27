@@ -52,8 +52,6 @@ class UserService():
     def get_driver_detals_by_code(self, code: str):
         vehicle_point = self.vehicle_point_repository.get_vehicle_point_association_by_code(code)
 
-        print(vehicle_point.vehicle_id)
-
         if vehicle_point is None:
             raise ValueError("Código inválido")
         

@@ -121,7 +121,7 @@ class StudentService():
 
         self.user_student_service.create_user_student(student_id=student_id, user_id=student.responsible_id)
 
-        driver = self.user_service.get_user_by_code(student.driver_code)
+        driver = self.user_service.get_user(student.driver_id)
 
         self.user_student_service.create_user_student(student_id=student_id, user_id=driver.id)
 
