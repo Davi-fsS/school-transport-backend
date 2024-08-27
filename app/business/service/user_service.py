@@ -51,10 +51,17 @@ class UserService():
     def get_driver_detals_by_code(self, code: str):
         vehicle_point = self.vehicle_point_repository.get_vehicle_point_association_by_code(code)
 
+        print(vehicle_point.vehicle_id)
+
         if vehicle_point is None:
             raise ValueError("Código inválido")
         
-        user_from_vehicle = self.vehicle_repository.get_vehicle(vehicle_point.vehicle_id)
+        vehicle = self.vehicle_repository.get_vehicle(vehicle_point.vehicle_id)
+
+        if vehicle is None:
+            raise ValueError("Veículo não encontrado")
+        
+        user_from_vehicle = self.user_repository.get_user(vehicle.user_id)
 
         user_dto = User(id=user_from_vehicle.id, uuid=user_from_vehicle.uuid, name=user_from_vehicle.name, email=user_from_vehicle.email, cpf=user_from_vehicle.cpf, 
                         cnh=user_from_vehicle.cnh, rg=user_from_vehicle.rg, user_type_id=user_from_vehicle.user_type_id, code=user_from_vehicle.code)
