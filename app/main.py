@@ -1,4 +1,7 @@
 from fastapi import FastAPI, status, HTTPException, Header
+from presentation.dto.UpdateVehiclePoint import UpdateVehiclePoint
+from presentation.dto.CreateVehiclePoint import CreateVehiclePoint
+from presentation.controller.vehicle_point_controller import VehiclePointController
 from presentation.dto.VehiclePointAssociation import VehiclePointAssociation
 from presentation.controller.schedule_controller import ScheduleController
 from presentation.controller.coordinate_controller import CoordinateController
@@ -54,6 +57,7 @@ vehicle_controller = VehicleController()
 point_controller = PointController()
 coordinate_controller = CoordinateController()
 schedule_controller = ScheduleController()
+vehicle_point_controller = VehiclePointController()
 
 # USER ENDPOINTS
 @app.post("/user/create",status_code=status.HTTP_201_CREATED)
@@ -307,6 +311,13 @@ async def get_school(user_id: int):
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
     
+@app.get("/point/get-school-associated-by-driver",status_code=status.HTTP_200_OK)
+async def get_school_associated_by_driver(user_id: int):
+    try:
+        return point_controller.get_school_associated_by_driver(user_id)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    
 @app.get("/point/get-school-by-driver",status_code=status.HTTP_200_OK)
 async def get_school_by_driver(user_id: int):
     try:
@@ -361,6 +372,42 @@ async def get_school_list():
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
     
+#VEHICLE POINT ENDPOINTS
+@app.get("/vehicle-point/get-association",status_code=status.HTTP_200_OK)
+async def get_association(vehicle_id: int, point_id: int):
+    try:
+        return vehicle_point_controller.get_vehicle_point_association(vehicle_id, point_id)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+
+@app.get("/vehicle-point/get-association-by-user",status_code=status.HTTP_200_OK)
+async def get_association_by_user(user_id: int):
+    try:
+        return vehicle_point_controller.get_association_by_user(user_id)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+
+@app.post("/vehicle-point/create",status_code=status.HTTP_201_CREATED)
+async def create_vehicle_point(vehicle_point: CreateVehiclePoint):
+    try:
+        return vehicle_point_controller.create_vehicle_point(vehicle_point)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    
+@app.post("/vehicle-point/update",status_code=status.HTTP_200_OK)
+async def update_vehicle_point(update_vehicle_point: UpdateVehiclePoint):
+    try:
+        return vehicle_point_controller.update_vehicle_point(update_vehicle_point)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+
+@app.delete("/vehicle-point/delete",status_code=status.HTTP_200_OK)
+async def delete_vehicle_point(vehicle_point_id: int):
+    try:
+        return vehicle_point_controller.delete_vehicle_point(vehicle_point_id)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+
 #COORDINATE ENDPOINTS
 @app.post("/coordinate/save-coordinates-mobile",status_code=status.HTTP_201_CREATED)
 async def save_coordinates_mobile(coordinates: SaveCoordinate):

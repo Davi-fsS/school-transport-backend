@@ -41,7 +41,7 @@ class PointService():
 
         return self.point_repository.get_first_point_school_by_point_list(point_id_list)
     
-    def get_school_by_driver(self, user_id : int):
+    def get_school_associated_by_driver(self, user_id : int):
         vehicle_point_list_dto: List[VehiclePoint] = []
 
         user = self.user_repository.get_user(user_id)
@@ -69,6 +69,26 @@ class PointService():
                     vehicle_point_list_dto.append(VehiclePoint(vehicle=vehicle_dto, school=point_dto))
 
         return vehicle_point_list_dto
+    
+    def get_school_by_driver(self, user_id : int):
+        user = self.user_repository.get_user(user_id)
+
+        if user is None:
+            raise ValueError("Usuário não existe")
+
+        if user.user_type_id == 3:
+            raise ValueError("Usuário não é um motorista")
+        
+        user_points = self.user_point_service.get_user_point_list(user.id)
+
+        point_id_list = []
+        for user_point in user_points:
+            point_id = user_point.point_id
+            point_id_list.append(point_id)
+
+        points = self.point_repository.get_points_school_by_point_list(point_id_list)
+
+        return points
     
     def get_points_by_user_list(self, user_list: List[int]):
         user_points = self.user_point_service.get_user_point_list_by_user_list(user_list)
