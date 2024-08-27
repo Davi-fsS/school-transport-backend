@@ -198,8 +198,6 @@ class VehiclePointService():
     def delete_vehicle_point(self, vehicle_point_id: int):
         self.vehicle_point_repository.delete_vehicle_point(vehicle_point_id)
 
-        # desassociar alunos a este veículo e ponto
-
     def generate_code(self, user_name: str, vehicle_plate: str, school_name: str):
         name = ''.join([palavra[0] for palavra in user_name.split()])
         school = ''.join([palavra[0] for palavra in school_name.split()]) 
