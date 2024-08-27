@@ -87,7 +87,7 @@ class StudentService():
         users = self.user_service.get_user_list_by_list(user_id_list)
 
         for user in users:
-            if(user.user_type_id == 2):
+            if(user.user_type_id != 3):
                 return user
             
     def get_student_school(self, driver_id: int):
