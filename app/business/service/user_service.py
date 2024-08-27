@@ -1,3 +1,4 @@
+from data.repository.vehicle_point_repository import VehiclePointRepository
 from data.repository.user_repository import UserRepository
 from business.service.user_phone_service import UserPhoneService
 from business.service.point_service import PointService
@@ -24,6 +25,7 @@ class UserService():
     point_service: PointService
     user_point_service: UserPointService
     vehicle_repository: VehicleRepository
+    vehicle_point_repository: VehiclePointRepository
 
     def __init__(self):
         self.user_repository = UserRepository()
@@ -31,6 +33,8 @@ class UserService():
         self.point_service = PointService()
         self.user_point_service = UserPointService()
         self.vehicle_repository = VehicleRepository()
+        self.vehicle_point_repository = VehiclePointRepository()
+
 
     def get_user(self, user_id: int):
         return self.user_repository.get_user(user_id)
@@ -45,22 +49,26 @@ class UserService():
         return self.user_repository.get_all_drivers()
     
     def get_driver_detals_by_code(self, code: str):
-        vehicle = self.vehicle_repository.get_vehicle_by_code(code)
+        vehicle_point = self.vehicle_point_repository.get_vehicle_point_association_by_code(code)
 
-        if(vehicle is None):
+        print(vehicle_point.vehicle_id)
+
+        if vehicle_point is None:
+            raise ValueError("Código inválido")
+        
+        vehicle = self.vehicle_repository.get_vehicle(vehicle_point.vehicle_id)
+
+        if vehicle is None:
             raise ValueError("Veículo não encontrado")
         
         user_from_vehicle = self.user_repository.get_user(vehicle.user_id)
 
-        if(user_from_vehicle is None or user_from_vehicle.user_type_id == 3):
-            raise ValueError("Motorista não existe")
-
         user_dto = User(id=user_from_vehicle.id, uuid=user_from_vehicle.uuid, name=user_from_vehicle.name, email=user_from_vehicle.email, cpf=user_from_vehicle.cpf, 
                         cnh=user_from_vehicle.cnh, rg=user_from_vehicle.rg, user_type_id=user_from_vehicle.user_type_id, code=user_from_vehicle.code)
 
-        school = self.point_service.get_school_by_id(vehicle.point_id)
+        school = self.point_service.get_school_by_id(vehicle_point.point_id)
 
-        if(school is None):
+        if school is None:
             raise ValueError("Motorista não possui escola")
 
         user_school_dto = Point(id=school.id, name=school.name, address=school.address, lat=school.lat,

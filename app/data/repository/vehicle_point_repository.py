@@ -25,6 +25,9 @@ class VehiclePointRepository():
     def get_vehicle_point_association_by_point_list(self, point_list: List[int]):
         return self.db.query(VehiclePointModel).filter(VehiclePointModel.point_id.in_(point_list), VehiclePointModel.disabled == False).all()
     
+    def get_vehicle_point_association_by_code(self, code: str):
+        return self.db.query(VehiclePointModel).filter(VehiclePointModel.code == code, VehiclePointModel.disabled == False).first()
+
     def create_vehicle_point(self, vehicle_point_model: VehiclePointModel):
         try:
             self.db.add(vehicle_point_model)
