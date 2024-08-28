@@ -81,9 +81,9 @@ class VehiclePointService():
         if user.user_type_id == 3:
             raise ValueError("Usuário não é um motorista")
         
-        vehicle = self.vehicle_service.get_vehicle_by_id(vehicle_point.vehicle_id)
+        vehicle_in_db = self.vehicle_service.get_vehicle_by_id(vehicle_point.vehicle_id)
 
-        if vehicle is None:
+        if vehicle_in_db is None:
             raise ValueError("Veículo não existe")
 
         vehicles = self.vehicle_service.get_vehicle_list_by_driver(user.id)
@@ -98,12 +98,12 @@ class VehiclePointService():
         if vehicle_point.vehicle_id not in vehicle_id_list:
             raise ValueError("Veículo não pertence a este motorista")
         
-        point = self.point_service.get_point_by_id(vehicle_point.point_id)
+        point_in_db = self.point_service.get_point_by_id(vehicle_point.point_id)
 
-        if point is None:
+        if point_in_db is None:
             raise ValueError("Ponto não existe")
         
-        if point.point_type_id == 1:
+        if point_in_db.point_type_id == 1:
             raise ValueError("Ponto não é uma escola")
         
         points = self.point_service.get_school_by_driver(user.id)
@@ -122,8 +122,8 @@ class VehiclePointService():
 
         if vehicle_point_with_these_combination is not None:
             raise ValueError("Associação já existe")
-        
-        vehicle_point_code = self.generate_code(user.name, vehicle.plate, point.name)
+
+        vehicle_point_code = self.generate_code(user.name, vehicle_in_db.plate, point_in_db.name)
         
         vehicle_point_create = VehiclePointModel(vehicle_id=vehicle_point.vehicle_id,
                                                  point_id=vehicle_point.point_id,
@@ -199,6 +199,11 @@ class VehiclePointService():
         self.vehicle_point_repository.delete_vehicle_point(vehicle_point_id)
 
     def generate_code(self, user_name: str, vehicle_plate: str, school_name: str):
+        print("***********")
+        print("name: ",user_name)
+        print("placa: ",vehicle_plate)
+        print("escola: ",school_name)
+        print("***********")
         name = ''.join([palavra[0] for palavra in user_name.split()])
         school = ''.join([palavra[0] for palavra in school_name.split()]) 
         return f"{name[:2]}{vehicle_plate[:2]}{school}{vehicle_plate[-2:]}".upper()
