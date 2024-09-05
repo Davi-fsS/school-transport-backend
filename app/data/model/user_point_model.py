@@ -9,6 +9,7 @@ class UserPointModel(Base):
     user_id = Column(Integer)
     point_id = Column(Integer)
     favorite = Column(Boolean)
+    code = Column(String(255))
     disabled = Column(Boolean, default=False)
     creation_user = Column(Integer)
     change_date = Column(DateTime)

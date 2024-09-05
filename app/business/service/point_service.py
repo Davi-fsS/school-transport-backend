@@ -121,9 +121,9 @@ class PointService():
         return self.point_repository.create_point(point_body)
     
     def create_driver_point_association(self, association: DriverAssociation):
-        self.validate_driver_point_association(association)
+        code = self.validate_driver_point_association(association)
 
-        self.user_point_service.create_user_point(association.user_id, association.point_id, True)
+        self.user_point_service.create_user_point(association.user_id, association.point_id, True, code=code)
     
     def delete_driver_point_association(self, disassociation: DriverAssociation):
         self.validate_driver_point_disassociation(disassociation)
@@ -137,9 +137,14 @@ class PointService():
             raise ValueError("Este ponto não é uma escola")
 
     def validate_driver_point_association(self, association: DriverAssociation):
-        point = self.point_repository.get_point(association.point_id)
+        user = self.user_repository.get_user(association.user_id)
 
-        if(point.point_type_id != 2):
+        if(user is None):
+            raise ValueError("Usuário não identificado")
+        
+        point_db = self.point_repository.get_point(association.point_id)
+
+        if(point_db.point_type_id != 2):
             raise ValueError("Este ponto não é uma escola")
 
         points_by_user = self.user_point_service.get_user_point_list(association.user_id)
@@ -154,6 +159,10 @@ class PointService():
 
         if(len(driver_with_school) != 0):
             raise ValueError("Já existe uma escola associada ao seu usuário")
+        
+        code = self.generate_code(user.name, point_db.name)
+
+        return code
 
     def update_point(self, point: UpdatePoint):
         self.validating_point_update(point)
@@ -227,3 +236,8 @@ class PointService():
     def validating_point_update(self, point: UpdatePoint):
         if(self.point_repository.get_point(point.id) is None):
             raise ValueError("Ponto inválido")
+    
+    def generate_code(self, user_name: str, school_name: str):
+        name = ''.join([palavra[0] for palavra in user_name.split()])
+        school = ''.join([palavra[0] for palavra in school_name.split()]) 
+        return f"{name[:2]}{school}".upper()
