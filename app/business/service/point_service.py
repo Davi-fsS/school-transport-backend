@@ -7,6 +7,7 @@ from business.service.user_point_service import UserPointService
 from presentation.dto.CreatePoint import CreatePoint
 from presentation.dto.DriverAssociation import DriverAssociation
 from presentation.dto.UpdatePoint import UpdatePoint
+from presentation.dto.SchoolAssociation import SchoolAssociation
 from presentation.dto.Point import Point
 from data.model.point_model import PointModel
 from business.external_service.google_geocoding_service import GoogleGeocodingService
@@ -71,6 +72,8 @@ class PointService():
         return vehicle_point_list_dto
     
     def get_school_by_driver(self, user_id : int):
+        school_association: List[SchoolAssociation] = []
+
         user = self.user_repository.get_user(user_id)
 
         if user is None:
@@ -88,7 +91,16 @@ class PointService():
 
         points = self.point_repository.get_points_school_by_point_list(point_id_list)
 
-        return points
+        for point in points:
+            for user_point in user_points:
+                if(user_point.point_id == point.id):
+                    point_dto = Point(id=point.id, name=point.name, address=point.address, lat=point.lat,
+                                      lng=point.lng, alt=point.alt, city=point.city, neighborhood=point.neighborhood,
+                                      state=point.state, description=point.description, point_type_id=point.point_type_id)
+                    school = SchoolAssociation(point=point_dto, code=user_point.code)
+                    school_association.append(school)
+
+        return school_association
     
     def get_points_by_user_list(self, user_list: List[int]):
         user_points = self.user_point_service.get_user_point_list_by_user_list(user_list)
