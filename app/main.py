@@ -6,6 +6,7 @@ from presentation.dto.VehiclePointAssociation import VehiclePointAssociation
 from presentation.controller.schedule_controller import ScheduleController
 from presentation.controller.coordinate_controller import CoordinateController
 from presentation.controller.user_controller import UserController
+from presentation.controller.user_point_controller import UserPointController
 from presentation.controller.user_type_controller import UserTypeController
 from presentation.controller.user_phone_controller import UserPhoneController
 from presentation.controller.student_controller import StudentController
@@ -58,6 +59,7 @@ point_controller = PointController()
 coordinate_controller = CoordinateController()
 schedule_controller = ScheduleController()
 vehicle_point_controller = VehiclePointController()
+user_point_controller = UserPointController()
 
 # USER ENDPOINTS
 @app.post("/user/create",status_code=status.HTTP_201_CREATED)
@@ -288,7 +290,15 @@ async def vehicle_disassociation_point(disassociation: VehiclePointAssociation):
         return vehicle_controller.vehicle_disassociation_point(disassociation)
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
-    
+
+#USER_POINT ENDPOINTS
+@app.get("/user-point/driver-school-by-code",status_code=status.HTTP_200_OK)
+async def get_driver_school_by_code(code: str):
+    try:
+        return user_point_controller.get_driver_school_by_code(code)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+   
 #POINT ENDPOINTS
 @app.get("/point/get-by-id",status_code=status.HTTP_200_OK)
 async def get_point_by_id(point_id: int):
