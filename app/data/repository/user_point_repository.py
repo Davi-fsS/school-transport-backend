@@ -37,6 +37,13 @@ class UserPointRepository():
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
         
+    def get_user_point_by_code(self, code: str):
+        try:
+            return self.db.query(UserPointModel).filter(UserPointModel.code == code, UserPointModel.disabled == False).first()
+        except:
+            self.db.rollback()
+            raise ValueError("Erro ao fazer a leitura no sistema")
+        
     def delete_user_point(self, user_id: int, point_id: int):
         try:
             user_point = self.get_user_point(user_id, point_id)
