@@ -31,8 +31,7 @@ class ScheduleRepository():
             creation_date = datetime.now()
 
             schedule = ScheduleModel(name=schedule.schedule_name, initial_date=creation_date,
-                                    end_date = schedule.end_date, real_initial_date = creation_date,
-                                    description=f"Viagem de ida para {school.name} - {creation_date.date()}",
+                                    end_date = schedule.end_date, description=f"Viagem de ida para {school.name} - {creation_date.date()}",
                                     schedule_type_id=1, creation_user=driver.id)
             
             self.db.add(schedule)
@@ -55,7 +54,7 @@ class ScheduleRepository():
             self.db.add(schedule_point_school)
 
             self.db.commit()
-            return schedule.id
+            return points
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer o registro no sistema")
@@ -65,8 +64,7 @@ class ScheduleRepository():
             creation_date = datetime.now()
 
             schedule = ScheduleModel(name=schedule.schedule_name, initial_date=creation_date,
-                                    end_date = schedule.end_date, real_initial_date = creation_date,
-                                    description=f"Viagem de volta de {school.name} - {creation_date.date()}",
+                                    end_date = schedule.end_date, description=f"Viagem de volta de {school.name} - {creation_date.date()}",
                                     schedule_type_id=2, creation_user=driver.id)
             
             self.db.add(schedule)
@@ -89,7 +87,7 @@ class ScheduleRepository():
                 self.db.add(schedule_point)
             
             self.db.commit()
-            return schedule.id
+            return points
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer o registro no sistema")
