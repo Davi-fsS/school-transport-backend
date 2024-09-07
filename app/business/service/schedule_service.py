@@ -125,3 +125,6 @@ class ScheduleService():
             raise ValueError("Usuário não é um motorista")
         
         return user
+    
+    def put_schedule_start(self, schedule_id: int):
+        self.schedule_repository.put_schedule_start(schedule_id)

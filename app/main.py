@@ -447,3 +447,11 @@ async def create_schedule(schedule: CreateSchedule):
         return schedule_controller.create_schedule(schedule)
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    
+@app.put("/schedule/start",status_code=status.HTTP_200_OK)
+async def put_schedule_start(schedule_id: int):
+    try:
+        return schedule_controller.put_schedule_start(schedule_id)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    

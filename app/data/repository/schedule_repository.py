@@ -18,14 +18,8 @@ class ScheduleRepository():
         self.db = next(get_db())
 
     def get_schedule_by_id(self, schedule_id : int):
-        try:
-            schedule = self.db.query(ScheduleModel).filter(ScheduleModel.id == schedule_id).first()
-
-            return schedule
-        except:
-            self.db.rollback()
-            raise ValueError("Erro ao fazer a leitura no sistema")
-        
+        return self.db.query(ScheduleModel).filter(ScheduleModel.id == schedule_id).first()
+    
     def create_schedule_destiny_school(self, schedule: CreateSchedule, driver: UserModel, vehicle: VehicleModel, points: List[PointModel], school: PointModel):
         try:
             creation_date = datetime.now()
@@ -92,3 +86,16 @@ class ScheduleRepository():
             self.db.rollback()
             raise ValueError("Erro ao fazer o registro no sistema")
 
+    def put_schedule_start(self, schedule_id: int):
+        try:
+            schedule = self.get_schedule_by_id(schedule_id)
+
+            if(schedule is None):
+                raise ValueError("Viagem não encontrada")
+            
+            schedule.real_initial_date = datetime.now()
+
+            self.db.commit()
+        except:
+            self.db.rollback()
+            raise ValueError("Erro ao fazer o registro no sistema")

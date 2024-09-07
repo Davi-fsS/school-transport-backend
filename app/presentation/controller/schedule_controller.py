@@ -12,3 +12,6 @@ class ScheduleController():
     
     def create_schedule(self, schedule: CreateSchedule):
         return self.schedule_service.create_schedule(schedule)
+    
+    def put_schedule_start(self, schedule_id: int):
+        return self.schedule_service.put_schedule_start(schedule_id)
