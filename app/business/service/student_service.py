@@ -38,6 +38,9 @@ class StudentService():
 
         return self.student_repository.get_students_by_student_list(student_id_list=student_id_list)
     
+    def get_students_by_list(self, student_id_list: List[int]):
+        return self.student_repository.get_students_by_student_list(student_id_list)
+    
     def get_student_by_code(self, code: str):
         student = self.student_repository.get_student_by_code(code)
 

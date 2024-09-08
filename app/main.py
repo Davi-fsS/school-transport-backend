@@ -1,4 +1,5 @@
 from fastapi import FastAPI, status, HTTPException, Header
+from presentation.dto.StartSchedule import StartSchedule
 from presentation.dto.UpdateVehiclePoint import UpdateVehiclePoint
 from presentation.dto.CreateVehiclePoint import CreateVehiclePoint
 from presentation.controller.vehicle_point_controller import VehiclePointController
@@ -449,9 +450,9 @@ async def create_schedule(schedule: CreateSchedule):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
     
 @app.put("/schedule/start",status_code=status.HTTP_200_OK)
-async def put_schedule_start(schedule_id: int):
+async def put_schedule_start(start: StartSchedule):
     try:
-        return schedule_controller.put_schedule_start(schedule_id)
+        return schedule_controller.put_schedule_start(start.schedule_id, start.points, start.school, start.user_id)
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
     

@@ -1,4 +1,8 @@
 from datetime import datetime
+from typing import List
+from presentation.dto.Point import Point
+from presentation.dto.ScheduleCreated import ScheduleCreated
+from business.service.student_service import StudentService
 from business.service.user_point_service import UserPointService
 from business.service.user_student_service import UserStudentService
 from data.model.schedule_vehicle_model import ScheduleVehicleModel
@@ -24,6 +28,7 @@ class ScheduleService():
     vehicle_service: VehicleService
     point_service: PointService
     user_student_service: UserStudentService
+    student_service: StudentService
     user_point_service: UserPointService
 
     def __init__(self):
@@ -36,6 +41,7 @@ class ScheduleService():
         self.point_service = PointService()
         self.user_student_service = UserStudentService()
         self.user_point_service = UserPointService()
+        self.student_service = StudentService()
 
     def get_schedule_by_id(self, schedule_id: int):
         schedule = self.schedule_repository.get_schedule_by_id(schedule_id)
@@ -80,25 +86,14 @@ class ScheduleService():
             student_id = driver_student.student_id
             student_list.append(student_id)
 
-        responsible_from_students = self.user_student_service.get_user_students_by_student_list(student_list)
+        student_point_list = []
 
-        responsible_list = []
+        students = self.student_service.get_students_by_list(student_list)
 
-        for responsible in responsible_from_students:
-            if(responsible.user_id != driver.id):
-                responsible_id = responsible.user_id
-                responsible_list.append(responsible_id)
-        
-        user_points = self.user_point_service.get_user_point_list_by_user_list(responsible_list)
+        for student in students:
+            student_point_list.append(student.point_id)
 
-        points = []
-
-        for user_point in user_points:
-            if(user_point.favorite == True):
-                point_id = user_point.point_id
-                points.append(point_id)
-
-        students_points = self.point_service.get_point_home_list_by_user(points)
+        students_points = self.point_service.get_point_home_list_by_user(student_point_list)
         
         if(len(students_points) == 0):
             raise ValueError("Viagem não possuí nenhum ponto de parada")
@@ -107,13 +102,26 @@ class ScheduleService():
 
         if(school is None):
             raise ValueError("Motorista não possui escola")
+        
+        school_dto = Point(id=school.id, name=school.name, address=school.address, lat=school.lat, lng=school.lng, 
+                           alt=school.alt, city=school.city, neighborhood=school.neighborhood, state=school.state,
+                           description=school.description, point_type_id=school.point_type_id)
+
+        schedule_id = 0
 
         if(schedule.schedule_type == 1):
-            return self.schedule_repository.create_schedule_destiny_school(schedule, driver, vehicle, students_points, school)
+            schedule_id = self.schedule_repository.create_schedule_destiny_school(schedule, driver, vehicle, school)
         elif(schedule.schedule_type == 2):
-            return self.schedule_repository.create_schedule_origin_school(schedule, driver, vehicle, students_points, school)
+            schedule_id = self.schedule_repository.create_schedule_origin_school(schedule, driver, vehicle, school)
         else:
             raise ValueError("Tipo de viagem inválida")
+        
+        if schedule_id == 0:
+            raise ValueError("Houve um erro ao criar a viagem")
+        
+        schedule_created = ScheduleCreated(points=students_points, school=school_dto, schedule_id=schedule_id)
+
+        return schedule_created
 
     def validate_create_schedule(self, schedule: CreateSchedule):
         user = self.user_repository.get_user(schedule.user_id)
@@ -126,5 +134,13 @@ class ScheduleService():
         
         return user
     
-    def put_schedule_start(self, schedule_id: int):
-        self.schedule_repository.put_schedule_start(schedule_id)
+    def put_schedule_start(self, schedule_id: int, points: List[int], school: Point, user_id: int):
+        user = self.user_repository.get_user(user_id)
+
+        if user is None:
+            raise ValueError("Usuário inválido")
+        
+        if user.user_type_id == 3:
+            raise ValueError("Usuário não é um motorista")
+
+        self.schedule_repository.put_schedule_start(schedule_id, points, school, user_id)
