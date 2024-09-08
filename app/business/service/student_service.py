@@ -48,13 +48,22 @@ class StudentService():
         
         return student_details
     
+    def get_students_by_point_list(self, point_list: List[int]) -> List[Student]:
+        students_dto : List[Student] = []
+        students = self.student_repository.get_students_by_point_list(point_list)
+
+        for student in students:
+            students_dto.append(Student(id=student.id, name=student.name, year=student.year, code=student.code, creation_user=student.creation_user, point_id=student.point_id))
+
+        return students_dto
+    
     def get_student_details(self, student_id: int):
         student = self.student_repository.get_student(student_id)
 
         if(student is None):
             raise ValueError("Aluno não encontrado")
         
-        student_dto = Student(id=student.id, name=student.name, year=student.year, code=student.code, creation_user=student.creation_user)
+        student_dto = Student(id=student.id, point_id=student.point_id, name=student.name, year=student.year, code=student.code, creation_user=student.creation_user)
         
         student_driver = self.get_student_driver(student_id)
 

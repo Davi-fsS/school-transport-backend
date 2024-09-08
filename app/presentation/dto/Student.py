@@ -5,4 +5,5 @@ class Student(BaseModel):
     name: str
     year: int
     code: str
+    point_id: int
     creation_user: int

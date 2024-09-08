@@ -199,11 +199,6 @@ class VehiclePointService():
         self.vehicle_point_repository.delete_vehicle_point(vehicle_point_id)
 
     def generate_code(self, user_name: str, vehicle_plate: str, school_name: str):
-        print("***********")
-        print("name: ",user_name)
-        print("placa: ",vehicle_plate)
-        print("escola: ",school_name)
-        print("***********")
         name = ''.join([palavra[0] for palavra in user_name.split()])
         school = ''.join([palavra[0] for palavra in school_name.split()]) 
         return f"{name[:2]}{vehicle_plate[:2]}{school}{vehicle_plate[-2:]}".upper()

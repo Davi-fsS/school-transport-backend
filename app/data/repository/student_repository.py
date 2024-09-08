@@ -38,6 +38,9 @@ class StudentRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
+        
+    def get_students_by_point_list(self, point_list: List[int]):
+        return self.db.query(StudentModel).filter(StudentModel.point_id.in_(point_list), StudentModel.disabled == False).all()
 
     def create_student(self, student: StudentModel):
         try:

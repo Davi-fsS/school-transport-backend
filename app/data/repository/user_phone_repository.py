@@ -1,3 +1,4 @@
+from typing import List
 from sqlalchemy.orm import Session
 from data.model.user_phone_model import UserPhoneModel
 from data.infrastructure.database import get_db
@@ -15,6 +16,9 @@ class UserPhoneRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
+        
+    def get_user_phone_list_by_list(self, user_id_list: List[int]):
+        return self.db.query(UserPhoneModel).filter(UserPhoneModel.user_id.in_(user_id_list)).all() 
 
     def create_phone(self, db_user_phone: UserPhoneModel):
         try:

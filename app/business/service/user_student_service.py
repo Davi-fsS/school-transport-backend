@@ -1,15 +1,46 @@
 from typing import List
+from data.repository.user_phone_repository import UserPhoneRepository
+from data.repository.user_repository import UserRepository
+from presentation.dto.User import User
 from data.repository.user_student_repository import UserStudentRepository
 from data.model.user_student_model import UserStudentModel
 
 class UserStudentService():
     user_student_repository: UserStudentRepository
+    user_repository: UserRepository
+    user_phone_repository: UserPhoneRepository
 
     def __init__(self):
         self.user_student_repository = UserStudentRepository()
+        self.user_repository = UserRepository()
+        self.user_phone_repository = UserPhoneRepository()
 
     def get_students_by_responsible(self, responsible_id: int):
         return self.user_student_repository.get_students_by_responsible(responsible_id=responsible_id)
+    
+    def get_responsibles_by_student_list(self, student_list: List[int]):
+        responsible_list: List[User] = []
+
+        user_student_list = self.get_user_students_by_student_list(student_list)
+
+        user_id_list = []
+
+        for user_student in user_student_list:
+            user_id_list.append(user_student.user_id)
+
+        responsibles = self.user_repository.get_responsibles_by_list(user_id_list)
+
+        phones = self.user_phone_repository.get_user_phone_list_by_list(user_id_list)
+
+        for responsible in responsibles:
+            phone = list(filter(lambda phone: phone.user_id == responsible.id, phones))
+
+            responsible_list.append(User(id=responsible.id, uuid=responsible.uuid, name=responsible.name, email=responsible.email, cpf=responsible.cpf,
+                                         cnh=responsible.cnh, rg=responsible.rg, user_type_id=responsible.user_type_id,
+                                         code=responsible.code, phones=phone))
+
+        return responsible_list
+
     
     def get_user_students_by_student_list(self, student_list: List[int]):
         return self.user_student_repository.get_user_students_by_student_list(student_list)
