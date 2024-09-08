@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import List
 from sqlalchemy.orm import Session
 from data.model.student_model import StudentModel
@@ -70,6 +71,18 @@ class StudentRepository():
             student = self.get_student(student_update.id)
             student.name = student_update.name
             student.year = student_update.year
+            self.db.commit()
+        except:
+            self.db.rollback()
+            raise ValueError("Erro ao salvar no sistema")
+    
+    def update_student_address(self, student_id: int, point_id: int, user_id: int):
+        try:
+            student = self.get_student(student_id)
+
+            student.point_id = point_id
+            student.change_user = user_id
+            student.change_date = datetime.now()
             self.db.commit()
         except:
             self.db.rollback()

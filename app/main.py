@@ -1,4 +1,5 @@
 from fastapi import FastAPI, status, HTTPException, Header
+from presentation.dto.UpdateStudentAddress import UpdateStudentAddress
 from presentation.dto.StartSchedule import StartSchedule
 from presentation.dto.UpdateVehiclePoint import UpdateVehiclePoint
 from presentation.dto.CreateVehiclePoint import CreateVehiclePoint
@@ -225,6 +226,20 @@ async def student_disassociation(disassociation: StudentAssociation):
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
     
+@app.put("/student/update-address", status_code=status.HTTP_200_OK)
+async def update_student_address(body: UpdateStudentAddress):
+    try:
+        return student_controller.update_student_address(body.student_id, body.user_id)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    
+@app.get("/student/all-homes", status_code=status.HTTP_200_OK)
+async def get_all_student_homes(student_id: int):
+    try:
+        return student_controller.get_all_student_homes(student_id)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+
 # VEHICLE ENDPOINTS
 @app.get("/vehicle/get-all",status_code=status.HTTP_200_OK)
 async def get_all_vehicle():
