@@ -103,10 +103,10 @@ class ScheduleRepository():
                     self.db.add(schedule_point)
 
                 schedule_point_school = SchedulePointModel(schedule_id=schedule.id, order=len(start.points) + 1, point_id=school.id, 
-                                                           description=f"Destino: Escola {school.name}" , creation_user=start.user_id, initial_date=start.end_date)
+                                                           description=f"Destino: Escola {school.name}" , creation_user=start.user_id, planned_date=start.end_date)
                 self.db.add(schedule_point_school)
             else:
-                schedule_point_school = SchedulePointModel(initial_date=start.end_date, real_initial_date=start.end_date, schedule_id=schedule.id, order=1, point_id=school.id, 
+                schedule_point_school = SchedulePointModel(planned_date=start.end_date, real_date=start.end_date, schedule_id=schedule.id, order=1, point_id=school.id, 
                                                            description=f"Origem: Escola {school.name}" ,creation_user=start.user_id)
                 self.db.add(schedule_point_school)
 
@@ -134,8 +134,7 @@ class ScheduleRepository():
 
             last_point = self.get_last_schedule_point(schedule.id)
 
-            last_point.real_initial_date = today_datetime
-            last_point.real_end_date = today_datetime
+            last_point.real_date = today_datetime
             last_point.change_user = user_id
             last_point.change_date = today_datetime
                     
