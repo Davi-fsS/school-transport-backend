@@ -233,10 +233,10 @@ async def update_student_address(body: UpdateStudentAddress):
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
     
-@app.get("/student/all-homes", status_code=status.HTTP_200_OK)
-async def get_all_student_homes(student_id: int):
+@app.get("/student/list-all-homes", status_code=status.HTTP_200_OK)
+async def get_all_student_homes(student_id: int = Header(), user_id: int = Header()):
     try:
-        return student_controller.get_all_student_homes(student_id)
+        return student_controller.get_all_student_homes(student_id, user_id)
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
 

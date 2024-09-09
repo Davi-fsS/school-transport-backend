@@ -116,6 +116,39 @@ class StudentService():
             if(point.point_type_id == 2):
                 return point
 
+    def get_all_student_homes(self, student_id: int, user_id: int):
+        user = self.user_service.get_user(user_id)
+
+        if user is None:
+            raise ValueError("Usuário inválido")
+        
+        if(user.user_type_id == 2):
+            raise ValueError("Usuário não é um responsável")
+        
+        student = self.student_repository.get_student(student_id)
+
+        if(student.creation_user != user_id):
+            raise ValueError("Usuário não autorizado")
+        
+        responsibles = self.user_student_service.get_responsibles_by_student_id(student.id)
+
+        print("responsaveis", len(responsibles))
+
+        responsibles_ids = []
+        for responsible in responsibles:
+            responsibles_ids.append(responsible.id)
+
+        print("id responsáveis", responsibles_ids)
+
+        responsible_points = self.user_point_service.get_user_point_list_by_user_list(responsibles_ids)
+
+        responsible_points_ids = []
+        for responsible_point in responsible_points:
+            responsible_points_ids.append(responsible_point.point_id)
+            print(responsible_point.point_id)
+
+        return self.point_service.get_point_home_list_by_user(responsible_points_ids)
+
     def create_association_student_responsible(self, association: StudentAssociation):
         self.validating_association(association)
 

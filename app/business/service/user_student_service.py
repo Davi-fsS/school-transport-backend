@@ -47,6 +47,19 @@ class UserStudentService():
     
     def get_user_students_by_student_id(self, student_id: int):
         return self.user_student_repository.get_all_user_student_by_student_id(student_id)
+    
+    def get_responsibles_by_student_id(self, student_id: int):
+        user_students = self.user_student_repository.get_all_user_student_by_student_id(student_id)
+
+        print("quantidade de associacoes de user x student:", len(user_students))
+
+        user_id_list = []
+        for user_student in user_students:
+            user_id_list.append(user_student.user_id)
+
+        print("quantidade de associacoes de user x student ID:", len(user_id_list))
+
+        return self.user_repository.get_responsibles_by_list(user_id_list)
 
     def create_user_student(self, user_id: int, student_id: int):
         user_student_model = UserStudentModel(user_id=user_id, student_id=student_id, creation_user=2)

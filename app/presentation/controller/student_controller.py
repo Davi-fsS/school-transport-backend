@@ -18,6 +18,9 @@ class StudentController():
 
     def get_student_details(self, student_id: int):
         return self.student_service.get_student_details(student_id)
+    
+    def get_all_student_homes(self, student_id: int, user_id: int):
+        return self.student_service.get_all_student_homes(student_id, user_id)
 
     def create_association_student_responsible(self, association: StudentAssociation):
         return self.student_service.create_association_student_responsible(association)

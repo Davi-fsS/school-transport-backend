@@ -12,16 +12,12 @@ class StudentRepository():
         self.db = next(get_db())
 
     def get_student(self, student_id: int):
-        try:
-            student = self.db.query(StudentModel).filter(StudentModel.id == student_id, StudentModel.disabled == False).first()
+        student = self.db.query(StudentModel).filter(StudentModel.id == student_id, StudentModel.disabled == False).first()
 
-            if student is None:
-                raise ValueError("Aluno não encontrado")
+        if student is None:
+            raise ValueError("Aluno não encontrado")
 
-            return student
-        except:
-            self.db.rollback()
-            raise ValueError("Erro ao fazer a leitura no sistema")
+        return student
         
     def get_student_by_code(self, student_code: str):
         try:
