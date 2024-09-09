@@ -1,5 +1,6 @@
 from datetime import datetime
 from typing import List
+from sqlalchemy import desc
 from sqlalchemy.orm import Session
 from presentation.dto.Point import Point
 from data.model.schedule_point_model import SchedulePointModel
@@ -21,6 +22,13 @@ class ScheduleRepository():
     def get_schedule_by_id(self, schedule_id : int):
         return self.db.query(ScheduleModel).filter(ScheduleModel.id == schedule_id).first()
     
+    def get_last_schedule_point(self, schedule_id : int):
+        return self.db.query(SchedulePointModel).filter(SchedulePointModel.schedule_id == schedule_id).order_by(desc(SchedulePointModel.order)).first()
+    
+    def get_schedule_in_progress(self, schedule_id: int):
+        return self.db.query(ScheduleModel).filter(ScheduleModel.id == schedule_id, ScheduleModel.real_initial_date != None, 
+                                                   ScheduleModel.real_end_date == None).first()
+
     def create_schedule_destiny_school(self, schedule: CreateSchedule, driver: UserModel, vehicle: VehicleModel, school: PointModel):
         try:
             creation_date = datetime.now()
@@ -84,7 +92,6 @@ class ScheduleRepository():
 
             if(schedule.schedule_type_id == 1):
                 for index, point in enumerate(points):
-                    print(index)
                     schedule_point = SchedulePointModel(schedule_id=schedule.id, order=index + 1,point_id=point, creation_user=user_id)
                     self.db.add(schedule_point)
 
@@ -98,6 +105,26 @@ class ScheduleRepository():
                     schedule_point = SchedulePointModel(schedule_id=schedule.id, order=index + 1,point_id=point, creation_user=user_id)
                     self.db.add(schedule_point)
 
+            self.db.commit()
+        except:
+            self.db.rollback()
+            raise ValueError("Erro ao fazer o registro no sistema")
+    
+    def put_schedule_end(self, schedule: ScheduleModel, user_id: int):
+        try:
+            today_datetime = datetime.now()
+
+            schedule.real_end_date = today_datetime
+            schedule.change_user = user_id
+            schedule.change_date = today_datetime
+
+            last_point = self.get_last_schedule_point(schedule.id)
+
+            last_point.real_initial_date = today_datetime
+            last_point.real_end_date = today_datetime
+            last_point.change_user = user_id
+            last_point.change_date = today_datetime
+                    
             self.db.commit()
         except:
             self.db.rollback()

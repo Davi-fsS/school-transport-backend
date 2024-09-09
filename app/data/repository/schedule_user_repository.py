@@ -9,8 +9,4 @@ class ScheduleUserRepository():
         self.db = next(get_db())
 
     def get_schedule_user_by_schedule_id(self, schedule_id: int):
-        try:
-            return self.db.query(ScheduleUserModel).filter(ScheduleUserModel.schedule_id == schedule_id).first()
-        except:
-            self.db.rollback()
-            raise ValueError("Erro ao fazer a leitura no sistema")
+        return self.db.query(ScheduleUserModel).filter(ScheduleUserModel.schedule_id == schedule_id).first()

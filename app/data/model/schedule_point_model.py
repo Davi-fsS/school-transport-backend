@@ -15,3 +15,5 @@ class SchedulePointModel(Base):
     order = Column(Integer, nullable=True)
     description = Column(String)
     creation_user = Column(Integer)
+    change_user = Column(Integer, nullable=True)
+    change_date = Column(DateTime, nullable=True)

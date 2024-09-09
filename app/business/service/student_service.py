@@ -132,20 +132,15 @@ class StudentService():
         
         responsibles = self.user_student_service.get_responsibles_by_student_id(student.id)
 
-        print("responsaveis", len(responsibles))
-
         responsibles_ids = []
         for responsible in responsibles:
             responsibles_ids.append(responsible.id)
-
-        print("id responsáveis", responsibles_ids)
 
         responsible_points = self.user_point_service.get_user_point_list_by_user_list(responsibles_ids)
 
         responsible_points_ids = []
         for responsible_point in responsible_points:
             responsible_points_ids.append(responsible_point.point_id)
-            print(responsible_point.point_id)
 
         return self.point_service.get_point_home_list_by_user(responsible_points_ids)
 

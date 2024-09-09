@@ -29,8 +29,6 @@ class SchedulePointService():
 
         schedule_point_list = self.schedule_point_repository.get_schedule_point_list_by_schedule_id(schedule_id)
 
-        print(len(schedule_point_list))
-
         if(len(schedule_point_list) == 0):
             raise ValueError("Não existem pontos associados a esta viagem")
         

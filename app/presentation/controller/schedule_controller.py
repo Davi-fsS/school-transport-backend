@@ -17,3 +17,6 @@ class ScheduleController():
     
     def put_schedule_start(self, schedule_id: int, points: List[int], school: Point, user_id: int):
         return self.schedule_service.put_schedule_start(schedule_id, points, school, user_id)
+    
+    def put_schedule_end(self, schedule_id: int, user_id: int):
+        return self.schedule_service.put_schedule_end(schedule_id, user_id)

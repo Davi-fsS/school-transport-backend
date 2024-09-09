@@ -22,7 +22,6 @@ class PointRepository():
             raise ValueError("Erro ao fazer a leitura no sistema")
             
     def get_points_home_by_point_list(self, point_id_list: List[int]):
-        print(point_id_list)
         try:
             points = self.db.query(PointModel).filter(and_(PointModel.id.in_(point_id_list), PointModel.point_type_id == 1, PointModel.disabled == False)).all()
             return points

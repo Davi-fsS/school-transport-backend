@@ -144,3 +144,28 @@ class ScheduleService():
             raise ValueError("Usuário não é um motorista")
 
         self.schedule_repository.put_schedule_start(schedule_id, points, school, user_id)
+    
+    def put_schedule_end(self, schedule_id: int, user_id: int):
+        user = self.user_repository.get_user(user_id)
+
+        if user is None:
+            raise ValueError("Usuário inválido")
+        
+        if user.user_type_id == 3:
+            raise ValueError("Usuário não é um motorista")
+        
+        schedule = self.schedule_repository.get_schedule_in_progress(schedule_id)
+
+        if schedule is None:
+            raise ValueError("Viagem inválida")
+        
+        schedule_user = self.schedule_user_service.get_schedule_user_by_schedule_id(schedule_id)
+
+        if schedule_user.user_id != user_id:
+            raise ValueError("Usuário não autorizado")
+        
+        schedule_point = self.schedule_point_service.get_schedule_point_by_schedule_id(schedule_id)
+
+        print(schedule_point)
+        
+        self.schedule_repository.put_schedule_end(schedule, user_id)
