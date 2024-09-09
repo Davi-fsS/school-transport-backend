@@ -1,5 +1,7 @@
 from datetime import datetime
 from typing import List
+from presentation.dto.Student import Student
+from presentation.dto.HomePoint import HomePoint
 from presentation.dto.PutSchedulePoint import PutSchedulePoint
 from presentation.dto.StartSchedule import StartSchedule
 from presentation.dto.Point import Point
@@ -107,7 +109,7 @@ class ScheduleService():
         for student in students:
             student_point_list.append(student.point_id)
 
-        students_points = self.point_service.get_point_home_list_by_user(student_point_list)
+        students_points = self.get_points_by_student_list(student_list, student_point_list)
         
         if(len(students_points) == 0):
             raise ValueError("Viagem não possuí nenhum ponto de parada")
@@ -262,3 +264,26 @@ class ScheduleService():
         schedule_point = self.schedule_point_service.get_schedule_point_by_schedule_id(schedule_id)
         
         self.schedule_repository.put_schedule_end(schedule, user_id)
+
+    def get_points_by_student_list(self, student_ids: List[int], student_point_ids: List[int]):
+        home_point_list: List[HomePoint] = []
+        students_dto : List[Student] = []
+
+        points : List[Point] = self.point_service.get_point_home_list_by_user(student_point_ids)
+
+        students = self.student_service.get_students_by_list(student_ids)
+
+        for student in students:
+            students_dto.append(Student(id=student.id, name=student.name, year=student.year, code=student.code,
+                                        point_id=student.point_id, creation_user=student.creation_user))
+            
+        for point in points:
+            student_dto_list = []
+            for student_dto in students_dto:
+                if(student_dto.point_id == point.id):
+                    student_dto_list.append(student_dto)
+            
+            home_point = HomePoint(point=point, student=student_dto_list)
+            home_point_list.append(home_point)
+
+        return home_point_list
