@@ -25,3 +25,6 @@ class ScheduleController():
     
     def put_schedule_end(self, schedule_id: int, user_id: int):
         return self.schedule_service.put_schedule_end(schedule_id, user_id)
+    
+    def get_schedule_student_position(self, schedule_id: int, user_id: int):
+        return self.schedule_service.get_schedule_student_position(schedule_id, user_id)

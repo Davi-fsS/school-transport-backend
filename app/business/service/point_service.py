@@ -195,13 +195,14 @@ class PointService():
     def get_point(self, point_id: int):
         return self.point_repository.get_point(point_id=point_id)
     
-    def get_point_home_by_user_id(self, user_id: int):
+    def get_point_home_by_user_id(self, user_id: int) -> Point:
         user_points = self.user_point_service.get_user_point_list(user_id)
 
         if(len(user_points) > 0):
             point_id_list = []
             for user_point in user_points:
-                point_id_list.append(user_point.point_id)
+                if(user_point.favorite == True):
+                    point_id_list.append(user_point.point_id)
 
             points = self.get_point_home_list_by_user(point_id_list)
 

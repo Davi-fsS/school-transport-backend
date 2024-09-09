@@ -265,6 +265,52 @@ class ScheduleService():
         
         self.schedule_repository.put_schedule_end(schedule, user_id)
 
+    def get_schedule_student_position(self, schedule_id: int, user_id: int):
+        user = self.user_repository.get_user(user_id)
+
+        if user is None:
+            raise ValueError("Usuário inválido")
+        
+        if user.user_type_id == 2:
+            raise ValueError("Usuário não é um responsável")
+        
+        schedule = self.schedule_repository.get_schedule_in_progress(schedule_id)
+
+        if schedule is None:
+            raise ValueError("Viagem inválida")
+        
+        schedule_points = self.schedule_point_service.get_schedule_point_by_schedule_id(schedule.id)
+
+        if len(schedule_points):
+            raise ValueError("Não existem pontos para esta viagem")
+
+        schedule_points_points_ids = []
+        schedule_points_already_completed = 1
+
+        for schedule_point in schedule_points:
+            schedule_points_points_ids.append(schedule_point.point_id)
+            if(schedule_point.real_date != None):
+                schedule_points_already_completed += 1
+
+        user_home = self.point_service.get_point_home_by_user_id(user.id)
+
+        if user_home is None:
+            raise ValueError("Usuário não possui endereço")
+
+        if user_home.id not in schedule_points_points_ids:
+            raise ValueError("Viagem inválida")
+        
+        user_home_in_schedule_order = 0
+
+        for schedule_point in schedule_points:
+            if(schedule_point.point_id == user_home.id):
+                user_home_in_schedule_order = schedule_point.order
+        
+        if user_home_in_schedule_order < schedule_points_already_completed:
+            raise ValueError("Seu estudante já embarcou")
+        
+        return user_home_in_schedule_order - schedule_points_already_completed
+
     def get_points_by_student_list(self, student_ids: List[int], student_point_ids: List[int]):
         home_point_list: List[HomePoint] = []
         students_dto : List[Student] = []
