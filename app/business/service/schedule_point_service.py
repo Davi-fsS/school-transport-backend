@@ -1,4 +1,5 @@
 from typing import List
+from presentation.dto.PutSchedulePoint import PutSchedulePoint
 from business.service.user_student_service import UserStudentService
 from presentation.dto.Point import Point
 from presentation.dto.HomePoint import HomePoint
@@ -58,3 +59,9 @@ class SchedulePointService():
             home_point_list.append(home_point)
 
         return home_point_list
+    
+    def get_schedule_point_by_id(self, id: int):
+        return self.schedule_point_repository.get_schedule_point_by_id(id)
+
+    def put_schedule_point(self, id: int, user_id: int):
+        return self.schedule_point_repository.put_schedule_point(id, user_id)

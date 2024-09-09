@@ -1,4 +1,5 @@
 from typing import List
+from presentation.dto.PutSchedulePoint import PutSchedulePoint
 from presentation.dto.StartSchedule import StartSchedule
 from presentation.dto.Point import Point
 from business.service.schedule_service import ScheduleService
@@ -18,6 +19,9 @@ class ScheduleController():
     
     def put_schedule_start(self, start: StartSchedule):
         return self.schedule_service.put_schedule_start(start)
+    
+    def put_schedule_point(self, schedule_point: PutSchedulePoint):
+        return self.schedule_service.put_schedule_point(schedule_point)
     
     def put_schedule_end(self, schedule_id: int, user_id: int):
         return self.schedule_service.put_schedule_end(schedule_id, user_id)

@@ -1,5 +1,6 @@
 from datetime import datetime
 from typing import List
+from presentation.dto.PutSchedulePoint import PutSchedulePoint
 from presentation.dto.StartSchedule import StartSchedule
 from presentation.dto.Point import Point
 from presentation.dto.ScheduleCreated import ScheduleCreated
@@ -192,7 +193,53 @@ class ScheduleService():
             raise ValueError("Escola não associada")
 
         self.schedule_repository.put_schedule_start(start, school)
-    
+
+    def put_schedule_point(self, schedule_point: PutSchedulePoint):
+        user = self.user_repository.get_user(schedule_point.user_id)
+
+        if user is None:
+            raise ValueError("Usuário inválido")
+        
+        if user.user_type_id == 3:
+            raise ValueError("Usuário não é um motorista")
+        
+        schedule = self.schedule_repository.get_schedule_in_progress(schedule_point.schedule_id)
+
+        if schedule is None:
+            raise ValueError("Viagem não está em andamento")
+        
+        schedule_user = self.schedule_user_service.get_schedule_user_by_schedule_id(schedule_point.schedule_id)
+
+        if schedule_user is None:
+            raise ValueError("Não existe motorista para a viagem")
+        
+        if schedule_user.user_id != schedule_point.user_id:
+            raise ValueError("Usuário não autorizado")
+        
+        schedule_point_db = self.schedule_point_service.get_schedule_point_by_id(schedule_point.schedule_point_id)
+
+        if schedule_point_db is None:
+            raise ValueError("Ponto não identificado")
+
+        schedules_point_list_db = self.schedule_point_service.get_schedule_point_by_schedule_id(schedule_point.schedule_id)
+
+        scheduls_points_id_list_db = []
+        for schedule_point_id in schedules_point_list_db:
+            scheduls_points_id_list_db.append(schedule_point_id.id)
+
+        if schedule_point_db.id not in scheduls_points_id_list_db:
+            raise ValueError("Ponto não autorizado")
+
+        point = self.point_service.get_point(schedule_point_db.point_id)
+
+        if point is None:
+            raise ValueError("Ponto inválido")
+        
+        if point.point_type_id == 2:
+            raise ValueError("Ponto não autorizado")
+
+        self.schedule_point_service.put_schedule_point(schedule_point.schedule_point_id, schedule_point.user_id)
+
     def put_schedule_end(self, schedule_id: int, user_id: int):
         user = self.user_repository.get_user(user_id)
 
@@ -213,7 +260,5 @@ class ScheduleService():
             raise ValueError("Usuário não autorizado")
         
         schedule_point = self.schedule_point_service.get_schedule_point_by_schedule_id(schedule_id)
-
-        print(schedule_point)
         
         self.schedule_repository.put_schedule_end(schedule, user_id)
