@@ -8,3 +8,6 @@ class StartSchedule(BaseModel):
     schedule_id: int
     school: Point
     points: List[int]
+    encoded_points: str
+    legs_info: str
+    eta: str

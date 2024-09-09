@@ -1,5 +1,6 @@
 from datetime import datetime
 from typing import List
+from presentation.dto.StartSchedule import StartSchedule
 from presentation.dto.Point import Point
 from presentation.dto.ScheduleCreated import ScheduleCreated
 from business.service.student_service import StudentService
@@ -134,8 +135,8 @@ class ScheduleService():
         
         return user
     
-    def put_schedule_start(self, schedule_id: int, points: List[int], school: Point, user_id: int):
-        user = self.user_repository.get_user(user_id)
+    def put_schedule_start(self, start: StartSchedule):
+        user = self.user_repository.get_user(start.user_id)
 
         if user is None:
             raise ValueError("Usuário inválido")
@@ -143,7 +144,7 @@ class ScheduleService():
         if user.user_type_id == 3:
             raise ValueError("Usuário não é um motorista")
 
-        self.schedule_repository.put_schedule_start(schedule_id, points, school, user_id)
+        self.schedule_repository.put_schedule_start(start)
     
     def put_schedule_end(self, schedule_id: int, user_id: int):
         user = self.user_repository.get_user(user_id)

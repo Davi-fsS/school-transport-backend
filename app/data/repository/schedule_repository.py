@@ -2,6 +2,8 @@ from datetime import datetime
 from typing import List
 from sqlalchemy import desc
 from sqlalchemy.orm import Session
+from data.model.schedule_maps_infos_model import ScheduleMapsInfosModel
+from presentation.dto.StartSchedule import StartSchedule
 from presentation.dto.Point import Point
 from data.model.schedule_point_model import SchedulePointModel
 from data.model.schedule_user_model import ScheduleUserModel
@@ -25,6 +27,10 @@ class ScheduleRepository():
     def get_last_schedule_point(self, schedule_id : int):
         return self.db.query(SchedulePointModel).filter(SchedulePointModel.schedule_id == schedule_id).order_by(desc(SchedulePointModel.order)).first()
     
+    def get_schedule_not_started(self, schedule_id: int):
+        return self.db.query(ScheduleModel).filter(ScheduleModel.id == schedule_id, ScheduleModel.real_initial_date == None, 
+                                                   ScheduleModel.real_end_date == None).first()
+
     def get_schedule_in_progress(self, schedule_id: int):
         return self.db.query(ScheduleModel).filter(ScheduleModel.id == schedule_id, ScheduleModel.real_initial_date != None, 
                                                    ScheduleModel.real_end_date == None).first()
@@ -81,9 +87,9 @@ class ScheduleRepository():
             self.db.rollback()
             raise ValueError("Erro ao fazer o registro no sistema")
 
-    def put_schedule_start(self, schedule_id: int, points: List[int], school: Point, user_id: int):
+    def put_schedule_start(self, start: StartSchedule):
         try:
-            schedule = self.get_schedule_by_id(schedule_id)
+            schedule = self.get_schedule_not_started(start.schedule_id)
 
             if(schedule is None):
                 raise ValueError("Viagem não encontrada")
@@ -91,19 +97,24 @@ class ScheduleRepository():
             schedule.real_initial_date = datetime.now()
 
             if(schedule.schedule_type_id == 1):
-                for index, point in enumerate(points):
-                    schedule_point = SchedulePointModel(schedule_id=schedule.id, order=index + 1,point_id=point, creation_user=user_id)
+                for index, point in enumerate(start.points):
+                    schedule_point = SchedulePointModel(schedule_id=schedule.id, order=index + 1,point_id=point, creation_user=start.user_id)
                     self.db.add(schedule_point)
 
-                schedule_point_school = SchedulePointModel(schedule_id=schedule.id, order=len(points) + 1, point_id=school.id, description=f"Destino: Escola {school.name}" ,creation_user=user_id)
+                schedule_point_school = SchedulePointModel(schedule_id=schedule.id, order=len(start.points) + 1, point_id=start.school.id, description=f"Destino: Escola {start.school.name}" ,creation_user=start.user_id)
                 self.db.add(schedule_point_school)
             else:
-                schedule_point_school = SchedulePointModel(schedule_id=schedule.id, order=1, point_id=school.id, description=f"Origem: Escola {school.name}" ,creation_user=user_id)
+                schedule_point_school = SchedulePointModel(schedule_id=schedule.id, order=1, point_id=start.school.id, description=f"Origem: Escola {start.school.name}" ,creation_user=start.user_id)
                 self.db.add(schedule_point_school)
 
-                for index, point in enumerate(points, start=1):
-                    schedule_point = SchedulePointModel(schedule_id=schedule.id, order=index + 1,point_id=point, creation_user=user_id)
+                for index, point in enumerate(start.points, start=1):
+                    schedule_point = SchedulePointModel(schedule_id=schedule.id, order=index + 1,point_id=point, creation_user=start.user_id)
                     self.db.add(schedule_point)
+
+            schedule_map_infos = ScheduleMapsInfosModel(schedule_id=schedule.id, encoded_points=start.encoded_points, legs_info=start.legs_info,
+                                                        eta=start.eta, creation_user = start.user_id)
+
+            self.db.add(schedule_map_infos)
 
             self.db.commit()
         except:

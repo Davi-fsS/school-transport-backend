@@ -468,7 +468,7 @@ async def create_schedule(schedule: CreateSchedule):
 @app.put("/schedule/start",status_code=status.HTTP_200_OK)
 async def put_schedule_start(start: StartSchedule):
     try:
-        return schedule_controller.put_schedule_start(start.schedule_id, start.points, start.school, start.user_id)
+        return schedule_controller.put_schedule_start(start)
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
     
