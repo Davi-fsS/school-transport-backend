@@ -42,6 +42,15 @@ class PointService():
 
         return self.point_repository.get_first_point_school_by_point_list(point_id_list)
     
+    def get_all_school_by_user(self, user_id : int):
+        user_points = self.user_point_service.get_user_point_list(user_id)
+
+        point_id_list = []
+        for user_point in user_points:
+            point_id_list.append(user_point.point_id)
+
+        return self.point_repository.get_points_school_by_point_list(point_id_list)
+    
     def get_school_associated_by_driver(self, user_id : int):
         vehicle_point_list_dto: List[VehiclePoint] = []
 

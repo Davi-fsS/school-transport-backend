@@ -1,8 +1,7 @@
 from pydantic import BaseModel
-from datetime import datetime
 
 class CreateSchedule(BaseModel):
-    schedule_name: str
-    end_date: datetime
+    vehicle_id: int
+    school_id: int
     user_id: int
     schedule_type: int

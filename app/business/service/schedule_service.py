@@ -74,10 +74,22 @@ class ScheduleService():
     def create_schedule(self, schedule: CreateSchedule):
         driver = self.validate_create_schedule(schedule)
 
-        vehicle = self.vehicle_service.get_vehicle_by_driver(driver.id)
+        vehicle_list = self.vehicle_service.get_vehicle_list_by_driver(driver.id)
 
-        if(vehicle is None):
+        if(len(vehicle_list) == 0):
             raise ValueError("Motorista não possui veículo")
+
+        vehicle_id_list = []
+        for vehicle_db in vehicle_list:
+            vehicle_id_list.append(vehicle_db.id)
+ 
+        vehicle = self.vehicle_service.get_vehicle_by_id(schedule.vehicle_id)
+
+        if vehicle is None:
+            raise ValueError("Veículo inválido")
+        
+        if vehicle.id not in vehicle_id_list:
+            raise ValueError("Veículo não autorizado")
         
         driver_student_list = self.user_student_service.get_students_by_responsible(driver.id)
 
@@ -99,11 +111,26 @@ class ScheduleService():
         if(len(students_points) == 0):
             raise ValueError("Viagem não possuí nenhum ponto de parada")
 
-        school = self.point_service.get_school_by_user(driver.id)
+        school_list = self.point_service.get_all_school_by_user(driver.id)
 
-        if(school is None):
+        if(len(school_list) == 0):
             raise ValueError("Motorista não possui escola")
         
+        school_id_list = []
+        for school_db in school_list:
+            school_id_list.append(school_db.id)
+
+        school = self.point_service.get_point(schedule.school_id)
+
+        if school is None:
+            raise ValueError("Escola inválida")
+        
+        if school.point_type_id == 1:
+            raise ValueError("Este ponto não é uma escola")
+        
+        if school.id not in school_id_list:
+            raise ValueError("Escola não associada")
+
         school_dto = Point(id=school.id, name=school.name, address=school.address, lat=school.lat, lng=school.lng, 
                            alt=school.alt, city=school.city, neighborhood=school.neighborhood, state=school.state,
                            description=school.description, point_type_id=school.point_type_id)
@@ -143,8 +170,28 @@ class ScheduleService():
         
         if user.user_type_id == 3:
             raise ValueError("Usuário não é um motorista")
+        
+        school_list = self.point_service.get_all_school_by_user(start.user_id)
 
-        self.schedule_repository.put_schedule_start(start)
+        if(len(school_list) == 0):
+            raise ValueError("Motorista não possui escola")
+        
+        school_id_list = []
+        for school_db in school_list:
+            school_id_list.append(school_db.id)
+
+        school = self.point_service.get_point(start.school_id)
+
+        if school is None:
+            raise ValueError("Escola inválida")
+        
+        if school.point_type_id == 1:
+            raise ValueError("Este ponto não é uma escola")
+        
+        if school.id not in school_id_list:
+            raise ValueError("Escola não associada")
+
+        self.schedule_repository.put_schedule_start(start, school)
     
     def put_schedule_end(self, schedule_id: int, user_id: int):
         user = self.user_repository.get_user(user_id)
