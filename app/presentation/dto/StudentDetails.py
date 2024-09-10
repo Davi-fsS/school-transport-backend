@@ -6,4 +6,5 @@ from presentation.dto.User import User
 class StudentDetails(BaseModel):
     student: Student
     school: Point
+    point: Point
     driver: User

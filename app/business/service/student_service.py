@@ -1,4 +1,5 @@
 from typing import List
+from presentation.dto.Point import Point
 from data.repository.student_repository import StudentRepository
 from business.service.user_service import UserService
 from business.service.point_service import PointService
@@ -81,10 +82,17 @@ class StudentService():
 
         student_school_dto = self.get_student_school(student_driver.id)
 
+        student_home = self.point_service.get_point(student.point_id)
+
+        student_home_dto = Point(id=student_home.id, name=student_home.name, address=student_home.address,
+                                 lat=student_home.lat, lng=student_home.lng, alt=student_home.alt,
+                                 city=student_home.city, neighborhood=student_home.neighborhood, state=student_home.state,
+                                 description=student_home.description, point_type_id=student_home.point_type_id)
+
         if(student_school_dto is None):
             raise ValueError("Aluno não possui escola")
         
-        student_details_dto = StudentDetails(school=student_school_dto, student=student_dto, driver=student_driver_dto)
+        student_details_dto = StudentDetails(school=student_school_dto, student=student_dto, point=student_home_dto, driver=student_driver_dto)
         
         return student_details_dto
 
