@@ -453,10 +453,17 @@ async def get_coordinates_by_schedule(schedule_id: int):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
     
 #SCHEDULE ENDPOINTS
-@app.get("/schedule/details",status_code=status.HTTP_200_OK)
-async def get_schedule_details(schedule_id: int):
+@app.get("/schedule/current-driver-details",status_code=status.HTTP_200_OK)
+async def get_schedule_details_driver(schedule_id: int):
     try:
-        return schedule_controller.get_schedule_details_by_schedule_id(schedule_id)
+        return schedule_controller.get_driver_schedule_details_by_schedule_id(schedule_id)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+
+@app.get("/schedule/current-responsible-details",status_code=status.HTTP_200_OK)
+async def get_schedule_details_responsible(schedule_id: int = Header(), user_id: int = Header()):
+    try:
+        return schedule_controller.get_responsible_schedule_details_by_schedule_id(schedule_id, user_id)
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
     

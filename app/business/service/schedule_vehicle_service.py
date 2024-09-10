@@ -29,9 +29,6 @@ class ScheduleVehicleService():
         
         user_with_vehicle = self.user_service.get_user(vehicle.user_id)
 
-        if(user_with_vehicle.user_type_id == 3):
-            raise ValueError("Responsável não deve ter carro associado")
-
         vehicle_dto = Vehicle(id=vehicle.id, plate=vehicle.plate, color=vehicle.color,
                            vehicle_type_id=vehicle.vehicle_type_id, model=vehicle.model,
                            year=vehicle.year, code=vehicle.code)

@@ -1,5 +1,6 @@
 from datetime import datetime
 from typing import List
+from presentation.dto.ScheduleResponsibleDetail import ScheduleResponsibleDetail
 from data.repository.schedule_maps_infos_repository import ScheduleMapsInfosRepository
 from presentation.dto.Student import Student
 from presentation.dto.HomePoint import HomePoint
@@ -63,8 +64,11 @@ class ScheduleService():
 
         return schedule_dto
     
-    def get_schedule_details_by_schedule_id(self, schedule_id: int):
-        schedule = self.get_schedule_by_id(schedule_id)
+    def get_driver_schedule_details_by_schedule_id(self, schedule_id: int):
+        schedule = self.schedule_repository.get_schedule_in_progress(schedule_id)
+
+        if schedule is None:
+            raise ValueError("Viagem não está em andamento")
 
         schedule_user = self.schedule_user_service.get_user_by_schedule_id(schedule_id)
 
@@ -76,6 +80,57 @@ class ScheduleService():
                                            vehicle=schedule_vehicle, points=schedule_points)
 
         return schedule_details
+    
+    def get_responsible_schedule_details_by_schedule_id(self, schedule_id: int, user_id: int):
+        schedule = self.schedule_repository.get_schedule_in_progress(schedule_id)
+
+        if schedule is None:
+            raise ValueError("Viagem não está em andamento")
+        
+        user = self.user_repository.get_user(user_id)
+
+        if user is None:
+            raise ValueError("Usuário inválido")
+        
+        if user.user_type_id == 2:
+            raise ValueError("Usuário não é um responsável")
+        
+        schedule_points = self.schedule_point_service.get_schedule_point_by_schedule_id(schedule.id)
+
+        if len(schedule_points) == 0:
+            raise ValueError("Não existem pontos para esta viagem")
+
+        schedule_points_points_ids = []
+
+        for schedule_point in schedule_points:
+            schedule_points_points_ids.append(schedule_point.point_id)
+
+        user_home = self.point_service.get_point_home_by_user_id(user.id)
+
+        if user_home is None:
+            raise ValueError("Usuário não possui endereço")
+
+        if user_home.id not in schedule_points_points_ids:
+            raise ValueError("Viagem inválida")
+        
+        students = self.student_service.get_students_by_responsible(user.id)
+
+        students_in_home_dto : List[Student] = []
+        students_in_other_home_dto : List[Student] = []
+
+        for student in students:
+            if student.point_id == user_home.id:
+                students_in_home_dto.append(Student(id=student.id, name=student.name, year=student.year, 
+                                                 code=student.code, point_id=student.point_id, creation_user=student.creation_user))
+            else:
+                students_in_other_home_dto.append(Student(id=student.id, name=student.name, year=student.year, 
+                                                 code=student.code, point_id=student.point_id, creation_user=student.creation_user))
+
+        driver = self.schedule_user_service.get_user_by_schedule_id(schedule.id)
+
+        vehicle = self.schedule_vehicle_service.get_vehicle_by_schedule_id(schedule.id)
+
+        return ScheduleResponsibleDetail(point=user_home, students_in_home=students_in_home_dto, students_in_other_home=students_in_other_home_dto, driver=driver, vehicle=vehicle)
     
     def create_schedule(self, schedule: CreateSchedule):
         driver = self.validate_create_schedule(schedule)
