@@ -281,7 +281,7 @@ class ScheduleService():
         
         schedule_points = self.schedule_point_service.get_schedule_point_by_schedule_id(schedule.id)
 
-        if len(schedule_points):
+        if len(schedule_points) == 0:
             raise ValueError("Não existem pontos para esta viagem")
 
         schedule_points_points_ids = []

@@ -488,9 +488,9 @@ async def put_schedule_end(end: EndSchedule):
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
     
-@app.put("/schedule/get-student-position",status_code=status.HTTP_200_OK)
-async def get_schedule_student_position(student_position: ScheduleStudentPosition):
+@app.get("/schedule/get-student-position",status_code=status.HTTP_200_OK)
+async def get_schedule_student_position(schedule_id : int = Header(), user_id : int = Header()):
     try:
-        return schedule_controller.get_schedule_student_position(student_position.schedule_id, student_position.user_id)
+        return schedule_controller.get_schedule_student_position(schedule_id, user_id)
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
