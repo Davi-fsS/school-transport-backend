@@ -201,6 +201,22 @@ class StudentService():
 
         return self.student_repository.update_student_address(student_id, point.id, user_id)
     
+    def update_student_address_by_point_id(self, student_id: int, user_id: int, point_id: int):
+        user = self.user_service.get_user(user_id)
+
+        if user is None:
+            raise ValueError("Usuário inválido")
+
+        if user.user_type_id == 2:
+            raise ValueError("Este usuário não é um responsável")
+
+        point = self.point_service.get_point(point_id)
+
+        if point is None:
+            raise ValueError("Endereço inválido")
+
+        return self.student_repository.update_student_address(student_id, point.id, user_id)
+    
     def delete_student(self, student_id: int):
         self.user_student_service.delete_user_student_by_student_id(student_id=student_id)
 

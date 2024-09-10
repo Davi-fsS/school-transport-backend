@@ -39,6 +39,9 @@ class StudentController():
     
     def update_student_address(self, student_id: int, user_id: int):
         return self.student_service.update_student_address(student_id, user_id)
+    
+    def update_student_address_by_point_id(self, student_id: int, user_id: int, point_id: int):
+        return self.student_service.update_student_address_by_point_id(student_id, user_id, point_id)
    
     def delete_student(self, student_id: int):
         return self.student_service.delete_student(student_id=student_id)
