@@ -28,6 +28,10 @@ class UserRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
+        
+    def get_responsibles_by_list(self, user_id_list : List[int]):
+        return self.db.query(UserModel).filter(UserModel.id.in_(user_id_list), UserModel.user_type_id != 2).all()
+        
     def get_all_drivers(self):
         try:
             return self.db.query(UserModel).filter(UserModel.user_type_id == 2).all()

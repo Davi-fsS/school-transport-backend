@@ -42,6 +42,15 @@ class PointService():
 
         return self.point_repository.get_first_point_school_by_point_list(point_id_list)
     
+    def get_all_school_by_user(self, user_id : int):
+        user_points = self.user_point_service.get_user_point_list(user_id)
+
+        point_id_list = []
+        for user_point in user_points:
+            point_id_list.append(user_point.point_id)
+
+        return self.point_repository.get_points_school_by_point_list(point_id_list)
+    
     def get_school_associated_by_driver(self, user_id : int):
         vehicle_point_list_dto: List[VehiclePoint] = []
 
@@ -186,13 +195,14 @@ class PointService():
     def get_point(self, point_id: int):
         return self.point_repository.get_point(point_id=point_id)
     
-    def get_point_home_by_user_id(self, user_id: int):
+    def get_point_home_by_user_id(self, user_id: int) -> Point:
         user_points = self.user_point_service.get_user_point_list(user_id)
 
         if(len(user_points) > 0):
             point_id_list = []
             for user_point in user_points:
-                point_id_list.append(user_point.point_id)
+                if(user_point.favorite == True):
+                    point_id_list.append(user_point.point_id)
 
             points = self.get_point_home_list_by_user(point_id_list)
 
@@ -218,7 +228,6 @@ class PointService():
             point_dto = Point(id=point.id, name=point.name, address=point.address, lat=point.lat, lng=point.lng, alt=point.alt, city=point.city, neighborhood=point.neighborhood, state=point.state, description=point.description, point_type_id=point.point_type_id)
             points_list_dto.append(point_dto)
 
-        
         return points_list_dto
 
     def get_point_school_list_by_user(self, point_list: List[int]):

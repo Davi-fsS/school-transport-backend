@@ -38,6 +38,9 @@ class StudentService():
 
         return self.student_repository.get_students_by_student_list(student_id_list=student_id_list)
     
+    def get_students_by_list(self, student_id_list: List[int]):
+        return self.student_repository.get_students_by_student_list(student_id_list)
+    
     def get_student_by_code(self, code: str):
         student = self.student_repository.get_student_by_code(code)
 
@@ -48,13 +51,22 @@ class StudentService():
         
         return student_details
     
+    def get_students_by_point_list(self, point_list: List[int]) -> List[Student]:
+        students_dto : List[Student] = []
+        students = self.student_repository.get_students_by_point_list(point_list)
+
+        for student in students:
+            students_dto.append(Student(id=student.id, name=student.name, year=student.year, code=student.code, creation_user=student.creation_user, point_id=student.point_id))
+
+        return students_dto
+    
     def get_student_details(self, student_id: int):
         student = self.student_repository.get_student(student_id)
 
         if(student is None):
             raise ValueError("Aluno não encontrado")
         
-        student_dto = Student(id=student.id, name=student.name, year=student.year, code=student.code, creation_user=student.creation_user)
+        student_dto = Student(id=student.id, point_id=student.point_id, name=student.name, year=student.year, code=student.code, creation_user=student.creation_user)
         
         student_driver = self.get_student_driver(student_id)
 
@@ -104,6 +116,34 @@ class StudentService():
             if(point.point_type_id == 2):
                 return point
 
+    def get_all_student_homes(self, student_id: int, user_id: int):
+        user = self.user_service.get_user(user_id)
+
+        if user is None:
+            raise ValueError("Usuário inválido")
+        
+        if(user.user_type_id == 2):
+            raise ValueError("Usuário não é um responsável")
+        
+        student = self.student_repository.get_student(student_id)
+
+        if(student.creation_user != user_id):
+            raise ValueError("Usuário não autorizado")
+        
+        responsibles = self.user_student_service.get_responsibles_by_student_id(student.id)
+
+        responsibles_ids = []
+        for responsible in responsibles:
+            responsibles_ids.append(responsible.id)
+
+        responsible_points = self.user_point_service.get_user_point_list_by_user_list(responsibles_ids)
+
+        responsible_points_ids = []
+        for responsible_point in responsible_points:
+            responsible_points_ids.append(responsible_point.point_id)
+
+        return self.point_service.get_point_home_list_by_user(responsible_points_ids)
+
     def create_association_student_responsible(self, association: StudentAssociation):
         self.validating_association(association)
 
@@ -136,6 +176,22 @@ class StudentService():
         self.validate_update_student(student=student)
 
         return self.student_repository.update_student(student_update=student)
+    
+    def update_student_address(self, student_id: int, user_id: int):
+        user = self.user_service.get_user(user_id)
+
+        if user is None:
+            raise ValueError("Usuário inválido")
+
+        if user.user_type_id == 2:
+            raise ValueError("Este usuário não é um responsável")
+
+        point = self.point_service.get_point_home_by_user_id(user.id)
+
+        if point is None:
+            raise ValueError("Este usuário não possuí um endereço")
+
+        return self.student_repository.update_student_address(student_id, point.id, user_id)
     
     def delete_student(self, student_id: int):
         self.user_student_service.delete_user_student_by_student_id(student_id=student_id)

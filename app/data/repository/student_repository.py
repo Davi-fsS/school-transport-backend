@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import List
 from sqlalchemy.orm import Session
 from data.model.student_model import StudentModel
@@ -11,16 +12,12 @@ class StudentRepository():
         self.db = next(get_db())
 
     def get_student(self, student_id: int):
-        try:
-            student = self.db.query(StudentModel).filter(StudentModel.id == student_id, StudentModel.disabled == False).first()
+        student = self.db.query(StudentModel).filter(StudentModel.id == student_id, StudentModel.disabled == False).first()
 
-            if student is None:
-                raise ValueError("Aluno não encontrado")
+        if student is None:
+            raise ValueError("Aluno não encontrado")
 
-            return student
-        except:
-            self.db.rollback()
-            raise ValueError("Erro ao fazer a leitura no sistema")
+        return student
         
     def get_student_by_code(self, student_code: str):
         try:
@@ -38,6 +35,9 @@ class StudentRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
+        
+    def get_students_by_point_list(self, point_list: List[int]):
+        return self.db.query(StudentModel).filter(StudentModel.point_id.in_(point_list), StudentModel.disabled == False).all()
 
     def create_student(self, student: StudentModel):
         try:
@@ -67,6 +67,18 @@ class StudentRepository():
             student = self.get_student(student_update.id)
             student.name = student_update.name
             student.year = student_update.year
+            self.db.commit()
+        except:
+            self.db.rollback()
+            raise ValueError("Erro ao salvar no sistema")
+    
+    def update_student_address(self, student_id: int, point_id: int, user_id: int):
+        try:
+            student = self.get_student(student_id)
+
+            student.point_id = point_id
+            student.change_user = user_id
+            student.change_date = datetime.now()
             self.db.commit()
         except:
             self.db.rollback()

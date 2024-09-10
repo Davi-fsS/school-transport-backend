@@ -1,4 +1,9 @@
 from fastapi import FastAPI, status, HTTPException, Header
+from presentation.dto.ScheduleStudentPosition import ScheduleStudentPosition
+from presentation.dto.PutSchedulePoint import PutSchedulePoint
+from presentation.dto.EndSchedule import EndSchedule
+from presentation.dto.UpdateStudentAddress import UpdateStudentAddress
+from presentation.dto.StartSchedule import StartSchedule
 from presentation.dto.UpdateVehiclePoint import UpdateVehiclePoint
 from presentation.dto.CreateVehiclePoint import CreateVehiclePoint
 from presentation.controller.vehicle_point_controller import VehiclePointController
@@ -224,6 +229,20 @@ async def student_disassociation(disassociation: StudentAssociation):
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
     
+@app.put("/student/update-address", status_code=status.HTTP_200_OK)
+async def update_student_address(body: UpdateStudentAddress):
+    try:
+        return student_controller.update_student_address(body.student_id, body.user_id)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    
+@app.get("/student/list-all-homes", status_code=status.HTTP_200_OK)
+async def get_all_student_homes(student_id: int = Header(), user_id: int = Header()):
+    try:
+        return student_controller.get_all_student_homes(student_id, user_id)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+
 # VEHICLE ENDPOINTS
 @app.get("/vehicle/get-all",status_code=status.HTTP_200_OK)
 async def get_all_vehicle():
@@ -434,10 +453,17 @@ async def get_coordinates_by_schedule(schedule_id: int):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
     
 #SCHEDULE ENDPOINTS
-@app.get("/schedule/details",status_code=status.HTTP_200_OK)
-async def get_schedule_details(schedule_id: int):
+@app.get("/schedule/current-driver-details",status_code=status.HTTP_200_OK)
+async def get_schedule_details_driver(schedule_id: int):
     try:
-        return schedule_controller.get_schedule_details_by_schedule_id(schedule_id)
+        return schedule_controller.get_driver_schedule_details_by_schedule_id(schedule_id)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+
+@app.get("/schedule/current-responsible-details",status_code=status.HTTP_200_OK)
+async def get_schedule_details_responsible(schedule_id: int = Header(), user_id: int = Header()):
+    try:
+        return schedule_controller.get_responsible_schedule_details_by_schedule_id(schedule_id, user_id)
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
     
@@ -445,5 +471,40 @@ async def get_schedule_details(schedule_id: int):
 async def create_schedule(schedule: CreateSchedule):
     try:
         return schedule_controller.create_schedule(schedule)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    
+@app.put("/schedule/start",status_code=status.HTTP_200_OK)
+async def put_schedule_start(start: StartSchedule):
+    try:
+        return schedule_controller.put_schedule_start(start)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    
+@app.put("/schedule/point",status_code=status.HTTP_200_OK)
+async def put_schedule_point(schedule_point: PutSchedulePoint):
+    try:
+        return schedule_controller.put_schedule_point(schedule_point)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+
+@app.put("/schedule/end",status_code=status.HTTP_200_OK)
+async def put_schedule_end(end: EndSchedule):
+    try:
+        return schedule_controller.put_schedule_end(end.schedule_id, end.user_id)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    
+@app.get("/schedule/get-maps-infos",status_code=status.HTTP_200_OK)
+async def get_schedule_maps_infos(schedule_id : int = Header(), user_id : int = Header()):
+    try:
+        return schedule_controller.get_schedule_maps_infos(schedule_id, user_id)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+
+@app.get("/schedule/get-student-position",status_code=status.HTTP_200_OK)
+async def get_schedule_student_position(schedule_id : int = Header(), user_id : int = Header()):
+    try:
+        return schedule_controller.get_schedule_student_position(schedule_id, user_id)
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
