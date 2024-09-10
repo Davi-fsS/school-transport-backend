@@ -28,3 +28,6 @@ class ScheduleController():
     
     def get_schedule_student_position(self, schedule_id: int, user_id: int):
         return self.schedule_service.get_schedule_student_position(schedule_id, user_id)
+    
+    def get_schedule_maps_infos(self, schedule_id: int, user_id: int):
+        return self.schedule_service.get_schedule_maps_infos(schedule_id, user_id)

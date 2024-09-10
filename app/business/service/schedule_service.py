@@ -1,5 +1,6 @@
 from datetime import datetime
 from typing import List
+from data.repository.schedule_maps_infos_repository import ScheduleMapsInfosRepository
 from presentation.dto.Student import Student
 from presentation.dto.HomePoint import HomePoint
 from presentation.dto.PutSchedulePoint import PutSchedulePoint
@@ -34,6 +35,7 @@ class ScheduleService():
     user_student_service: UserStudentService
     student_service: StudentService
     user_point_service: UserPointService
+    schedule_maps_infos_repository: ScheduleMapsInfosRepository
 
     def __init__(self):
         self.schedule_repository = ScheduleRepository()
@@ -46,6 +48,7 @@ class ScheduleService():
         self.user_student_service = UserStudentService()
         self.user_point_service = UserPointService()
         self.student_service = StudentService()
+        self.schedule_maps_infos_repository = ScheduleMapsInfosRepository()
 
     def get_schedule_by_id(self, schedule_id: int):
         schedule = self.schedule_repository.get_schedule_by_id(schedule_id)
@@ -310,6 +313,19 @@ class ScheduleService():
             raise ValueError("Seu estudante já embarcou")
         
         return user_home_in_schedule_order - schedule_points_already_completed
+
+    def get_schedule_maps_infos(self, schedule_id: int, user_id: int):
+        user = self.user_repository.get_user(user_id)
+
+        if user is None:
+            raise ValueError("Usuário inválido")
+        
+        schedule = self.schedule_repository.get_schedule_in_progress(schedule_id)
+
+        if schedule is None:
+            raise ValueError("Viagem inválida")
+        
+        return self.schedule_maps_infos_repository.get_schedule_maps_infos_by_schedule_id(schedule.id)
 
     def get_points_by_student_list(self, student_ids: List[int], student_point_ids: List[int]):
         home_point_list: List[HomePoint] = []

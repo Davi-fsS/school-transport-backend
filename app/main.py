@@ -488,6 +488,13 @@ async def put_schedule_end(end: EndSchedule):
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
     
+@app.get("/schedule/get-maps-infos",status_code=status.HTTP_200_OK)
+async def get_schedule_maps_infos(schedule_id : int = Header(), user_id : int = Header()):
+    try:
+        return schedule_controller.get_schedule_maps_infos(schedule_id, user_id)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+
 @app.get("/schedule/get-student-position",status_code=status.HTTP_200_OK)
 async def get_schedule_student_position(schedule_id : int = Header(), user_id : int = Header()):
     try:
