@@ -1,3 +1,7 @@
+from data.model.student_model import StudentModel
+from data.repository.user_phone_repository import UserPhoneRepository
+from data.repository.student_repository import StudentRepository
+from business.service.user_student_service import UserStudentService
 from presentation.dto.Vehicle import Vehicle
 from data.repository.vehicle_point_repository import VehiclePointRepository
 from data.repository.user_repository import UserRepository
@@ -23,10 +27,13 @@ import re
 class UserService():
     user_repository: UserRepository
     user_phone_service: UserPhoneService
+    user_phone_repository: UserPhoneRepository
     point_service: PointService
     user_point_service: UserPointService
     vehicle_repository: VehicleRepository
     vehicle_point_repository: VehiclePointRepository
+    user_student_service: UserStudentService
+    student_repository: StudentRepository
 
     def __init__(self):
         self.user_repository = UserRepository()
@@ -35,7 +42,9 @@ class UserService():
         self.user_point_service = UserPointService()
         self.vehicle_repository = VehicleRepository()
         self.vehicle_point_repository = VehiclePointRepository()
-
+        self.user_student_service = UserStudentService()
+        self.student_repository = StudentRepository()
+        self.user_phone_repository = UserPhoneRepository()
 
     def get_user(self, user_id: int):
         return self.user_repository.get_user(user_id)
@@ -138,9 +147,43 @@ class UserService():
         self.user_repository.update_user_code(user_id, code)
     
     def delete_user(self, user_id: int):
-        self.validating_delete_user(user_id)
+        user = self.validating_delete_user(user_id)
         
-        self.user_repository.delete_user(user_id)
+        user_points = self.user_point_service.get_user_point_list(user_id)
+
+        user_phones = self.user_phone_repository.get_user_phone_list(user_id)
+
+        user_students = self.user_student_service.get_students_by_responsible(user_id)
+
+        student_ids = []
+        for user_student in user_students:
+            student_ids.append(user_student.student_id)
+
+        students = self.student_repository.get_students_by_student_list(student_ids)
+
+        students_created_by_this_user_ids = []
+        students_only_associated : List[StudentModel] = []
+        responsibles_to_students_this_user_is_associated = []
+
+        for student in students:
+            if(student.creation_user == user_id):
+                students_created_by_this_user_ids.append(student.id)
+            else:
+                students_only_associated.append(student)
+                responsibles_to_students_this_user_is_associated.append(student.creation_user)
+
+        user_student_from_another_responsibles = self.user_student_service.get_user_students_by_student_list(students_created_by_this_user_ids)
+        
+        students_created_by_user = self.student_repository.get_students_by_student_list(students_created_by_this_user_ids)
+
+        homes = self.point_service.get_points_by_user_list(responsibles_to_students_this_user_is_associated)
+
+        students_to_update = students_only_associated
+        for i, students_to_update in enumerate(students_only_associated):
+            if i < len(homes):
+                students_to_update.point_id = homes[i].id
+
+        self.user_repository.delete_user(user, user_points, user_phones, user_students, user_student_from_another_responsibles, students_created_by_user, students_only_associated)
 
     def user_details(self, user_id: int):
         self.validating_user_detail(user_id)
@@ -335,8 +378,11 @@ class UserService():
             self.validate_update_responsible(user)
 
     def validating_delete_user(self, user_id: int):
-        if(self.user_repository.get_user(user_id) is None):
+        user = self.user_repository.get_user(user_id)
+        if(user is None):
             raise ValueError("Usuário não existe")
+        
+        return user
         
     def validating_user_detail(self, user_id : int):
         if(self.user_repository.get_user(user_id) is None):

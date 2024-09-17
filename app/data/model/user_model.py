@@ -14,6 +14,7 @@ class UserModel(Base):
     rg = Column(String(12), nullable=True)
     code = Column(String(255), nullable=True)
     user_type_id = Column(Integer)
+    disabled = Column(Boolean, default=False)
     creation_user = Column(Integer)
     change_date = Column(DateTime)
     change_user = Column(Integer)

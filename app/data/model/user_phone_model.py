@@ -10,4 +10,7 @@ class UserPhoneModel(Base):
     ddi = Column(String(4), nullable=True)
     ddd = Column(String(2), nullable=True)
     phone = Column(String(15), nullable=True)
+    disabled = Column(Boolean, default=False)
     creation_user = Column(Integer)
+    change_date = Column(DateTime, nullable=True)
+    change_user = Column(Integer, nullable=True)
