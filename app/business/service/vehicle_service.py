@@ -28,6 +28,8 @@ class VehicleService():
     def get_all_vehicle(self):
         all_vehicles = self.vehicle_repository.get_all_vehicle()
 
+        print(len(all_vehicles))
+
         if(len(all_vehicles) == 0):
             raise ValueError("Não existe nenhum veículo")
 

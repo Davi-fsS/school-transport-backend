@@ -32,7 +32,7 @@ class VehicleRepository():
         
     def get_all_vehicle(self):
         try:
-            all_vehicle = self.db.query(VehicleModel.disabled == False).all()
+            all_vehicle = self.db.query(VehicleModel).filter(VehicleModel.disabled == False).all()
 
             return all_vehicle
         except:
