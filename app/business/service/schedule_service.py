@@ -69,6 +69,11 @@ class ScheduleService():
 
         if schedule is None:
             raise ValueError("Viagem não está em andamento")
+        
+        schedule_dto = Schedule(id=schedule.id, name=schedule.name, initial_date=schedule.initial_date,
+                                end_date=schedule.end_date, real_initial_date=schedule.real_initial_date,
+                                real_end_date=schedule.real_end_date, description=schedule.description,
+                                schedule_type_id=schedule.schedule_type_id, creation_user=schedule.creation_user)
 
         schedule_user = self.schedule_user_service.get_user_by_schedule_id(schedule_id)
 
@@ -76,7 +81,7 @@ class ScheduleService():
 
         schedule_points = self.schedule_point_service.get_points_by_schedule_id(schedule_id)
 
-        schedule_details = ScheduleDetails(schedule=schedule, driver=schedule_user, 
+        schedule_details = ScheduleDetails(schedule=schedule_dto, driver=schedule_user, 
                                            vehicle=schedule_vehicle, points=schedule_points)
 
         return schedule_details

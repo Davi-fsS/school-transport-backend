@@ -48,9 +48,8 @@ class SchedulePointService():
         for student in students_points:
             student_id_list.append(student.id)
 
-        student_list = []
-
         for point_dto in points_dto:
+            student_list = []
             for student_dto in students_points:
                 if(student_dto.point_id == point_dto.id):
                     student_list.append(student_dto)
