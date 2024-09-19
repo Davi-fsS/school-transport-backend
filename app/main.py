@@ -474,7 +474,7 @@ async def get_schedule_details_responsible(schedule_id: int = Header(), user_id:
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
     
-@app.get("/schedule/get-schedule-by-user",status_code=status.HTTP_200_OK)
+@app.get("/schedule/get-current-schedules-by-user",status_code=status.HTTP_200_OK)
 async def get_schedule_by_user(user_id: int):
     try:
         return schedule_controller.get_schedule_by_user(user_id)
