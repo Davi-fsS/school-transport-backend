@@ -10,6 +10,7 @@ class SchedulePointModel(Base):
     point_id = Column(Integer)
     planned_date = Column(DateTime, nullable=True)
     real_date = Column(DateTime, nullable=True)
+    has_embarked = Column(Boolean, nullable=True)
     order = Column(Integer, nullable=True)
     description = Column(String)
     creation_user = Column(Integer)

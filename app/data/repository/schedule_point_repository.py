@@ -17,15 +17,21 @@ class SchedulePointRepository():
     def get_schedule_point_by_id(self, id: int):
         return self.db.query(SchedulePointModel).filter(SchedulePointModel.id == id).first()
     
+    def get_schedule_point_by_point_id(self, schedule_id: int, point_id: int):
+        return self.db.query(SchedulePointModel).filter(SchedulePointModel.point_id == point_id,SchedulePointModel.schedule_id == schedule_id, SchedulePointModel.real_date == None).first()
+    
     def get_schedule_point_by_point_list(self, point_list: List[int]):
         return self.db.query(SchedulePointModel).filter(SchedulePointModel.point_id.in_(point_list)).all()
     
-    def put_schedule_point(self, id: int, user_id: int):
+    def put_schedule_point(self, schedule_id: int, point_id: int, user_id: int, has_embarked: bool):
         try:
-            sched_point = self.get_schedule_point_by_id(id)
+            sched_point = self.get_schedule_point_by_point_id(schedule_id, point_id)
+
+            print(sched_point.id)
 
             sched_point.real_date = datetime.now()
             sched_point.change_user = user_id
+            sched_point.has_embarked = has_embarked
             sched_point.change_date = datetime.now()
 
             self.db.commit()
