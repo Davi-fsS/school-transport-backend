@@ -1,3 +1,4 @@
+from typing import List
 from sqlalchemy.orm import Session
 from datetime import datetime
 from presentation.dto.PutSchedulePoint import PutSchedulePoint
@@ -15,6 +16,9 @@ class SchedulePointRepository():
        
     def get_schedule_point_by_id(self, id: int):
         return self.db.query(SchedulePointModel).filter(SchedulePointModel.id == id).first()
+    
+    def get_schedule_point_by_point_list(self, point_list: List[int]):
+        return self.db.query(SchedulePointModel).filter(SchedulePointModel.point_id.in_(point_list)).all()
     
     def put_schedule_point(self, id: int, user_id: int):
         try:

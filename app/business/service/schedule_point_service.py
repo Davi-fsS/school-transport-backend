@@ -1,4 +1,5 @@
 from typing import List
+from data.repository.schedule_repository import ScheduleRepository
 from presentation.dto.PutSchedulePoint import PutSchedulePoint
 from business.service.user_student_service import UserStudentService
 from presentation.dto.Point import Point
@@ -14,6 +15,7 @@ class SchedulePointService():
     user_service: UserService
     student_service: StudentService
     user_student_service: UserStudentService
+    schedule_repository: ScheduleRepository
 
     def __init__(self):
         self.schedule_point_repository = SchedulePointRepository()
@@ -21,6 +23,7 @@ class SchedulePointService():
         self.user_service = UserService()
         self.student_service = StudentService()
         self.user_student_service = UserStudentService()
+        self.schedule_repository = ScheduleRepository()
 
     def get_schedule_point_by_schedule_id(self, schedule_id: int):
         return self.schedule_point_repository.get_schedule_point_list_by_schedule_id(schedule_id)
@@ -61,6 +64,23 @@ class SchedulePointService():
     
     def get_schedule_point_by_id(self, id: int):
         return self.schedule_point_repository.get_schedule_point_by_id(id)
+    
+    def get_current_schedule_list_by_point_list(self, point_list: List[int]):
+        schedules_points = self.schedule_point_repository.get_schedule_point_by_point_list(point_list)
+
+        if len(schedules_points) == 0: 
+            return []
+        
+        schedule_ids = []
+        for schedule_point in schedules_points:
+            schedule_ids.append(schedule_point.schedule_id)
+
+        current_schedules = self.schedule_repository.get_schedule_list_in_progress_by_list(schedule_ids)
+
+        if len(current_schedules) == 0:
+            return []
+
+        return current_schedules
 
     def put_schedule_point(self, id: int, user_id: int):
         return self.schedule_point_repository.put_schedule_point(id, user_id)

@@ -17,6 +17,9 @@ class ScheduleController():
     def get_responsible_schedule_details_by_schedule_id(self, schedule_id : int, user_id: int):
         return self.schedule_service.get_responsible_schedule_details_by_schedule_id(schedule_id, user_id)
     
+    def get_schedule_by_user(self, user_id: int):
+        return self.schedule_service.get_schedule_by_user(user_id)
+    
     def create_schedule(self, schedule: CreateSchedule):
         return self.schedule_service.create_schedule(schedule)
     

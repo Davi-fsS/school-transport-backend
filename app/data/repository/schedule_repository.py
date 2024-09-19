@@ -34,6 +34,10 @@ class ScheduleRepository():
     def get_schedule_in_progress(self, schedule_id: int):
         return self.db.query(ScheduleModel).filter(ScheduleModel.id == schedule_id, ScheduleModel.real_initial_date != None, 
                                                    ScheduleModel.real_end_date == None).first()
+    
+    def get_schedule_list_in_progress_by_list(self, schedule_id_list: List[int]):
+        return self.db.query(ScheduleModel).filter(ScheduleModel.id.in_(schedule_id_list), ScheduleModel.real_initial_date != None, 
+                                                   ScheduleModel.real_end_date == None).all()
 
     def create_schedule_destiny_school(self, schedule: CreateSchedule, driver: UserModel, vehicle: VehicleModel, school: PointModel):
         try:

@@ -137,6 +137,31 @@ class ScheduleService():
 
         return ScheduleResponsibleDetail(point=user_home, students_in_home=students_in_home_dto, students_in_other_home=students_in_other_home_dto, driver=driver, vehicle=vehicle)
     
+    def get_schedule_by_user(self, user_id: int):
+        user = self.user_repository.get_user(user_id)
+
+        if user is None:
+            raise ValueError("Usuário inválido")
+        
+        if user.user_type_id == 2:
+            raise ValueError("Usuário não é um responsável")
+        
+        user_students = self.user_student_service.get_students_by_responsible(user.id)
+
+        student_ids = []
+        for user_student in user_students:
+            student_ids.append(user_student.student_id)
+
+        students = self.student_service.get_students_by_list(student_ids)
+
+        point_from_students = []
+        for student in students:
+            point_from_students.append(student.point_id)
+
+        current_schedules = self.schedule_point_service.get_current_schedule_list_by_point_list(point_from_students)
+
+        return current_schedules
+
     def create_schedule(self, schedule: CreateSchedule):
         driver = self.validate_create_schedule(schedule)
 
