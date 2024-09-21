@@ -546,9 +546,16 @@ async def create_parent_notification(notification: CreateParentNotification):
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
 
-@app.get("/parent_notification/get-active-list-by-user",status_code=status.HTTP_201_CREATED)
+@app.get("/parent_notification/get-active-list-by-user",status_code=status.HTTP_200_OK)
 async def get_parent_notification_active_list_by_user(user_id: int):
     try:
         return parent_notification_controller.get_parent_notification_active_list_by_user(user_id)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+
+@app.get("/parent_notification/get-past-list-by-user",status_code=status.HTTP_200_OK)
+async def get_parent_notification_past_list_by_user(user_id: int):
+    try:
+        return parent_notification_controller.get_parent_notification_past_list_by_user(user_id)
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))

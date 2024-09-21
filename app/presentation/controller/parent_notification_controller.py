@@ -8,7 +8,10 @@ class ParentNotificationController():
         self.parent_notification_service = ParentNotificationService()
 
     def create_parent_notification(self, notification: CreateParentNotification):
-        self.parent_notification_service.create_parent_notification(notification)
+        return self.parent_notification_service.create_parent_notification(notification)
     
     def get_parent_notification_active_list_by_user(self, user_id: int):
-        self.parent_notification_service.get_parent_notification_active_list_by_user(user_id)
+        return self.parent_notification_service.get_parent_notification_active_list_by_user(user_id)
+    
+    def get_parent_notification_past_list_by_user(self, user_id: int):
+        return self.parent_notification_service.get_parent_notification_past_list_by_user(user_id)

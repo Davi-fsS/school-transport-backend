@@ -60,12 +60,7 @@ class ParentNotificationService():
 
         self.parent_notification_repository.create_notification(parent_notification_model)
 
-    def get_parent_notification_active_list_by_user(self, user_id: int):
-        parent_notifications_dto : List[ParentNotification] = []
-
-        point_list_dto : List[Point] = []
-        student_list_dto : List[Student] = []
-        
+    def get_parent_notification_active_list_by_user(self, user_id: int):        
         user = self.user_repository.get_user(user_id)
 
         if user is None:
@@ -74,7 +69,28 @@ class ParentNotificationService():
         if user.user_type_id == 2:
             raise ValueError("Usuário não é um responsável")
         
-        parent_notification_list = self.parent_notification_repository.get_notification_list_by_user(user.id)
+        parent_notification_list = self.parent_notification_repository.get_notification_list_after_today_by_user(user.id)
+
+        return self.get_parent_notification_list_dto(parent_notification_list)
+    
+    def get_parent_notification_past_list_by_user(self, user_id: int):        
+        user = self.user_repository.get_user(user_id)
+
+        if user is None:
+            raise ValueError("Usuário inválido")
+        
+        if user.user_type_id == 2:
+            raise ValueError("Usuário não é um responsável")
+        
+        parent_notification_list = self.parent_notification_repository.get_notification_list_past_by_user(user.id)
+
+        return self.get_parent_notification_list_dto(parent_notification_list)
+    
+    def get_parent_notification_list_dto(self, parent_notification_list: List[ParentNotificationModel]):
+        parent_notifications_dto : List[ParentNotification] = []
+
+        point_list_dto : List[Point] = []
+        student_list_dto : List[Student] = []
 
         parent_notification_period_all = self.parent_notification_period_repository.get_all()
 

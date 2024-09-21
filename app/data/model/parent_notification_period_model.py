@@ -9,5 +9,3 @@ class ParentNotificationPeriodModel(Base):
     name = Column(String(255))
     schedule_type_id = Column(Integer)
     creation_user = Column(Integer)
-    change_date = Column(DateTime)
-    change_user = Column(Integer)
