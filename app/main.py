@@ -1,4 +1,6 @@
 from fastapi import FastAPI, status, HTTPException, Header
+from presentation.dto.CreateParentNotification import CreateParentNotification
+from presentation.controller.parent_notification_controller import ParentNotificationController
 from presentation.dto.ScheduleStudentPosition import ScheduleStudentPosition
 from presentation.dto.PutSchedulePoint import PutSchedulePoint
 from presentation.dto.EndSchedule import EndSchedule
@@ -65,6 +67,7 @@ coordinate_controller = CoordinateController()
 schedule_controller = ScheduleController()
 vehicle_point_controller = VehiclePointController()
 user_point_controller = UserPointController()
+parent_notification_controller = ParentNotificationController()
 
 # USER ENDPOINTS
 @app.post("/user/create",status_code=status.HTTP_201_CREATED)
@@ -524,3 +527,9 @@ async def get_schedule_student_position(schedule_id : int = Header(), user_id : 
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
     
 # PARENT_NOTIFICATION ENDPOINTS
+@app.post("/parent_notification/create",status_code=status.HTTP_201_CREATED)
+async def create_parent_notification(notification: CreateParentNotification):
+    try:
+        return parent_notification_controller.create_parent_notification(notification)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
