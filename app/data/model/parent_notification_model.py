@@ -10,6 +10,7 @@ class ParentNotificationModel(Base):
     student_id = Column(Integer)
     inative_day = Column(DateTime)
     parent_notification_period_id = Column(Integer)
+    point_id = Column(Integer)
     disabled = Column(Boolean)
     creation_user = Column(Integer)
     change_date = Column(DateTime)

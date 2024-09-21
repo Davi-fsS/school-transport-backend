@@ -8,6 +8,9 @@ class ParentNotificationRepository():
     def __init__(self):
         self.db = next(get_db())
 
+    def get_notification_list_by_user(self, user_id: int):
+        return self.db.query(ParentNotificationModel).filter(ParentNotificationModel.user_id == user_id, ParentNotificationModel.disabled == False).all()
+
     def create_notification(self, body: ParentNotificationModel):
         try:
             self.db.add(body)
