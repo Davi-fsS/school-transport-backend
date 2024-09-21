@@ -204,6 +204,18 @@ async def get_students_by_responsible(responsible_id: int):
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
     
+@app.get("/student/get-by-point-responsible", status_code=status.HTTP_200_OK)
+async def get_students_by_point_responsible(responsible_id: int):
+    try:
+        students = student_controller.get_students_by_point_responsible(responsible_id=responsible_id)
+
+        if(len(students) == 0):
+            raise HTTPException(status_code=status.HTTP_204_NO_CONTENT, detail="Sem alunos cadastrados")
+        
+        return students
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    
 @app.get("/student/get-by-code", status_code=status.HTTP_200_OK)
 async def get_student_by_code(student_code: str):
     try:
