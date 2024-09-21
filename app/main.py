@@ -522,3 +522,5 @@ async def get_schedule_student_position(schedule_id : int = Header(), user_id : 
         return schedule_controller.get_schedule_student_position(schedule_id, user_id)
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    
+# PARENT_NOTIFICATION ENDPOINTS
