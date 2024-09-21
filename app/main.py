@@ -1,4 +1,6 @@
 from fastapi import FastAPI, status, HTTPException, Header
+from presentation.dto.CreateParentNotification import CreateParentNotification
+from presentation.controller.parent_notification_controller import ParentNotificationController
 from presentation.dto.ScheduleStudentPosition import ScheduleStudentPosition
 from presentation.dto.PutSchedulePoint import PutSchedulePoint
 from presentation.dto.EndSchedule import EndSchedule
@@ -65,6 +67,7 @@ coordinate_controller = CoordinateController()
 schedule_controller = ScheduleController()
 vehicle_point_controller = VehiclePointController()
 user_point_controller = UserPointController()
+parent_notification_controller = ParentNotificationController()
 
 # USER ENDPOINTS
 @app.post("/user/create",status_code=status.HTTP_201_CREATED)
@@ -193,6 +196,18 @@ async def delete_student(student_id: int):
 async def get_students_by_responsible(responsible_id: int):
     try:
         students = student_controller.get_students_by_responsible(responsible_id=responsible_id)
+
+        if(len(students) == 0):
+            raise HTTPException(status_code=status.HTTP_204_NO_CONTENT, detail="Sem alunos cadastrados")
+        
+        return students
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    
+@app.get("/student/get-by-point-responsible", status_code=status.HTTP_200_OK)
+async def get_students_by_point_responsible(responsible_id: int):
+    try:
+        students = student_controller.get_students_by_point_responsible(responsible_id=responsible_id)
 
         if(len(students) == 0):
             raise HTTPException(status_code=status.HTTP_204_NO_CONTENT, detail="Sem alunos cadastrados")
@@ -520,5 +535,27 @@ async def get_schedule_maps_infos(schedule_id : int = Header(), user_id : int = 
 async def get_schedule_student_position(schedule_id : int = Header(), user_id : int = Header()):
     try:
         return schedule_controller.get_schedule_student_position(schedule_id, user_id)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    
+# PARENT_NOTIFICATION ENDPOINTS
+@app.post("/parent_notification/create",status_code=status.HTTP_201_CREATED)
+async def create_parent_notification(notification: CreateParentNotification):
+    try:
+        return parent_notification_controller.create_parent_notification(notification)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+
+@app.get("/parent_notification/get-active-list-by-user",status_code=status.HTTP_200_OK)
+async def get_parent_notification_active_list_by_user(user_id: int):
+    try:
+        return parent_notification_controller.get_parent_notification_active_list_by_user(user_id)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+
+@app.get("/parent_notification/get-past-list-by-user",status_code=status.HTTP_200_OK)
+async def get_parent_notification_past_list_by_user(user_id: int):
+    try:
+        return parent_notification_controller.get_parent_notification_past_list_by_user(user_id)
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))

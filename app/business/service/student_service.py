@@ -39,6 +39,25 @@ class StudentService():
 
         return self.student_repository.get_students_by_student_list(student_id_list=student_id_list)
     
+    def get_students_by_point_responsible(self, responsible_id: int):
+        user = self.user_service.get_user(responsible_id)
+
+        if user is None:
+            raise ValueError("Usuário inválido")
+
+        if user.user_type_id == 2:
+            raise ValueError("Usuário não é um responsável")
+        
+        user_home = self.point_service.get_point_home_by_user_id(responsible_id)
+
+        user_students_by_responsible_list = self.user_student_service.get_students_by_responsible(responsible_id=responsible_id)
+
+        student_id_list = []
+        for user_student in user_students_by_responsible_list:
+            student_id_list.append(user_student.student_id)
+
+        return self.student_repository.get_students_by_student_list_and_point(student_id_list=student_id_list, point_id=user_home.id)
+    
     def get_students_by_list(self, student_id_list: List[int]):
         return self.student_repository.get_students_by_student_list(student_id_list)
     
