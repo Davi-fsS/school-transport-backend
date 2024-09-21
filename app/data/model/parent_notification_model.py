@@ -11,7 +11,7 @@ class ParentNotificationModel(Base):
     inative_day = Column(DateTime)
     parent_notification_period_id = Column(Integer)
     point_id = Column(Integer)
-    disabled = Column(Boolean)
+    disabled = Column(Boolean, default=False)
     creation_user = Column(Integer)
     change_date = Column(DateTime)
     change_user = Column(Integer)

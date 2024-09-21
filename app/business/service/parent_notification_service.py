@@ -55,7 +55,8 @@ class ParentNotificationService():
             raise ValueError("Este aluno não está no endereço deste responsável")
 
         parent_notification_model = ParentNotificationModel(user_id = notification.user_id, student_id = notification.student_id, point_id = student.point_id,
-                                                            inative_day = notification.inative_day, parent_notification_period_id = notification.period_id)
+                                                            inative_day = notification.inative_day, parent_notification_period_id = notification.period_id,
+                                                            creation_user=notification.user_id)
 
         self.parent_notification_repository.create_notification(parent_notification_model)
 
