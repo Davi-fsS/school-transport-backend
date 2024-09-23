@@ -28,7 +28,7 @@ class SchedulePointService():
     def get_schedule_point_by_schedule_id(self, schedule_id: int):
         return self.schedule_point_repository.get_schedule_point_list_by_schedule_id(schedule_id)
 
-    def get_points_by_schedule_id(self, schedule_id: int):
+    def get_points_by_schedule_id(self, schedule_id: int) -> List[HomePoint]:
         home_point_list: List[HomePoint] = []
 
         schedule_point_list = self.schedule_point_repository.get_schedule_point_list_by_schedule_id(schedule_id)

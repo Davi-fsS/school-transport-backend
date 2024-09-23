@@ -408,6 +408,9 @@ class ScheduleService():
         if user is None:
             raise ValueError("Usuário inválido")
         
+        if user.user_type_id == 2:
+            raise ValueError("Usuário não é um responsável")
+        
         schedule = self.schedule_repository.get_schedule_in_progress(schedule_id)
 
         if schedule is None:
@@ -437,3 +440,28 @@ class ScheduleService():
             home_point_list.append(home_point)
 
         return home_point_list
+    
+    def get_responsibles_in_schedule(self, schedule_id: int):
+        schedule = self.schedule_repository.get_schedule_by_id(schedule_id)
+
+        if schedule is None:
+            raise ValueError("Viagem inválida")
+
+        schedule_points = self.schedule_point_service.get_schedule_point_by_schedule_id(schedule.id)
+
+        if len(schedule_points) == 0:
+            raise ValueError("Não há pontos para essa viagem")
+        
+        point_id_list = []
+
+        for schedule_point in schedule_points:
+            point_id_list.append(schedule_point.point_id)
+
+        students = self.student_service.get_students_by_point_list(point_id_list)
+
+        student_id_list = []
+
+        for student in students:
+            student_id_list.append(student.id)
+
+        return self.user_student_service.get_responsibles_by_student_list(student_id_list)

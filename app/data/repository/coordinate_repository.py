@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 from data.infrastructure.database import get_db
+from sqlalchemy import desc
 from data.model.coordinate_model import CoordinateModel
 
 class CoordinateRepository():
@@ -25,3 +26,6 @@ class CoordinateRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
+    
+    def get_last_coordinate_by_schedule_id(self, schedule_id: int):
+        return self.db.query(CoordinateModel).filter(CoordinateModel.schedule_id == schedule_id).order_by(desc(CoordinateModel.id)).first()

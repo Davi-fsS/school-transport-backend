@@ -1,4 +1,5 @@
 from typing import List
+from presentation.dto.Phone import Phone
 from data.repository.user_phone_repository import UserPhoneRepository
 from data.repository.user_repository import UserRepository
 from presentation.dto.User import User
@@ -32,12 +33,17 @@ class UserStudentService():
 
         phones = self.user_phone_repository.get_user_phone_list_by_list(user_id_list)
 
+        phones_dto = []
+
         for responsible in responsibles:
-            phone = list(filter(lambda phone: phone.user_id == responsible.id, phones))
+            phones = list(filter(lambda phone: phone.user_id == responsible.id, phones))
+
+            for phone in phones:
+                phones_dto.append(Phone(id=phone.id, user_id=phone.user_id, ddi=phone.ddi, ddd=phone.ddd, phone=phone.phone))
 
             responsible_list.append(User(id=responsible.id, uuid=responsible.uuid, name=responsible.name, email=responsible.email, cpf=responsible.cpf,
                                          cnh=responsible.cnh, rg=responsible.rg, user_type_id=responsible.user_type_id,
-                                         code=responsible.code, phones=phone))
+                                         code=responsible.code, phones=phones_dto))
 
         return responsible_list
 
