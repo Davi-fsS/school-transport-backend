@@ -10,6 +10,7 @@ from data.repository.user_repository import UserRepository
 from data.model.parent_notification_model import ParentNotificationModel
 from presentation.dto.CreateParentNotification import CreateParentNotification
 from data.repository.parent_notification_repository import ParentNotificationRepository
+from datetime import datetime, timedelta
 
 class ParentNotificationService():
     parent_notification_repository: ParentNotificationRepository
@@ -53,6 +54,13 @@ class ParentNotificationService():
 
         if user_point.user_id != user.id:
             raise ValueError("Este aluno não está no endereço deste responsável")
+        
+        today = datetime.now().date()
+        tomorrow = today + timedelta(days=1)
+        is_date_valid = notification.inative_day.date() >= tomorrow
+
+        if not is_date_valid:
+            raise ValueError("A data deve ser pelo menos 1 dia à frente da data atual.")
 
         parent_notification_model = ParentNotificationModel(user_id = notification.user_id, student_id = notification.student_id, point_id = student.point_id,
                                                             inative_day = notification.inative_day, parent_notification_period_id = notification.period_id,
