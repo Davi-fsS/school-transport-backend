@@ -89,7 +89,7 @@ class StudentService():
         student_dto = Student(id=student.id, point_id=student.point_id, name=student.name, year=student.year, code=student.code, creation_user=student.creation_user)
         
         student_driver = self.get_student_driver(student_id)
-
+        
         if(student_driver is None):
             raise ValueError("Aluno não possui motorista")
 
@@ -126,7 +126,7 @@ class StudentService():
         users = self.user_service.get_user_list_by_list(user_id_list)
 
         for user in users:
-            if(user.user_type_id != 3):
+            if(user.user_type_id == 2):
                 return user
             
     def get_student_school(self, driver_id: int):
