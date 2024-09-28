@@ -530,3 +530,10 @@ async def get_parent_notification_past_list_by_user(user_id: int):
         return parent_notification_controller.get_parent_notification_past_list_by_user(user_id)
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+
+@app.get("/parent_notification/get-period-options",status_code=status.HTTP_200_OK)
+async def get_period_options():
+    try:
+        return parent_notification_controller.get_period_options()
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))

@@ -86,6 +86,9 @@ class ParentNotificationService():
 
         return self.get_parent_notification_list_dto(parent_notification_list)
     
+    def get_period_options(self):
+        return self.parent_notification_period_repository.get_all()
+    
     def get_parent_notification_list_dto(self, parent_notification_list: List[ParentNotificationModel]):
         parent_notifications_dto : List[ParentNotification] = []
 

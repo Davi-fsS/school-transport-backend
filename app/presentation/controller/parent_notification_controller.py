@@ -15,3 +15,6 @@ class ParentNotificationController():
     
     def get_parent_notification_past_list_by_user(self, user_id: int):
         return self.parent_notification_service.get_parent_notification_past_list_by_user(user_id)
+    
+    def get_period_options(self):
+        return self.parent_notification_service.get_period_options()
