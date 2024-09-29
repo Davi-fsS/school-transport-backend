@@ -57,7 +57,10 @@ class ParentNotificationService():
         
         today = datetime.now().date()
         tomorrow = today + timedelta(days=1)
-        is_date_valid = notification.inative_day.date() >= tomorrow
+
+        inative_day_date = notification.inative_day.date()  
+
+        is_date_valid = inative_day_date >= tomorrow
 
         if not is_date_valid:
             raise ValueError("A data deve ser pelo menos 1 dia à frente da data atual.")
@@ -155,4 +158,4 @@ class ParentNotificationService():
                                                                inative_day=parent_notification.inative_day,
                                                                period=period_dto.name, canceled=parent_notification.disabled))
             
-        return parent_notifications_dto
+        return sorted(parent_notifications_dto, key=lambda notification: notification.inative_day, reverse=True)
