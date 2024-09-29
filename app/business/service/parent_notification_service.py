@@ -151,7 +151,7 @@ class ParentNotificationService():
             student_dto = list(filter(lambda s: s.id == parent_notification.student_id, student_list_dto))[0]
             period_dto = list(filter(lambda p: p.id == parent_notification.parent_notification_period_id, parent_notification_period_all))[0]
 
-            parent_notifications_dto.append(ParentNotification(home=point_dto, student=student_dto,
+            parent_notifications_dto.append(ParentNotification(home=point_dto, student=student_dto, id=parent_notification.id,
                                                                inative_day=parent_notification.inative_day,
                                                                period=period_dto.name, canceled=parent_notification.disabled))
             
