@@ -7,7 +7,8 @@ from presentation.dto.User import User
 from presentation.dto.Point import Point
 
 class ParentNotification(BaseModel):
-    school: Point
+    home: Point
     student: Student
     inative_day: datetime
     period: str
+    canceled: bool

@@ -18,3 +18,6 @@ class ParentNotificationController():
     
     def get_period_options(self):
         return self.parent_notification_service.get_period_options()
+    
+    def put_period_disabled(self, id: int, user_id: int):
+        return self.parent_notification_service.put_period_disabled(id, user_id)

@@ -90,12 +90,33 @@ class ParentNotificationService():
         if user.user_type_id == 2:
             raise ValueError("Usuário não é um responsável")
         
-        parent_notification_list = self.parent_notification_repository.get_notification_list_past_by_user(user.id)
+        past_parent_notification_list = self.parent_notification_repository.get_notification_list_past_by_user(user.id)
 
-        return self.get_parent_notification_list_dto(parent_notification_list)
+        canceled_parent_notification_list = self.parent_notification_repository.get_canceled_notification_list_by_user(user.id)
+
+        return self.get_parent_notification_list_dto(past_parent_notification_list + canceled_parent_notification_list)
     
     def get_period_options(self):
         return self.parent_notification_period_repository.get_all()
+    
+    def put_period_disabled(self, id: int, user_id: int):
+        user = self.user_repository.get_user(user_id)
+
+        if user is None:
+            raise ValueError("Usuário inválido")
+        
+        if user.user_type_id == 2:
+            raise ValueError("Usuário não é um responsável")
+
+        notification = self.parent_notification_repository.get_by_id(id)
+
+        if notification is None:
+            raise ValueError("Ocorrência inexistente")
+
+        if notification.user_id != user.id:
+            raise ValueError("Operação não autorizada")
+
+        return self.parent_notification_repository.put_notification_disabled(id)
     
     def get_parent_notification_list_dto(self, parent_notification_list: List[ParentNotificationModel]):
         parent_notifications_dto : List[ParentNotification] = []
@@ -130,8 +151,8 @@ class ParentNotificationService():
             student_dto = list(filter(lambda s: s.id == parent_notification.student_id, student_list_dto))[0]
             period_dto = list(filter(lambda p: p.id == parent_notification.parent_notification_period_id, parent_notification_period_all))[0]
 
-            parent_notifications_dto.append(ParentNotification(school=point_dto, student=student_dto,
+            parent_notifications_dto.append(ParentNotification(home=point_dto, student=student_dto,
                                                                inative_day=parent_notification.inative_day,
-                                                               period=period_dto.name))
+                                                               period=period_dto.name, canceled=parent_notification.disabled))
             
         return parent_notifications_dto

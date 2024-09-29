@@ -537,3 +537,10 @@ async def get_period_options():
         return parent_notification_controller.get_period_options()
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+
+@app.put("/parent_notification/cancel-by-id",status_code=status.HTTP_200_OK)
+async def put_period_disabled(id: int = Header(), user_id : int = Header()):
+    try:
+        return parent_notification_controller.put_period_disabled(id, user_id)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
