@@ -77,9 +77,6 @@ class ScheduleRepository():
     def put_schedule_start(self, start: StartSchedule, school: PointModel):
         try:
             schedule = self.get_schedule_not_started(start.schedule_id)
-
-            if(schedule is None):
-                raise ValueError("Viagem não encontrada")
             
             schedule.end_date = start.end_date
             schedule.real_initial_date = datetime.now()
@@ -93,12 +90,18 @@ class ScheduleRepository():
                                                            description=f"Destino: Escola {school.name}" , creation_user=start.user_id, planned_date=start.end_date)
                 self.db.add(schedule_point_school)
             else:
-                schedule_point_school = SchedulePointModel(planned_date=start.end_date, real_date=start.end_date, schedule_id=schedule.id, order=1, point_id=school.id, 
+                schedule_point_school = SchedulePointModel(planned_date=datetime.now(), real_date=datetime.now(), schedule_id=schedule.id, order=1, point_id=school.id, 
                                                            description=f"Origem: Escola {school.name}" ,creation_user=start.user_id)
                 self.db.add(schedule_point_school)
 
                 for index, point in enumerate(start.points, start=1):
-                    schedule_point = SchedulePointModel(schedule_id=schedule.id, order=index + 1,point_id=point, creation_user=start.user_id)
+                    schedule_point = SchedulePointModel()
+                    
+                    if(index - 1 == len(point)):
+                        schedule_point = SchedulePointModel(schedule_id=schedule.id, order=index + 1,point_id=point, creation_user=start.user_id, planned_date=start.end_date)
+                    else:
+                        schedule_point = SchedulePointModel(schedule_id=schedule.id, order=index + 1,point_id=point, creation_user=start.user_id)
+                    
                     self.db.add(schedule_point)
 
             schedule_map_infos = ScheduleMapsInfosModel(schedule_id=schedule.id, encoded_points=start.encoded_points, legs_info=start.legs_info,

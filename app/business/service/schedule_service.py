@@ -164,7 +164,7 @@ class ScheduleService():
         return current_schedules
 
     def create_schedule(self, schedule: CreateSchedule):
-        driver = self.validating_driver(schedule)
+        driver = self.validating_driver(schedule.user_id)
 
         vehicle = self.validating_vehicle(driver.id, schedule.vehicle_id)
 
@@ -181,33 +181,11 @@ class ScheduleService():
         return schedule_created
     
     def put_schedule_start(self, start: StartSchedule):
-        user = self.user_repository.get_user(start.user_id)
+        self.validating_driver(start.user_id)
 
-        if user is None:
-            raise ValueError("Usuário inválido")
-        
-        if user.user_type_id == 3:
-            raise ValueError("Usuário não é um motorista")
-        
-        school_list = self.point_service.get_all_school_by_user(start.user_id)
+        self.validating_driver_on_not_started_schedule(start.user_id, start.schedule_id)
 
-        if(len(school_list) == 0):
-            raise ValueError("Motorista não possui escola")
-        
-        school_id_list = []
-        for school_db in school_list:
-            school_id_list.append(school_db.id)
-
-        school = self.point_service.get_point(start.school_id)
-
-        if school is None:
-            raise ValueError("Escola inválida")
-        
-        if school.point_type_id == 1:
-            raise ValueError("Este ponto não é uma escola")
-        
-        if school.id not in school_id_list:
-            raise ValueError("Escola não associada")
+        school, _ = self.validating_school(start.user_id, start.school_id)
 
         self.schedule_repository.put_schedule_start(start, school)
 
@@ -393,8 +371,8 @@ class ScheduleService():
 
         return self.user_student_service.get_responsibles_by_student_list(student_id_list)
     
-    def validating_driver(self, schedule: CreateSchedule):
-        user = self.user_repository.get_user(schedule.user_id)
+    def validating_driver(self, user_id: int):
+        user = self.user_repository.get_user(user_id)
 
         if(user is None):
             raise ValueError("Usuário inválido")
@@ -476,3 +454,17 @@ class ScheduleService():
                            description=school.description, point_type_id=school.point_type_id)
         
         return school, school_dto
+
+    def validating_driver_on_not_started_schedule(self, driver_id: int, schedule_id: int):
+        schedule = self.schedule_repository.get_schedule_not_started(schedule_id)
+        
+        if schedule is None:
+            raise ValueError("Viagem inválida")
+        
+        schedule_driver = self.schedule_user_service.get_schedule_user_by_schedule_id(schedule.id)
+
+        if schedule_driver is None:
+            raise ValueError("A viagem não possuí motorista")
+        
+        if schedule_driver.user_id != driver_id:
+            raise ValueError("O motorista não pertence à essa viagem")
