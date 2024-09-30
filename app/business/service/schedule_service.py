@@ -174,12 +174,7 @@ class ScheduleService():
 
         students_points = self.listing_students_points(students, student_list)
 
-        schedule_id = 0
-
         schedule_id = self.schedule_repository.create_schedule(schedule, driver, vehicle, school)
-        
-        if schedule_id == 0:
-            raise ValueError("Houve um erro ao criar a viagem")
         
         schedule_created = ScheduleCreated(points=students_points, school=school_dto, schedule_id=schedule_id)
 
