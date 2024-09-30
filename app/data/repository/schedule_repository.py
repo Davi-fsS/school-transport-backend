@@ -39,13 +39,22 @@ class ScheduleRepository():
         return self.db.query(ScheduleModel).filter(ScheduleModel.id.in_(schedule_id_list), ScheduleModel.real_initial_date != None, 
                                                    ScheduleModel.real_end_date == None).all()
 
-    def create_schedule_destiny_school(self, schedule: CreateSchedule, driver: UserModel, vehicle: VehicleModel, school: PointModel):
+    def create_schedule(self, schedule: CreateSchedule, driver: UserModel, vehicle: VehicleModel, school: PointModel):
         try:
             creation_date = datetime.now()
 
-            schedule = ScheduleModel(name=f"Ida para {school.name}", initial_date=creation_date,
-                                    description=f"Viagem de ida para {school.name} - {creation_date.date()}",
-                                    schedule_type_id=1, creation_user=driver.id)
+            if(schedule.schedule_type != 1 and schedule.schedule_type != 2):
+                raise ValueError("Tipo de viagem inválida")
+
+            schedule_name = f"Ida para {school.name}"
+            schedule_description = f"Viagem de ida para {school.name} - {creation_date.date()}"
+
+            if(schedule.schedule_type == 2):
+                schedule_name = f"Volta de {school.name}"
+                schedule_description = f"Viagem de volta de {school.name} - {creation_date.date()}"
+
+            schedule = ScheduleModel(name=schedule_name, initial_date=creation_date, description=schedule_description,
+                                    schedule_type_id=schedule.schedule_type, creation_user=driver.id)
             
             self.db.add(schedule)
             self.db.flush()
@@ -58,32 +67,6 @@ class ScheduleRepository():
 
             self.db.add(schedule_user)
 
-            self.db.commit()
-
-            return schedule.id
-        except:
-            self.db.rollback()
-            raise ValueError("Erro ao fazer o registro no sistema")
-        
-    def create_schedule_origin_school(self, schedule: CreateSchedule, driver: UserModel, vehicle: VehicleModel, school: PointModel):
-        try:
-            creation_date = datetime.now()
-
-            schedule = ScheduleModel(name=f"Volta de {school.name}", initial_date=creation_date,
-                                    description=f"Viagem de volta de {school.name} - {creation_date.date()}",
-                                    schedule_type_id=2, creation_user=driver.id)
-            
-            self.db.add(schedule)
-            self.db.flush()
-
-            schedule_vehicle = ScheduleVehicleModel(schedule_id=schedule.id, vehicle_id=vehicle.id, creation_user= driver.id)
-
-            self.db.add(schedule_vehicle)
-
-            schedule_user = ScheduleUserModel(schedule_id=schedule.id, user_id=driver.id, creation_user=driver.id)
-
-            self.db.add(schedule_user)
-            
             self.db.commit()
 
             return schedule.id

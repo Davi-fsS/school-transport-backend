@@ -1,5 +1,6 @@
 from datetime import datetime
 from typing import List
+from data.model.student_model import StudentModel
 from presentation.dto.ScheduleResponsibleDetail import ScheduleResponsibleDetail
 from data.repository.schedule_maps_infos_repository import ScheduleMapsInfosRepository
 from presentation.dto.Student import Student
@@ -165,75 +166,17 @@ class ScheduleService():
     def create_schedule(self, schedule: CreateSchedule):
         driver = self.validate_create_schedule(schedule)
 
-        vehicle_list = self.vehicle_service.get_vehicle_list_by_driver(driver.id)
+        vehicle = self.validating_vehicle(driver.id, schedule.vehicle_id)
 
-        if(len(vehicle_list) == 0):
-            raise ValueError("Motorista não possui veículo")
-
-        vehicle_id_list = []
-        for vehicle_db in vehicle_list:
-            vehicle_id_list.append(vehicle_db.id)
- 
-        vehicle = self.vehicle_service.get_vehicle_by_id(schedule.vehicle_id)
-
-        if vehicle is None:
-            raise ValueError("Veículo inválido")
+        school, school_dto = self.validating_school(driver.id, schedule.school_id)
         
-        if vehicle.id not in vehicle_id_list:
-            raise ValueError("Veículo não autorizado")
-        
-        driver_student_list = self.user_student_service.get_students_by_responsible(driver.id)
+        student_list, students = self.listing_driver_students(driver.id)
 
-        student_list = []
-
-        for driver_student in driver_student_list:
-            student_id = driver_student.student_id
-            student_list.append(student_id)
-
-        student_point_list = []
-
-        students = self.student_service.get_students_by_list(student_list)
-
-        for student in students:
-            student_point_list.append(student.point_id)
-
-        students_points = self.get_points_by_student_list(student_list, student_point_list)
-        
-        if(len(students_points) == 0):
-            raise ValueError("Viagem não possuí nenhum ponto de parada")
-
-        school_list = self.point_service.get_all_school_by_user(driver.id)
-
-        if(len(school_list) == 0):
-            raise ValueError("Motorista não possui escola")
-        
-        school_id_list = []
-        for school_db in school_list:
-            school_id_list.append(school_db.id)
-
-        school = self.point_service.get_point(schedule.school_id)
-
-        if school is None:
-            raise ValueError("Escola inválida")
-        
-        if school.point_type_id == 1:
-            raise ValueError("Este ponto não é uma escola")
-        
-        if school.id not in school_id_list:
-            raise ValueError("Escola não associada")
-
-        school_dto = Point(id=school.id, name=school.name, address=school.address, lat=school.lat, lng=school.lng, 
-                           alt=school.alt, city=school.city, neighborhood=school.neighborhood, state=school.state,
-                           description=school.description, point_type_id=school.point_type_id)
+        students_points = self.listing_students_points(students, student_list)
 
         schedule_id = 0
 
-        if(schedule.schedule_type == 1):
-            schedule_id = self.schedule_repository.create_schedule_destiny_school(schedule, driver, vehicle, school)
-        elif(schedule.schedule_type == 2):
-            schedule_id = self.schedule_repository.create_schedule_origin_school(schedule, driver, vehicle, school)
-        else:
-            raise ValueError("Tipo de viagem inválida")
+        schedule_id = self.schedule_repository.create_schedule(schedule, driver, vehicle, school)
         
         if schedule_id == 0:
             raise ValueError("Houve um erro ao criar a viagem")
@@ -465,3 +408,76 @@ class ScheduleService():
             student_id_list.append(student.id)
 
         return self.user_student_service.get_responsibles_by_student_list(student_id_list)
+    
+    def validating_vehicle(self, driver_id: int, vehicle_id: int):
+        vehicle_list = self.vehicle_service.get_vehicle_list_by_driver(driver_id)
+
+        if(len(vehicle_list) == 0):
+            raise ValueError("Motorista não possui veículo")
+
+        vehicle_id_list = []
+        for vehicle_db in vehicle_list:
+            vehicle_id_list.append(vehicle_db.id)
+ 
+        vehicle = self.vehicle_service.get_vehicle_by_id(vehicle_id)
+
+        if vehicle is None:
+            raise ValueError("Veículo inválido")
+        
+        if vehicle.id not in vehicle_id_list:
+            raise ValueError("Veículo não autorizado")
+        
+        return vehicle
+    
+    def listing_driver_students(self, driver_id: int):
+        driver_student_list = self.user_student_service.get_students_by_responsible(driver_id)
+
+        student_list = []
+
+        for driver_student in driver_student_list:
+            student_id = driver_student.student_id
+            student_list.append(student_id)
+
+        students = self.student_service.get_students_by_list(student_list)
+
+        return student_list, students
+    
+    def listing_students_points(self, students : List[StudentModel], student_list: List[int]): 
+        student_point_list = []
+
+        for student in students:
+            student_point_list.append(student.point_id)
+
+        students_points = self.get_points_by_student_list(student_list, student_point_list)
+        
+        if(len(students_points) == 0):
+            raise ValueError("Viagem não possuí nenhum ponto de parada")
+        
+        return students_points
+    
+    def validating_school(self, driver_id: int, school_id: int):
+        school_list = self.point_service.get_all_school_by_user(driver_id)
+
+        if(len(school_list) == 0):
+            raise ValueError("Motorista não possui escola")
+        
+        school_id_list = []
+        for school_db in school_list:
+            school_id_list.append(school_db.id)
+
+        school = self.point_service.get_point(school_id)
+
+        if school is None:
+            raise ValueError("Escola inválida")
+        
+        if school.point_type_id == 1:
+            raise ValueError("Este ponto não é uma escola")
+        
+        if school.id not in school_id_list:
+            raise ValueError("Escola não associada")
+
+        school_dto = Point(id=school.id, name=school.name, address=school.address, lat=school.lat, lng=school.lng, 
+                           alt=school.alt, city=school.city, neighborhood=school.neighborhood, state=school.state,
+                           description=school.description, point_type_id=school.point_type_id)
+        
+        return school, school_dto
