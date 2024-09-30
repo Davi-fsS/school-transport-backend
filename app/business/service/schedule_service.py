@@ -164,7 +164,7 @@ class ScheduleService():
         return current_schedules
 
     def create_schedule(self, schedule: CreateSchedule):
-        driver = self.validate_create_schedule(schedule)
+        driver = self.validating_driver(schedule)
 
         vehicle = self.validating_vehicle(driver.id, schedule.vehicle_id)
 
@@ -179,17 +179,6 @@ class ScheduleService():
         schedule_created = ScheduleCreated(points=students_points, school=school_dto, schedule_id=schedule_id)
 
         return schedule_created
-
-    def validate_create_schedule(self, schedule: CreateSchedule):
-        user = self.user_repository.get_user(schedule.user_id)
-
-        if(user is None):
-            raise ValueError("Usuário inválido")
-
-        if(user.user_type_id == 3):
-            raise ValueError("Usuário não é um motorista")
-        
-        return user
     
     def put_schedule_start(self, start: StartSchedule):
         user = self.user_repository.get_user(start.user_id)
@@ -404,6 +393,17 @@ class ScheduleService():
 
         return self.user_student_service.get_responsibles_by_student_list(student_id_list)
     
+    def validating_driver(self, schedule: CreateSchedule):
+        user = self.user_repository.get_user(schedule.user_id)
+
+        if(user is None):
+            raise ValueError("Usuário inválido")
+
+        if(user.user_type_id == 3):
+            raise ValueError("Usuário não é um motorista")
+        
+        return user
+
     def validating_vehicle(self, driver_id: int, vehicle_id: int):
         vehicle_list = self.vehicle_service.get_vehicle_list_by_driver(driver_id)
 
