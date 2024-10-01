@@ -359,6 +359,8 @@ class ScheduleService():
 
         students = self.student_service.get_students_by_list(student_list)
 
+        # adicionar validação aqui das notificações
+
         return student_list, students
     
     def listing_students_points(self, students : List[StudentModel], student_list: List[int]): 
