@@ -1,5 +1,6 @@
 from datetime import datetime
 from typing import List
+from business.service.parent_notification_service import ParentNotificationService
 from data.model.student_model import StudentModel
 from presentation.dto.ScheduleResponsibleDetail import ScheduleResponsibleDetail
 from data.repository.schedule_maps_infos_repository import ScheduleMapsInfosRepository
@@ -38,6 +39,7 @@ class ScheduleService():
     student_service: StudentService
     user_point_service: UserPointService
     schedule_maps_infos_repository: ScheduleMapsInfosRepository
+    parent_notification_service: ParentNotificationService
 
     def __init__(self):
         self.schedule_repository = ScheduleRepository()
@@ -170,7 +172,7 @@ class ScheduleService():
 
         school, school_dto = self.validating_school(driver.id, schedule.school_id)
 
-        student_list, students = self.listing_driver_students(driver.id)
+        student_list, students = self.listing_driver_students(driver.id, schedule.schedule_type)
 
         students_points = self.listing_students_points(students, student_list)
 
@@ -348,7 +350,7 @@ class ScheduleService():
         
         return vehicle
     
-    def listing_driver_students(self, driver_id: int):
+    def listing_driver_students(self, driver_id: int, schedule_type_id: int):
         driver_student_list = self.user_student_service.get_students_by_responsible(driver_id)
 
         student_list = []
@@ -357,12 +359,34 @@ class ScheduleService():
             student_id = driver_student.student_id
             student_list.append(student_id)
 
-        students = self.student_service.get_students_by_list(student_list)
+        student_actives, students = self.listing_active_students(student_list, schedule_type_id)
 
-        # adicionar validação aqui das notificações
-
-        return student_list, students
+        return student_actives, students
     
+    def listing_active_students(self, student_list : List[int], schedule_type_id: int):
+        parent_notifications = self.parent_notification_service.get_parent_notification_list_by_student_list_today(student_list)
+
+        students_inative = []
+
+        for parent_notification in parent_notifications:
+            if(parent_notification.student_id in student_list):
+                if(parent_notification.parent_notification_period_id == 1 and schedule_type_id == 1):
+                    students_inative.append(parent_notification.student_id)
+                elif(parent_notification.parent_notification_period_id == 2 and schedule_type_id == 2):
+                    students_inative.append(parent_notification.student_id)
+                else:
+                    students_inative.append(parent_notification.student_id)
+
+        students_active = []
+
+        for student in student_list:
+            if(student not in students_inative):
+                students_active.append(student)
+
+        students = self.student_service.get_students_by_list(students_active)
+
+        return students_active, students
+
     def listing_students_points(self, students : List[StudentModel], student_list: List[int]): 
         student_point_list = []
 

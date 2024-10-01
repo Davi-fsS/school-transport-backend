@@ -121,6 +121,9 @@ class ParentNotificationService():
 
         return self.parent_notification_repository.put_notification_disabled(id)
     
+    def get_parent_notification_list_by_student_list_today(self, student_list: List[int]):
+        return self.parent_notification_repository.get_notification_list_by_student_list(student_list)
+    
     def get_parent_notification_list_dto(self, parent_notification_list: List[ParentNotificationModel]):
         parent_notifications_dto : List[ParentNotification] = []
 
