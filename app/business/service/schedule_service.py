@@ -199,25 +199,13 @@ class ScheduleService():
         self.schedule_point_service.put_schedule_point(schedule_point.schedule_id, schedule_point.point_id, schedule_point.user_id, schedule_point.has_embarked)
 
     def put_schedule_end(self, schedule_id: int, user_id: int):
-        user = self.user_repository.get_user(user_id)
+        self.validating_driver(user_id)
+        
+        schedule = self.validating_driver_on_current_schedule(user_id, schedule_id)
 
-        if user is None:
-            raise ValueError("Usuário inválido")
-        
-        if user.user_type_id == 3:
-            raise ValueError("Usuário não é um motorista")
-        
-        schedule = self.schedule_repository.get_schedule_in_progress(schedule_id)
+        self.validating_schedule_last_point(schedule_id)
 
-        if schedule is None:
-            raise ValueError("Viagem inválida")
-        
-        schedule_user = self.schedule_user_service.get_schedule_user_by_schedule_id(schedule_id)
-
-        if schedule_user.user_id != user_id:
-            raise ValueError("Usuário não autorizado")
-        
-        schedule_point = self.schedule_point_service.get_schedule_point_by_schedule_id(schedule_id)
+        self.validating_schedule_last_point(schedule_id)
         
         self.schedule_repository.put_schedule_end(schedule, user_id)
 
@@ -443,6 +431,8 @@ class ScheduleService():
         if schedule_user.user_id != driver_id:
             raise ValueError("Usuário não autorizado")
         
+        return schedule
+        
     def validating_point_to_embark(self, schedule_id: int, point_id: int):
         schedule_point_db = self.schedule_point_service.get_schedule_point_by_point_id(schedule_id, point_id)
 
@@ -468,3 +458,11 @@ class ScheduleService():
         
         if point.point_type_id == 2:
             raise ValueError("Ponto não autorizado")
+        
+    def validating_schedule_last_point(self, schedule_id: int):
+        actual_schedule_point = self.schedule_point_service.get_current_schedule_point_by_schedule_id(schedule_id)
+
+        last_point = self.schedule_point_service.get_last_schedule_point(schedule_id)
+
+        if actual_schedule_point.id != last_point.id:
+            raise ValueError("Não é possível finalizar a viagem até que todos as paradas sejam informadas")
