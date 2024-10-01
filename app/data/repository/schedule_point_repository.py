@@ -27,8 +27,6 @@ class SchedulePointRepository():
         try:
             sched_point = self.get_schedule_point_by_point_id(schedule_id, point_id)
 
-            print(sched_point.id)
-
             sched_point.real_date = datetime.now()
             sched_point.change_user = user_id
             sched_point.has_embarked = has_embarked
