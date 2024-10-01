@@ -204,8 +204,6 @@ class ScheduleService():
         schedule = self.validating_driver_on_current_schedule(user_id, schedule_id)
 
         self.validating_schedule_last_point(schedule_id)
-
-        self.validating_schedule_last_point(schedule_id)
         
         self.schedule_repository.put_schedule_end(schedule, user_id)
 
