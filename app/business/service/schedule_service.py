@@ -53,6 +53,7 @@ class ScheduleService():
         self.user_point_service = UserPointService()
         self.student_service = StudentService()
         self.schedule_maps_infos_repository = ScheduleMapsInfosRepository()
+        self.parent_notification_service = ParentNotificationService()
 
     def get_schedule_by_id(self, schedule_id: int):
         schedule = self.schedule_repository.get_schedule_by_id(schedule_id)
@@ -172,13 +173,13 @@ class ScheduleService():
 
         school, school_dto = self.validating_school(driver.id, schedule.school_id)
 
-        student_list, students = self.listing_driver_students(driver.id, schedule.schedule_type)
+        student_list, students_active, students_inactive = self.listing_driver_students(driver.id, schedule.schedule_type)
 
-        students_points = self.listing_students_points(students, student_list)
+        students_points = self.listing_students_points(students_active, student_list)
 
         schedule_id = self.schedule_repository.create_schedule(schedule, driver, vehicle, school)
         
-        schedule_created = ScheduleCreated(points=students_points, school=school_dto, schedule_id=schedule_id)
+        schedule_created = ScheduleCreated(points=students_points, school=school_dto, schedule_id=schedule_id, students_inactive=students_inactive)
 
         return schedule_created
     
@@ -359,9 +360,9 @@ class ScheduleService():
             student_id = driver_student.student_id
             student_list.append(student_id)
 
-        student_actives, students = self.listing_active_students(student_list, schedule_type_id)
+        student_actives, students_active, students_inactive = self.listing_active_students(student_list, schedule_type_id)
 
-        return student_actives, students
+        return student_actives, students_active, students_inactive
     
     def listing_active_students(self, student_list : List[int], schedule_type_id: int):
         parent_notifications = self.parent_notification_service.get_parent_notification_list_by_student_list_today(student_list)
@@ -383,14 +384,25 @@ class ScheduleService():
             if(student not in students_inative):
                 students_active.append(student)
 
-        students = self.student_service.get_students_by_list(students_active)
+        students_actives = self.student_service.get_students_by_list(students_active)
 
-        return students_active, students
+        students_inactive_list = self.student_service.get_students_by_list(students_inative)
 
-    def listing_students_points(self, students : List[StudentModel], student_list: List[int]): 
+        students_inactive_dto : List[Student] = []
+
+        for student_inactive in students_inactive_list:
+            students_inactive_dto.append(Student(id=student_inactive.id, name=student_inactive.name, year=student_inactive.year,
+                                                 code=student_inactive.code, point_id=student_inactive.point_id, creation_user=student_inactive.creation_user))
+
+        return students_active, students_actives, students_inactive_dto
+
+    def listing_students_points(self, students_active : List[StudentModel], student_list: List[int]): 
         student_point_list = []
 
-        for student in students:
+        print("estudantes ativos:", len(students_active))
+        print("estudantes ativos:", len(students_active))
+
+        for student in students_active:
             student_point_list.append(student.point_id)
 
         students_points = self.get_points_by_student_list(student_list, student_point_list)
