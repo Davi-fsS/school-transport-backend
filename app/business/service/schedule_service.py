@@ -375,7 +375,7 @@ class ScheduleService():
                     students_inative.append(parent_notification.student_id)
                 elif(parent_notification.parent_notification_period_id == 2 and schedule_type_id == 2):
                     students_inative.append(parent_notification.student_id)
-                else:
+                elif(parent_notification.parent_notification_period_id == 3):
                     students_inative.append(parent_notification.student_id)
 
         students_active = []
@@ -398,9 +398,6 @@ class ScheduleService():
 
     def listing_students_points(self, students_active : List[StudentModel], student_list: List[int]): 
         student_point_list = []
-
-        print("estudantes ativos:", len(students_active))
-        print("estudantes ativos:", len(students_active))
 
         for student in students_active:
             student_point_list.append(student.point_id)
