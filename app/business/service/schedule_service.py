@@ -478,8 +478,15 @@ class ScheduleService():
         schedules_point_list_db = self.schedule_point_service.get_schedule_point_by_schedule_id(schedule_id)
 
         scheduls_points_id_list_db = []
+        schedule_point_not_visited = []
         for schedule_point_id in schedules_point_list_db:
             scheduls_points_id_list_db.append(schedule_point_id.point_id)
+
+            if(schedule_point_id.real_date == None and schedule_point_id.has_embarked == None):
+                schedule_point_not_visited.append(schedule_point_id)
+
+        if schedule_point_not_visited[0].id != schedule_point_db.id:
+            raise ValueError("Este não é o ponto atual")
 
         if schedule_point_db.point_id not in scheduls_points_id_list_db:
             raise ValueError("Ponto não autorizado")
