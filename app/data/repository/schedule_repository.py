@@ -74,7 +74,7 @@ class ScheduleRepository():
             self.db.rollback()
             raise ValueError("Erro ao fazer o registro no sistema")
 
-    def put_schedule_start(self, start: StartSchedule, school: PointModel):
+    def put_schedule_start(self, start: StartSchedule, school: PointModel, destiny: PointModel | None):
         try:
             schedule = self.get_schedule_not_started(start.schedule_id)
             
@@ -89,20 +89,25 @@ class ScheduleRepository():
                 schedule_point_school = SchedulePointModel(schedule_id=schedule.id, order=len(start.points) + 1, point_id=school.id, 
                                                            description=f"Destino: Escola {school.name}" , creation_user=start.user_id, planned_date=start.end_date)
                 self.db.add(schedule_point_school)
-            else:
+            elif(schedule.schedule_type_id == 2):
                 schedule_point_school = SchedulePointModel(planned_date=datetime.now(), real_date=datetime.now(), schedule_id=schedule.id, order=1, point_id=school.id, 
-                                                           description=f"Origem: Escola {school.name}" ,creation_user=start.user_id)
+                                                        description=f"Origem: Escola {school.name}" ,creation_user=start.user_id)
                 self.db.add(schedule_point_school)
 
-                for index, point in enumerate(start.points, start=1):
-                    schedule_point = SchedulePointModel()
-                    
-                    if(index - 1 == len(point)):
-                        schedule_point = SchedulePointModel(schedule_id=schedule.id, order=index + 1,point_id=point, creation_user=start.user_id, planned_date=start.end_date)
-                    else:
-                        schedule_point = SchedulePointModel(schedule_id=schedule.id, order=index + 1,point_id=point, creation_user=start.user_id)
-                    
+                for index, point in enumerate(start.points, start=1):                
+                    schedule_point = SchedulePointModel(schedule_id=schedule.id, order=index + 1,point_id=point, creation_user=start.user_id)
                     self.db.add(schedule_point)
+
+                schedule_point_destiny = SchedulePointModel(planned_date=start.end_date, schedule_id=schedule.id, order=len(start.points) + 2, point_id=start.destiny_id,creation_user=start.user_id)
+                
+                destiny_description = f"Destino: {destiny.name}"
+
+                if(destiny.point_type_id == 2):
+                    destiny_description = f"Destino: Escola {destiny.name}"
+
+                schedule_point_destiny.description = destiny_description
+                
+                self.db.add(schedule_point_destiny)
 
             schedule_map_infos = ScheduleMapsInfosModel(schedule_id=schedule.id, encoded_points=start.encoded_points, legs_info=start.legs_info,
                                                         eta=start.eta, creation_user = start.user_id)

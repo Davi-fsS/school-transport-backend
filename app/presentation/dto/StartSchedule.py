@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from pydantic import BaseModel
 from datetime import datetime
 
@@ -13,3 +13,4 @@ class StartSchedule(BaseModel):
     encoded_points: str
     legs_info: str
     eta: str
+    destiny_id: Optional[int] = None

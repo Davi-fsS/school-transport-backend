@@ -186,11 +186,16 @@ class ScheduleService():
     def put_schedule_start(self, start: StartSchedule):
         self.validating_driver(start.user_id)
 
-        self.validating_driver_on_not_started_schedule(start.user_id, start.schedule_id)
+        schedule = self.validating_driver_on_not_started_schedule(start.user_id, start.schedule_id)
 
         school, _ = self.validating_school(start.user_id, start.school_id)
 
-        self.schedule_repository.put_schedule_start(start, school)
+        destiny = None
+
+        if(schedule.schedule_type_id == 2):
+            destiny = self.validating_destiny_schedule(start.user_id, start.destiny_id)
+
+        self.schedule_repository.put_schedule_start(start, school, destiny)
 
     def put_schedule_point(self, schedule_point: PutSchedulePoint):
         self.validating_driver(schedule_point.user_id)
@@ -200,6 +205,23 @@ class ScheduleService():
         self.validating_point_to_embark(schedule_point.schedule_id, schedule_point.point_id)
 
         self.schedule_point_service.put_schedule_point(schedule_point.schedule_id, schedule_point.point_id, schedule_point.user_id, schedule_point.has_embarked)
+
+    def validating_destiny_schedule(self, driver_id: int, destiny_id: int):
+        driver_point_list = self.user_point_service.get_user_point_list(driver_id)
+
+        driver_point_ids = []
+        for driver_point in driver_point_list:
+            driver_point_ids.append(driver_point.point_id)
+
+        if(destiny_id not in driver_point_ids):
+            raise ValueError("Destino não permitido")
+        
+        destiny = self.point_service.get_point_by_id(destiny_id)
+
+        if destiny is None:
+            raise ValueError("Destino inválido")
+        
+        return destiny
 
     def put_schedule_end(self, schedule_id: int, user_id: int):
         self.validating_driver(user_id)
@@ -449,6 +471,8 @@ class ScheduleService():
         
         if schedule_driver.user_id != driver_id:
             raise ValueError("O motorista não pertence à essa viagem")
+        
+        return schedule
         
     def validating_driver_on_current_schedule(self, driver_id: int, schedule_id: int):
         schedule = self.schedule_repository.get_schedule_in_progress(schedule_id)
