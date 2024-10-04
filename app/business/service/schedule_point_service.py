@@ -65,8 +65,14 @@ class SchedulePointService():
     def get_schedule_point_by_id(self, id: int):
         return self.schedule_point_repository.get_schedule_point_by_id(id)
     
+    def get_current_schedule_point_by_schedule_id(self, schedule_id: int):
+        return self.schedule_point_repository.get_current_schedule_point_by_schedule_id(schedule_id)
+    
     def get_schedule_point_by_point_id(self, schedule_id: int, point_id: int):
         return self.schedule_point_repository.get_schedule_point_by_point_id(schedule_id, point_id)
+    
+    def get_last_schedule_point(self, schedule_id: int):
+        return self.schedule_point_repository.get_last_schedule_point(schedule_id)
 
     def get_current_schedule_list_by_point_list(self, point_list: List[int]):
         schedules_points = self.schedule_point_repository.get_schedule_point_by_point_list(point_list)

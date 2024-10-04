@@ -1,8 +1,10 @@
+from typing import List
 from sqlalchemy.orm import Session
 from data.infrastructure.database import get_db
 from data.model.parent_notification_model import ParentNotificationModel
 from datetime import datetime
 from sqlalchemy import func, cast, Date
+import pytz
 
 class ParentNotificationRepository():
     db: Session
@@ -13,6 +15,16 @@ class ParentNotificationRepository():
     def get_notification_list_by_user(self, user_id: int):
         return self.db.query(ParentNotificationModel).filter(ParentNotificationModel.user_id == user_id, ParentNotificationModel.disabled == False).all()
    
+    def get_notification_list_by_student_list(self, student_list: List[int]):
+        timezone = pytz.timezone('America/Sao_Paulo')
+        current_date = datetime.now(timezone).date()
+
+        return self.db.query(ParentNotificationModel).filter(
+            ParentNotificationModel.student_id.in_(student_list),
+            cast(ParentNotificationModel.inative_day, Date) == current_date,
+            ParentNotificationModel.disabled == False
+        ).all()
+
     def get_canceled_notification_list_by_user(self, user_id: int):
         return self.db.query(ParentNotificationModel).filter(ParentNotificationModel.user_id == user_id, ParentNotificationModel.disabled == True).all()
    

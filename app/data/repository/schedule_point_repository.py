@@ -1,5 +1,6 @@
 from typing import List
 from sqlalchemy.orm import Session
+from sqlalchemy import desc
 from datetime import datetime
 from presentation.dto.PutSchedulePoint import PutSchedulePoint
 from data.model.schedule_point_model import SchedulePointModel
@@ -17,6 +18,12 @@ class SchedulePointRepository():
     def get_schedule_point_by_id(self, id: int):
         return self.db.query(SchedulePointModel).filter(SchedulePointModel.id == id).first()
     
+    def get_last_schedule_point(self, schedule_id : int):
+        return self.db.query(SchedulePointModel).filter(SchedulePointModel.schedule_id == schedule_id).order_by(desc(SchedulePointModel.order)).first()
+
+    def get_current_schedule_point_by_schedule_id(self, schedule_id: int):
+        return self.db.query(SchedulePointModel).filter(SchedulePointModel.schedule_id == schedule_id, SchedulePointModel.real_date == None).first()
+
     def get_schedule_point_by_point_id(self, schedule_id: int, point_id: int):
         return self.db.query(SchedulePointModel).filter(SchedulePointModel.point_id == point_id,SchedulePointModel.schedule_id == schedule_id, SchedulePointModel.real_date == None).first()
     
@@ -26,8 +33,6 @@ class SchedulePointRepository():
     def put_schedule_point(self, schedule_id: int, point_id: int, user_id: int, has_embarked: bool):
         try:
             sched_point = self.get_schedule_point_by_point_id(schedule_id, point_id)
-
-            print(sched_point.id)
 
             sched_point.real_date = datetime.now()
             sched_point.change_user = user_id

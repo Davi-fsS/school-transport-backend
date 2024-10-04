@@ -39,13 +39,22 @@ class ScheduleRepository():
         return self.db.query(ScheduleModel).filter(ScheduleModel.id.in_(schedule_id_list), ScheduleModel.real_initial_date != None, 
                                                    ScheduleModel.real_end_date == None).all()
 
-    def create_schedule_destiny_school(self, schedule: CreateSchedule, driver: UserModel, vehicle: VehicleModel, school: PointModel):
+    def create_schedule(self, schedule: CreateSchedule, driver: UserModel, vehicle: VehicleModel, school: PointModel):
         try:
             creation_date = datetime.now()
 
-            schedule = ScheduleModel(name=f"Ida para {school.name}", initial_date=creation_date,
-                                    description=f"Viagem de ida para {school.name} - {creation_date.date()}",
-                                    schedule_type_id=1, creation_user=driver.id)
+            if(schedule.schedule_type != 1 and schedule.schedule_type != 2):
+                raise ValueError("Tipo de viagem inválida")
+
+            schedule_name = f"Ida para {school.name}"
+            schedule_description = f"Viagem de ida para {school.name} - {creation_date.date()}"
+
+            if(schedule.schedule_type == 2):
+                schedule_name = f"Volta de {school.name}"
+                schedule_description = f"Viagem de volta de {school.name} - {creation_date.date()}"
+
+            schedule = ScheduleModel(name=schedule_name, initial_date=creation_date, description=schedule_description,
+                                    schedule_type_id=schedule.schedule_type, creation_user=driver.id)
             
             self.db.add(schedule)
             self.db.flush()
@@ -64,39 +73,10 @@ class ScheduleRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer o registro no sistema")
-        
-    def create_schedule_origin_school(self, schedule: CreateSchedule, driver: UserModel, vehicle: VehicleModel, school: PointModel):
-        try:
-            creation_date = datetime.now()
 
-            schedule = ScheduleModel(name=f"Volta de {school.name}", initial_date=creation_date,
-                                    description=f"Viagem de volta de {school.name} - {creation_date.date()}",
-                                    schedule_type_id=2, creation_user=driver.id)
-            
-            self.db.add(schedule)
-            self.db.flush()
-
-            schedule_vehicle = ScheduleVehicleModel(schedule_id=schedule.id, vehicle_id=vehicle.id, creation_user= driver.id)
-
-            self.db.add(schedule_vehicle)
-
-            schedule_user = ScheduleUserModel(schedule_id=schedule.id, user_id=driver.id, creation_user=driver.id)
-
-            self.db.add(schedule_user)
-            
-            self.db.commit()
-
-            return schedule.id
-        except:
-            self.db.rollback()
-            raise ValueError("Erro ao fazer o registro no sistema")
-
-    def put_schedule_start(self, start: StartSchedule, school: PointModel):
+    def put_schedule_start(self, start: StartSchedule, school: PointModel, destiny: PointModel | None):
         try:
             schedule = self.get_schedule_not_started(start.schedule_id)
-
-            if(schedule is None):
-                raise ValueError("Viagem não encontrada")
             
             schedule.end_date = start.end_date
             schedule.real_initial_date = datetime.now()
@@ -109,14 +89,25 @@ class ScheduleRepository():
                 schedule_point_school = SchedulePointModel(schedule_id=schedule.id, order=len(start.points) + 1, point_id=school.id, 
                                                            description=f"Destino: Escola {school.name}" , creation_user=start.user_id, planned_date=start.end_date)
                 self.db.add(schedule_point_school)
-            else:
-                schedule_point_school = SchedulePointModel(planned_date=start.end_date, real_date=start.end_date, schedule_id=schedule.id, order=1, point_id=school.id, 
-                                                           description=f"Origem: Escola {school.name}" ,creation_user=start.user_id)
+            elif(schedule.schedule_type_id == 2):
+                schedule_point_school = SchedulePointModel(planned_date=datetime.now(), real_date=datetime.now(), schedule_id=schedule.id, order=1, point_id=school.id, 
+                                                        description=f"Origem: Escola {school.name}" ,creation_user=start.user_id)
                 self.db.add(schedule_point_school)
 
-                for index, point in enumerate(start.points, start=1):
+                for index, point in enumerate(start.points, start=1):                
                     schedule_point = SchedulePointModel(schedule_id=schedule.id, order=index + 1,point_id=point, creation_user=start.user_id)
                     self.db.add(schedule_point)
+
+                schedule_point_destiny = SchedulePointModel(planned_date=start.end_date, schedule_id=schedule.id, order=len(start.points) + 2, point_id=start.destiny_id,creation_user=start.user_id)
+                
+                destiny_description = f"Destino: {destiny.name}"
+
+                if(destiny.point_type_id == 2):
+                    destiny_description = f"Destino: Escola {destiny.name}"
+
+                schedule_point_destiny.description = destiny_description
+                
+                self.db.add(schedule_point_destiny)
 
             schedule_map_infos = ScheduleMapsInfosModel(schedule_id=schedule.id, encoded_points=start.encoded_points, legs_info=start.legs_info,
                                                         eta=start.eta, creation_user = start.user_id)

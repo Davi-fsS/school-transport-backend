@@ -1,5 +1,7 @@
 from datetime import datetime
 from typing import List
+from business.service.parent_notification_service import ParentNotificationService
+from data.model.student_model import StudentModel
 from presentation.dto.ScheduleResponsibleDetail import ScheduleResponsibleDetail
 from data.repository.schedule_maps_infos_repository import ScheduleMapsInfosRepository
 from presentation.dto.Student import Student
@@ -37,6 +39,7 @@ class ScheduleService():
     student_service: StudentService
     user_point_service: UserPointService
     schedule_maps_infos_repository: ScheduleMapsInfosRepository
+    parent_notification_service: ParentNotificationService
 
     def __init__(self):
         self.schedule_repository = ScheduleRepository()
@@ -50,6 +53,7 @@ class ScheduleService():
         self.user_point_service = UserPointService()
         self.student_service = StudentService()
         self.schedule_maps_infos_repository = ScheduleMapsInfosRepository()
+        self.parent_notification_service = ParentNotificationService()
 
     def get_schedule_by_id(self, schedule_id: int):
         schedule = self.schedule_repository.get_schedule_by_id(schedule_id)
@@ -163,196 +167,68 @@ class ScheduleService():
         return current_schedules
 
     def create_schedule(self, schedule: CreateSchedule):
-        driver = self.validate_create_schedule(schedule)
+        driver = self.validating_driver(schedule.user_id)
 
-        vehicle_list = self.vehicle_service.get_vehicle_list_by_driver(driver.id)
+        vehicle = self.validating_vehicle(driver.id, schedule.vehicle_id)
 
-        if(len(vehicle_list) == 0):
-            raise ValueError("Motorista não possui veículo")
+        school, school_dto = self.validating_school(driver.id, schedule.school_id)
 
-        vehicle_id_list = []
-        for vehicle_db in vehicle_list:
-            vehicle_id_list.append(vehicle_db.id)
- 
-        vehicle = self.vehicle_service.get_vehicle_by_id(schedule.vehicle_id)
+        student_list, students_active, students_inactive = self.listing_driver_students(driver.id, schedule.schedule_type)
 
-        if vehicle is None:
-            raise ValueError("Veículo inválido")
+        students_points = self.listing_students_points(students_active, student_list)
+
+        schedule_id = self.schedule_repository.create_schedule(schedule, driver, vehicle, school)
         
-        if vehicle.id not in vehicle_id_list:
-            raise ValueError("Veículo não autorizado")
-        
-        driver_student_list = self.user_student_service.get_students_by_responsible(driver.id)
-
-        student_list = []
-
-        for driver_student in driver_student_list:
-            student_id = driver_student.student_id
-            student_list.append(student_id)
-
-        student_point_list = []
-
-        students = self.student_service.get_students_by_list(student_list)
-
-        for student in students:
-            student_point_list.append(student.point_id)
-
-        students_points = self.get_points_by_student_list(student_list, student_point_list)
-        
-        if(len(students_points) == 0):
-            raise ValueError("Viagem não possuí nenhum ponto de parada")
-
-        school_list = self.point_service.get_all_school_by_user(driver.id)
-
-        if(len(school_list) == 0):
-            raise ValueError("Motorista não possui escola")
-        
-        school_id_list = []
-        for school_db in school_list:
-            school_id_list.append(school_db.id)
-
-        school = self.point_service.get_point(schedule.school_id)
-
-        if school is None:
-            raise ValueError("Escola inválida")
-        
-        if school.point_type_id == 1:
-            raise ValueError("Este ponto não é uma escola")
-        
-        if school.id not in school_id_list:
-            raise ValueError("Escola não associada")
-
-        school_dto = Point(id=school.id, name=school.name, address=school.address, lat=school.lat, lng=school.lng, 
-                           alt=school.alt, city=school.city, neighborhood=school.neighborhood, state=school.state,
-                           description=school.description, point_type_id=school.point_type_id)
-
-        schedule_id = 0
-
-        if(schedule.schedule_type == 1):
-            schedule_id = self.schedule_repository.create_schedule_destiny_school(schedule, driver, vehicle, school)
-        elif(schedule.schedule_type == 2):
-            schedule_id = self.schedule_repository.create_schedule_origin_school(schedule, driver, vehicle, school)
-        else:
-            raise ValueError("Tipo de viagem inválida")
-        
-        if schedule_id == 0:
-            raise ValueError("Houve um erro ao criar a viagem")
-        
-        schedule_created = ScheduleCreated(points=students_points, school=school_dto, schedule_id=schedule_id)
+        schedule_created = ScheduleCreated(points=students_points, school=school_dto, schedule_id=schedule_id, students_inactive=students_inactive)
 
         return schedule_created
-
-    def validate_create_schedule(self, schedule: CreateSchedule):
-        user = self.user_repository.get_user(schedule.user_id)
-
-        if(user is None):
-            raise ValueError("Usuário inválido")
-
-        if(user.user_type_id == 3):
-            raise ValueError("Usuário não é um motorista")
-        
-        return user
     
     def put_schedule_start(self, start: StartSchedule):
-        user = self.user_repository.get_user(start.user_id)
+        self.validating_driver(start.user_id)
 
-        if user is None:
-            raise ValueError("Usuário inválido")
-        
-        if user.user_type_id == 3:
-            raise ValueError("Usuário não é um motorista")
-        
-        school_list = self.point_service.get_all_school_by_user(start.user_id)
+        schedule = self.validating_driver_on_not_started_schedule(start.user_id, start.schedule_id)
 
-        if(len(school_list) == 0):
-            raise ValueError("Motorista não possui escola")
-        
-        school_id_list = []
-        for school_db in school_list:
-            school_id_list.append(school_db.id)
+        school, _ = self.validating_school(start.user_id, start.school_id)
 
-        school = self.point_service.get_point(start.school_id)
+        destiny = None
 
-        if school is None:
-            raise ValueError("Escola inválida")
-        
-        if school.point_type_id == 1:
-            raise ValueError("Este ponto não é uma escola")
-        
-        if school.id not in school_id_list:
-            raise ValueError("Escola não associada")
+        if(schedule.schedule_type_id == 2):
+            destiny = self.validating_destiny_schedule(start.user_id, start.destiny_id)
 
-        self.schedule_repository.put_schedule_start(start, school)
+        self.schedule_repository.put_schedule_start(start, school, destiny)
 
     def put_schedule_point(self, schedule_point: PutSchedulePoint):
-        user = self.user_repository.get_user(schedule_point.user_id)
-
-        if user is None:
-            raise ValueError("Usuário inválido")
+        self.validating_driver(schedule_point.user_id)
         
-        if user.user_type_id == 3:
-            raise ValueError("Usuário não é um motorista")
-        
-        schedule = self.schedule_repository.get_schedule_in_progress(schedule_point.schedule_id)
-
-        if schedule is None:
-            raise ValueError("Viagem não está em andamento")
-        
-        schedule_user = self.schedule_user_service.get_schedule_user_by_schedule_id(schedule_point.schedule_id)
-
-        if schedule_user is None:
-            raise ValueError("Não existe motorista para a viagem")
-        
-        if schedule_user.user_id != schedule_point.user_id:
-            raise ValueError("Usuário não autorizado")
-        
-        schedule_point_db = self.schedule_point_service.get_schedule_point_by_point_id(schedule_point.schedule_id, schedule_point.point_id)
-
-        if schedule_point_db is None:
-            raise ValueError("Ponto não identificado")
-        
-        if schedule_point_db.real_date != None:
-            raise ValueError("Ponto já passado")
-
-        schedules_point_list_db = self.schedule_point_service.get_schedule_point_by_schedule_id(schedule_point.schedule_id)
-
-        scheduls_points_id_list_db = []
-        for schedule_point_id in schedules_point_list_db:
-            scheduls_points_id_list_db.append(schedule_point_id.point_id)
-
-        if schedule_point_db.point_id not in scheduls_points_id_list_db:
-            raise ValueError("Ponto não autorizado")
-
-        point = self.point_service.get_point(schedule_point_db.point_id)
-
-        if point is None:
-            raise ValueError("Ponto inválido")
-        
-        if point.point_type_id == 2:
-            raise ValueError("Ponto não autorizado")
+        self.validating_driver_on_current_schedule(schedule_point.user_id, schedule_point.schedule_id)
+                
+        self.validating_point_to_embark(schedule_point.schedule_id, schedule_point.point_id)
 
         self.schedule_point_service.put_schedule_point(schedule_point.schedule_id, schedule_point.point_id, schedule_point.user_id, schedule_point.has_embarked)
 
+    def validating_destiny_schedule(self, driver_id: int, destiny_id: int):
+        driver_point_list = self.user_point_service.get_user_point_list(driver_id)
+
+        driver_point_ids = []
+        for driver_point in driver_point_list:
+            driver_point_ids.append(driver_point.point_id)
+
+        if(destiny_id not in driver_point_ids):
+            raise ValueError("Destino não permitido")
+        
+        destiny = self.point_service.get_point_by_id(destiny_id)
+
+        if destiny is None:
+            raise ValueError("Destino inválido")
+        
+        return destiny
+
     def put_schedule_end(self, schedule_id: int, user_id: int):
-        user = self.user_repository.get_user(user_id)
+        self.validating_driver(user_id)
+        
+        schedule = self.validating_driver_on_current_schedule(user_id, schedule_id)
 
-        if user is None:
-            raise ValueError("Usuário inválido")
-        
-        if user.user_type_id == 3:
-            raise ValueError("Usuário não é um motorista")
-        
-        schedule = self.schedule_repository.get_schedule_in_progress(schedule_id)
-
-        if schedule is None:
-            raise ValueError("Viagem inválida")
-        
-        schedule_user = self.schedule_user_service.get_schedule_user_by_schedule_id(schedule_id)
-
-        if schedule_user.user_id != user_id:
-            raise ValueError("Usuário não autorizado")
-        
-        schedule_point = self.schedule_point_service.get_schedule_point_by_schedule_id(schedule_id)
+        self.validating_schedule_last_point(schedule_id)
         
         self.schedule_repository.put_schedule_end(schedule, user_id)
 
@@ -465,3 +341,192 @@ class ScheduleService():
             student_id_list.append(student.id)
 
         return self.user_student_service.get_responsibles_by_student_list(student_id_list)
+    
+    def validating_driver(self, user_id: int):
+        user = self.user_repository.get_user(user_id)
+
+        if(user is None):
+            raise ValueError("Usuário inválido")
+
+        if(user.user_type_id == 3):
+            raise ValueError("Usuário não é um motorista")
+        
+        return user
+
+    def validating_vehicle(self, driver_id: int, vehicle_id: int):
+        vehicle_list = self.vehicle_service.get_vehicle_list_by_driver(driver_id)
+
+        if(len(vehicle_list) == 0):
+            raise ValueError("Motorista não possui veículo")
+
+        vehicle_id_list = []
+        for vehicle_db in vehicle_list:
+            vehicle_id_list.append(vehicle_db.id)
+ 
+        vehicle = self.vehicle_service.get_vehicle_by_id(vehicle_id)
+
+        if vehicle is None:
+            raise ValueError("Veículo inválido")
+        
+        if vehicle.id not in vehicle_id_list:
+            raise ValueError("Veículo não autorizado")
+        
+        return vehicle
+    
+    def listing_driver_students(self, driver_id: int, schedule_type_id: int):
+        driver_student_list = self.user_student_service.get_students_by_responsible(driver_id)
+
+        student_list = []
+
+        for driver_student in driver_student_list:
+            student_id = driver_student.student_id
+            student_list.append(student_id)
+
+        student_actives, students_active, students_inactive = self.listing_active_students(student_list, schedule_type_id)
+
+        return student_actives, students_active, students_inactive
+    
+    def listing_active_students(self, student_list : List[int], schedule_type_id: int):
+        parent_notifications = self.parent_notification_service.get_parent_notification_list_by_student_list_today(student_list)
+
+        students_inative = []
+
+        for parent_notification in parent_notifications:
+            if(parent_notification.student_id in student_list):
+                if(parent_notification.parent_notification_period_id == 1 and schedule_type_id == 1):
+                    students_inative.append(parent_notification.student_id)
+                elif(parent_notification.parent_notification_period_id == 2 and schedule_type_id == 2):
+                    students_inative.append(parent_notification.student_id)
+                elif(parent_notification.parent_notification_period_id == 3):
+                    students_inative.append(parent_notification.student_id)
+
+        students_active = []
+
+        for student in student_list:
+            if(student not in students_inative):
+                students_active.append(student)
+
+        students_actives = self.student_service.get_students_by_list(students_active)
+
+        students_inactive_list = self.student_service.get_students_by_list(students_inative)
+
+        students_inactive_dto : List[Student] = []
+
+        for student_inactive in students_inactive_list:
+            students_inactive_dto.append(Student(id=student_inactive.id, name=student_inactive.name, year=student_inactive.year,
+                                                 code=student_inactive.code, point_id=student_inactive.point_id, creation_user=student_inactive.creation_user))
+
+        return students_active, students_actives, students_inactive_dto
+
+    def listing_students_points(self, students_active : List[StudentModel], student_list: List[int]): 
+        student_point_list = []
+
+        for student in students_active:
+            student_point_list.append(student.point_id)
+
+        students_points = self.get_points_by_student_list(student_list, student_point_list)
+        
+        if(len(students_points) == 0):
+            raise ValueError("Viagem não possuí nenhum ponto de parada")
+        
+        return students_points
+    
+    def validating_school(self, driver_id: int, school_id: int):
+        school_list = self.point_service.get_all_school_by_user(driver_id)
+
+        if(len(school_list) == 0):
+            raise ValueError("Motorista não possui escola")
+        
+        school_id_list = []
+        for school_db in school_list:
+            school_id_list.append(school_db.id)
+
+        school = self.point_service.get_point(school_id)
+
+        if school is None:
+            raise ValueError("Escola inválida")
+        
+        if school.point_type_id == 1:
+            raise ValueError("Este ponto não é uma escola")
+        
+        if school.id not in school_id_list:
+            raise ValueError("Escola não associada")
+
+        school_dto = Point(id=school.id, name=school.name, address=school.address, lat=school.lat, lng=school.lng, 
+                           alt=school.alt, city=school.city, neighborhood=school.neighborhood, state=school.state,
+                           description=school.description, point_type_id=school.point_type_id)
+        
+        return school, school_dto
+
+    def validating_driver_on_not_started_schedule(self, driver_id: int, schedule_id: int):
+        schedule = self.schedule_repository.get_schedule_not_started(schedule_id)
+        
+        if schedule is None:
+            raise ValueError("Viagem inválida")
+        
+        schedule_driver = self.schedule_user_service.get_schedule_user_by_schedule_id(schedule.id)
+
+        if schedule_driver is None:
+            raise ValueError("A viagem não possuí motorista")
+        
+        if schedule_driver.user_id != driver_id:
+            raise ValueError("O motorista não pertence à essa viagem")
+        
+        return schedule
+        
+    def validating_driver_on_current_schedule(self, driver_id: int, schedule_id: int):
+        schedule = self.schedule_repository.get_schedule_in_progress(schedule_id)
+
+        if schedule is None:
+            raise ValueError("Viagem não está em andamento")
+
+        schedule_user = self.schedule_user_service.get_schedule_user_by_schedule_id(schedule_id)
+
+        if schedule_user is None:
+            raise ValueError("Não existe motorista para a viagem")
+        
+        if schedule_user.user_id != driver_id:
+            raise ValueError("Usuário não autorizado")
+        
+        return schedule
+        
+    def validating_point_to_embark(self, schedule_id: int, point_id: int):
+        schedule_point_db = self.schedule_point_service.get_schedule_point_by_point_id(schedule_id, point_id)
+
+        if schedule_point_db is None:
+            raise ValueError("Ponto não identificado")
+        
+        if schedule_point_db.real_date != None:
+            raise ValueError("Ponto já passado")
+
+        schedules_point_list_db = self.schedule_point_service.get_schedule_point_by_schedule_id(schedule_id)
+
+        scheduls_points_id_list_db = []
+        schedule_point_not_visited = []
+        for schedule_point_id in schedules_point_list_db:
+            scheduls_points_id_list_db.append(schedule_point_id.point_id)
+
+            if(schedule_point_id.real_date == None and schedule_point_id.has_embarked == None):
+                schedule_point_not_visited.append(schedule_point_id)
+
+        if schedule_point_not_visited[0].id != schedule_point_db.id:
+            raise ValueError("Este não é o ponto atual")
+
+        if schedule_point_db.point_id not in scheduls_points_id_list_db:
+            raise ValueError("Ponto não autorizado")
+
+        point = self.point_service.get_point(schedule_point_db.point_id)
+
+        if point is None:
+            raise ValueError("Ponto inválido")
+        
+        if point.point_type_id == 2:
+            raise ValueError("Ponto não autorizado")
+        
+    def validating_schedule_last_point(self, schedule_id: int):
+        actual_schedule_point = self.schedule_point_service.get_current_schedule_point_by_schedule_id(schedule_id)
+
+        last_point = self.schedule_point_service.get_last_schedule_point(schedule_id)
+
+        if actual_schedule_point.id != last_point.id:
+            raise ValueError("Não é possível finalizar a viagem até que todos as paradas sejam informadas")
