@@ -11,6 +11,9 @@ class ScheduleController():
     def __init__(self):
         self.schedule_service = ScheduleService()
 
+    def get_schedule_by_student(self, student_id : int, user_id: int):
+        return self.schedule_service.get_schedule_by_student(student_id, user_id)
+    
     def get_driver_schedule_details_by_schedule_id(self, schedule_id : int):
         return self.schedule_service.get_driver_schedule_details_by_schedule_id(schedule_id)
     
