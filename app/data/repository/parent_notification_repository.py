@@ -24,6 +24,16 @@ class ParentNotificationRepository():
             cast(ParentNotificationModel.inative_day, Date) == current_date,
             ParentNotificationModel.disabled == False
         ).all()
+    
+    def get_parent_notification_list_by_student_today(self, student_id: int):
+        timezone = pytz.timezone('America/Sao_Paulo')
+        current_date = datetime.now(timezone).date()
+
+        return self.db.query(ParentNotificationModel).filter(
+            ParentNotificationModel.student_id == student_id,
+            cast(ParentNotificationModel.inative_day, Date) == current_date,
+            ParentNotificationModel.disabled == False
+        ).all()
 
     def get_canceled_notification_list_by_user(self, user_id: int):
         return self.db.query(ParentNotificationModel).filter(ParentNotificationModel.user_id == user_id, ParentNotificationModel.disabled == True).all()

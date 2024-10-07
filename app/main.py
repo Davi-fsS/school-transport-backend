@@ -446,6 +446,13 @@ async def get_last_coordinate_by_schedule(schedule_id : int = Header(), user_id 
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
     
 #SCHEDULE ENDPOINTS
+@app.get("/schedule/by-student", status_code=status.HTTP_200_OK)
+async def get_schedule_by_student(student_id: int = Header(), user_id: int = Header()):
+    try:
+        return schedule_controller.get_schedule_by_student(student_id, user_id)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+
 @app.get("/schedule/current-driver-details",status_code=status.HTTP_200_OK)
 async def get_schedule_details_driver(schedule_id: int):
     try:

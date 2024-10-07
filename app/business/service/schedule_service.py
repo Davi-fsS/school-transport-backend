@@ -68,6 +68,31 @@ class ScheduleService():
 
         return schedule_dto
     
+    def get_schedule_by_student(self, student_id: int, user_id: int):
+        self.validating_responsible(user_id)
+
+        driver_by_student = self.student_service.get_student_driver(student_id)
+
+        if driver_by_student is None:
+            raise ValueError("Este aluno não possuí um motorista")
+        
+        driver_schedule = self.schedule_user_service.get_current_schedule_by_user(driver_by_student.id)
+
+        if driver_schedule is None:
+            raise ValueError("Não possuí viagem em andamento")
+
+        parent_notificaton_to_student = self.parent_notification_service.get_parent_notification_list_by_student_today(student_id)
+
+        if(len(parent_notificaton_to_student) == 0):
+            return driver_schedule
+
+        for notification in parent_notificaton_to_student:
+            if(notification.parent_notification_period_id == driver_schedule.schedule_type_id or 
+               notification.parent_notification_period_id == 3):
+                raise ValueError("Este aluno não está utilizando o transporte no momento")
+
+        return driver_schedule
+
     def get_driver_schedule_details_by_schedule_id(self, schedule_id: int):
         schedule = self.schedule_repository.get_schedule_in_progress(schedule_id)
 
@@ -350,6 +375,17 @@ class ScheduleService():
 
         if(user.user_type_id == 3):
             raise ValueError("Usuário não é um motorista")
+        
+        return user
+    
+    def validating_responsible(self, user_id: int):
+        user = self.user_repository.get_user(user_id)
+
+        if(user is None):
+            raise ValueError("Usuário inválido")
+
+        if(user.user_type_id == 2):
+            raise ValueError("Usuário não é um responsável")
         
         return user
 
