@@ -76,9 +76,22 @@ class ScheduleService():
         if driver_by_student is None:
             raise ValueError("Este aluno não possuí um motorista")
         
-        # driver_on_schedule = self.schedule_user_service.get_schedule_user_by_schedule_id
+        driver_schedule = self.schedule_user_service.get_current_schedule_by_user(driver_by_student.id)
 
-        return 
+        if driver_schedule is None:
+            raise ValueError("Não possuí viagem em andamento")
+
+        parent_notificaton_to_student = self.parent_notification_service.get_parent_notification_list_by_student_today(student_id)
+
+        if(len(parent_notificaton_to_student) == 0):
+            return driver_schedule
+
+        for notification in parent_notificaton_to_student:
+            if(notification.parent_notification_period_id == driver_schedule.schedule_type_id or 
+               notification.parent_notification_period_id == 3):
+                raise ValueError("Este aluno não está utilizando o transporte no momento")
+
+        return driver_schedule
 
     def get_driver_schedule_details_by_schedule_id(self, schedule_id: int):
         schedule = self.schedule_repository.get_schedule_in_progress(schedule_id)
