@@ -1,5 +1,7 @@
+from datetime import datetime
 from fastapi import FastAPI, status, HTTPException, Header
 from presentation.dto.CreateParentNotification import CreateParentNotification
+from presentation.dto.GetHistoricByDate import GetHistoricByDate
 from presentation.controller.parent_notification_controller import ParentNotificationController
 from presentation.dto.ScheduleStudentPosition import ScheduleStudentPosition
 from presentation.dto.PutSchedulePoint import PutSchedulePoint
@@ -516,6 +518,13 @@ async def get_schedule_student_position(schedule_id : int = Header(), user_id : 
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
     
+@app.post("/schedule/get-driver-historic-by-date",status_code=status.HTTP_200_OK)
+async def get_schedule_driver_historic_by_date(body: GetHistoricByDate):
+    try:
+        return schedule_controller.get_schedule_driver_historic_by_date(body.date, body.user_id)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+   
 # PARENT_NOTIFICATION ENDPOINTS
 @app.post("/parent_notification/create",status_code=status.HTTP_201_CREATED)
 async def create_parent_notification(notification: CreateParentNotification):

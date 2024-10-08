@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date, datetime
 from typing import List
 from business.service.parent_notification_service import ParentNotificationService
 from data.model.student_model import StudentModel
@@ -92,6 +92,9 @@ class ScheduleService():
                 raise ValueError("Este aluno não está utilizando o transporte no momento")
 
         return driver_schedule
+
+    def get_schedule_in_progress(self, schedule_id: int):
+        return self.schedule_repository.get_schedule_in_progress(schedule_id)
 
     def get_driver_schedule_details_by_schedule_id(self, schedule_id: int):
         schedule = self.schedule_repository.get_schedule_in_progress(schedule_id)
@@ -256,6 +259,27 @@ class ScheduleService():
         self.validating_schedule_last_point(schedule_id)
         
         self.schedule_repository.put_schedule_end(schedule, user_id)
+
+    def get_schedule_driver_historic_by_date(self, date: str, user_id: int):
+        self.validating_driver(user_id)
+
+        schedules_by_driver = self.schedule_user_service.get_schedule_user_list_by_user_id(user_id)
+
+        if len(schedules_by_driver) == 0:
+            raise ValueError("Não existe nenhuma viagem")
+        
+        all_schedule_drivers_id = []
+        for schedule_driver in schedules_by_driver:
+            all_schedule_drivers_id.append(schedule_driver.schedule_id)
+
+        date_format = datetime.strptime(date, "%Y-%m-%d").date()
+
+        schedules_from_date = self.schedule_repository.get_schedule_list_by_list_and_date(all_schedule_drivers_id, date_format)
+
+        if len(schedules_from_date) == 0:
+            raise ValueError("Não existe viagem para esta data")
+        
+        return schedules_from_date
 
     def get_schedule_student_position(self, schedule_id: int, user_id: int):
         user = self.user_repository.get_user(user_id)

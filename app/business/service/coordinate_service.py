@@ -24,10 +24,15 @@ class CoordinateService():
             raise ValueError("Usuário inválido")
 
         if(user.user_type_id == 3):
-            raise ValueError("Usuário inválido")    
+            raise ValueError("Usuário inválido")   
+
+        schedule = self.schedule_service.get_schedule_in_progress(coordinate.schedule_id)
+
+        if schedule is None:
+            raise ValueError("Viagem inválida")
         
         coordinate_db = CoordinateModel(lat=coordinate.lat, lng=coordinate.lng, coordinate_type_id=1, 
-                                        register_date=datetime.now(), creation_user=coordinate.user_id, schedule_id=1)
+                                        register_date=datetime.now(), creation_user=coordinate.user_id, schedule_id=coordinate.schedule_id)
         
         return self.coordinate_repository.save_coordinates(coordinate_db)
     

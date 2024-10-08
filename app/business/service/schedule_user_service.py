@@ -19,6 +19,9 @@ class ScheduleUserService():
     def get_schedule_user_by_schedule_id(self, schedule_id: int):
         return self.schedule_user_repository.get_schedule_user_by_schedule_id(schedule_id)
     
+    def get_schedule_user_list_by_user_id(self, user_id: int):
+        return self.schedule_user_repository.get_schedule_user_list_by_user_id(user_id)
+
     def get_current_schedule_by_user(self, user_id: int):
         schedule_users_list = self.schedule_user_repository.get_schedule_user_list_by_user_id(user_id)
 
