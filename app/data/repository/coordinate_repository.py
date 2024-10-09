@@ -1,3 +1,4 @@
+from typing import List
 from sqlalchemy.orm import Session
 from data.infrastructure.database import get_db
 from sqlalchemy import desc
@@ -19,13 +20,10 @@ class CoordinateRepository():
             raise ValueError("Erro ao salvar no sistema")
         
     def get_list_coordinates_by_schedule_id(self, schedule_id: int):
-        try:
-            coords = self.db.query(CoordinateModel).filter(CoordinateModel.schedule_id == schedule_id).all()
-
-            return coords        
-        except:
-            self.db.rollback()
-            raise ValueError("Erro ao salvar no sistema")
+        return self.db.query(CoordinateModel).filter(CoordinateModel.schedule_id == schedule_id).all()
+    
+    def get_list_coordinates_by_schedule_list(self, schedule_list: List[int]):
+        return self.db.query(CoordinateModel).filter(CoordinateModel.schedule_id.in_(schedule_list)).all()
     
     def get_last_coordinate_by_schedule_id(self, schedule_id: int):
         return self.db.query(CoordinateModel).filter(CoordinateModel.schedule_id == schedule_id).order_by(desc(CoordinateModel.id)).first()
