@@ -1,5 +1,8 @@
 from datetime import date, datetime
 from typing import List
+from presentation.dto.Coordinate import Coordinate
+from data.repository.coordinate_repository import CoordinateRepository
+from presentation.dto.ScheduleHistoric import ScheduleHistoric
 from business.service.parent_notification_service import ParentNotificationService
 from data.model.student_model import StudentModel
 from presentation.dto.ScheduleResponsibleDetail import ScheduleResponsibleDetail
@@ -40,6 +43,7 @@ class ScheduleService():
     user_point_service: UserPointService
     schedule_maps_infos_repository: ScheduleMapsInfosRepository
     parent_notification_service: ParentNotificationService
+    coordinate_repository: CoordinateRepository
 
     def __init__(self):
         self.schedule_repository = ScheduleRepository()
@@ -54,6 +58,7 @@ class ScheduleService():
         self.student_service = StudentService()
         self.schedule_maps_infos_repository = ScheduleMapsInfosRepository()
         self.parent_notification_service = ParentNotificationService()
+        self.coordinate_repository = CoordinateRepository()
 
     def get_schedule_by_id(self, schedule_id: int):
         schedule = self.schedule_repository.get_schedule_by_id(schedule_id)
@@ -260,7 +265,9 @@ class ScheduleService():
         
         self.schedule_repository.put_schedule_end(schedule, user_id)
 
-    def get_schedule_driver_historic_by_date(self, date: str, user_id: int):
+    def get_schedule_driver_historic_by_date(self, date: str, user_id: int) -> List[ScheduleHistoric]:
+        schedule_historic : List[ScheduleHistoric] = []
+
         self.validating_driver(user_id)
 
         schedules_by_driver = self.schedule_user_service.get_schedule_user_list_by_user_id(user_id)
@@ -279,7 +286,28 @@ class ScheduleService():
         if len(schedules_from_date) == 0:
             raise ValueError("Não existe viagem para esta data")
         
-        return schedules_from_date
+        schedules_ids = []
+        
+        for schedule_date in schedules_from_date:
+            schedules_ids.append(schedule_date.id)
+        
+        coordinates_from_schedules = self.coordinate_repository.get_list_coordinates_by_schedule_list(schedules_ids)
+
+        for schedule_date in schedules_from_date:
+            coordinate_dto : List[Coordinate] = []
+            coordinates_to_schedule = list(filter(lambda coord: coord.schedule_id == schedule_date.id, coordinates_from_schedules))
+
+            schedule_dto = Schedule(id=schedule_date.id, name=schedule_date.name, initial_date=schedule_date.initial_date, end_date=schedule_date.end_date,
+                                real_initial_date=schedule_date.real_initial_date, real_end_date=schedule_date.real_end_date, description=schedule_date.description,
+                                schedule_type_id=schedule_date.schedule_type_id, creation_user=schedule_date.creation_user)
+        
+            for coordinate in coordinates_to_schedule:
+                coordinate_dto.append(Coordinate(lat=coordinate.lat, lng=coordinate.lng, coordinate_type_id=coordinate.coordinate_type_id,
+                                                 schedule_id=coordinate.schedule_id, register_date=coordinate.register_date, creation_user=coordinate.creation_user))
+
+            schedule_historic.append(ScheduleHistoric(schedule=schedule_dto, coordinates=coordinate_dto))
+        
+        return schedule_historic
 
     def get_schedule_student_position(self, schedule_id: int, user_id: int):
         user = self.user_repository.get_user(user_id)
