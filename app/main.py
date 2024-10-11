@@ -524,6 +524,13 @@ async def get_schedule_driver_historic_by_date(body: GetHistoricByDate):
         return schedule_controller.get_schedule_driver_historic_by_date(body.date, body.user_id)
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+
+@app.get("/schedule/get-driver-historic-details",status_code=status.HTTP_200_OK)
+async def get_schedule_driver_historic_details(schedule_id : int = Header(), user_id : int = Header()):
+    try:
+        return schedule_controller.get_schedule_driver_historic_details(schedule_id, user_id)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
    
 # PARENT_NOTIFICATION ENDPOINTS
 @app.post("/parent_notification/create",status_code=status.HTTP_201_CREATED)

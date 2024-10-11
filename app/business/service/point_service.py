@@ -220,6 +220,16 @@ class PointService():
 
         return points_list_dto
     
+    def get_point_list_by_list(self, point_list: List[int]) -> List[Point]:
+        points_list = self.point_repository.get_points_by_point_list(point_list)
+
+        points_list_dto = []
+        for point in points_list:
+            point_dto = Point(id=point.id, name=point.name, address=point.address, lat=point.lat, lng=point.lng, alt=point.alt, city=point.city, neighborhood=point.neighborhood, state=point.state, description=point.description, point_type_id=point.point_type_id)
+            points_list_dto.append(point_dto)
+
+        return points_list_dto
+
     def get_point_home_list_by_user(self, point_list: List[int]):
         points_list = self.point_repository.get_points_home_by_point_list(point_list)
 
