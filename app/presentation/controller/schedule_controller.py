@@ -42,5 +42,8 @@ class ScheduleController():
     def get_schedule_driver_historic_by_date(self, date: str, user_id: int):
         return self.schedule_service.get_schedule_driver_historic_by_date(date, user_id)
     
+    def get_schedule_driver_historic_details(self, schedule_id: int, user_id: int):
+        return self.schedule_service.get_schedule_driver_historic_details(schedule_id, user_id)
+    
     def get_schedule_maps_infos(self, schedule_id: int, user_id: int):
         return self.schedule_service.get_schedule_maps_infos(schedule_id, user_id)
