@@ -41,8 +41,13 @@ class ScheduleRepository():
                                                    ScheduleModel.real_end_date == None).all()
    
     def get_schedule_list_by_list_and_date(self, schedule_id_list: List[int], date: date):
-        return self.db.query(ScheduleModel).filter(ScheduleModel.id.in_(schedule_id_list), 
+        with self.db:
+            return self.db.query(ScheduleModel).filter(ScheduleModel.id.in_(schedule_id_list), 
                                                    cast(ScheduleModel.initial_date, Date) == date).all()
+    
+    def get_schedule_list_by_list(self, schedule_id_list: List[int]):
+        with self.db:
+            return self.db.query(ScheduleModel).filter(ScheduleModel.id.in_(schedule_id_list)).all()
 
     def create_schedule(self, schedule: CreateSchedule, driver: UserModel, vehicle: VehicleModel, school: PointModel):
         try:

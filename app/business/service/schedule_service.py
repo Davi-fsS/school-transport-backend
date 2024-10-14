@@ -1,5 +1,6 @@
 from datetime import date, datetime
 from typing import List
+from presentation.dto.ScheduleHistoricResponsible import ScheduleHistoricResponsible
 from presentation.dto.ScheduleHistoricDetails import ScheduleHistoricDetails
 from presentation.dto.SchedulePoint import SchedulePoint
 from presentation.dto.Coordinate import Coordinate
@@ -327,6 +328,71 @@ class ScheduleService():
                                                                 name=schedule.name, schedule_type=schedule_type, points=schedule_points_dto)
 
         return schedule_driver_historic_dto
+
+    def get_schedule_responsible_historic_by_date(self, data: str, user_id: int):
+        schedule_historic : List[ScheduleHistoricResponsible] = []
+
+        self.validating_responsible(user_id)
+
+        student_list = self.student_service.get_students_by_responsible(user_id)
+
+        student_list_ids = []
+        for student in student_list:
+            student_list_ids.append(student.id)
+
+        others_responsibles_to_students = self.user_student_service.get_responsibles_by_student_list(student_list_ids)
+
+        others_responsibles_ids = []
+
+        for responsible in others_responsibles_to_students:
+            others_responsibles_ids.append(responsible.id)
+
+        user_points = self.user_point_service.get_user_point_list_by_user_list(others_responsibles_ids)
+
+        point_list = []
+
+        for user_point in user_points:
+            point_list.append(user_point.point_id)
+
+        points_by_responsibles = self.point_service.get_point_home_list_by_user(point_list)
+
+        points_ids = []
+
+        for point in points_by_responsibles:
+            points_ids.append(point.id)
+
+        date_format = datetime.strptime(data, "%Y-%m-%d").date()
+
+        schedules_points_from_date = self.schedule_point_service.get_schedule_point_list_by_point_list_date(points_ids, date_format)
+
+        schedule_ids = []
+        points_in_schedule_ids = []
+        for schedule_point in schedules_points_from_date:
+            if(schedule_point.schedule_id not in schedule_ids):
+                schedule_ids.append(schedule_point.schedule_id)
+
+            if(schedule_point.point_id not in points_in_schedule_ids):
+                points_in_schedule_ids.append(schedule_point.point_id)
+        
+        schedules = self.schedule_repository.get_schedule_list_by_list(schedule_ids)
+
+        points = self.point_service.get_point_list_by_list(points_in_schedule_ids)
+
+        for schedule_point in schedules_points_from_date:
+            schedule = list(filter(lambda sched: sched.id == schedule_point.schedule_id, schedules))[0]
+
+            schedule_dto = Schedule(id=schedule.id, name=schedule.name, initial_date=schedule.initial_date, end_date=schedule.end_date,
+                                    real_initial_date=schedule.real_initial_date, real_end_date=schedule.real_end_date, description=schedule.description,
+                                    schedule_type_id=schedule.schedule_type_id, creation_user=schedule.creation_user)
+
+            if schedule is not None:
+                point_dto = list(filter(lambda poi: poi.id == schedule_point.point_id, points))
+
+                schedule_historic_item = ScheduleHistoricResponsible(schedule=schedule_dto, points=point_dto, coordinates=None)
+
+                schedule_historic.append(schedule_historic_item)
+
+        return schedule_historic
 
     def get_schedule_driver_historic_by_date(self, date: str, user_id: int) -> List[ScheduleHistoric]:
         schedule_historic : List[ScheduleHistoric] = []

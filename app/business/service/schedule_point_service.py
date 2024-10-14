@@ -1,4 +1,5 @@
 from typing import List
+from datetime import date
 from data.repository.schedule_repository import ScheduleRepository
 from presentation.dto.PutSchedulePoint import PutSchedulePoint
 from business.service.user_student_service import UserStudentService
@@ -70,6 +71,9 @@ class SchedulePointService():
     
     def get_schedule_point_by_point_id(self, schedule_id: int, point_id: int):
         return self.schedule_point_repository.get_schedule_point_by_point_id(schedule_id, point_id)
+    
+    def get_schedule_point_list_by_point_list_date(self, point_list: List[int], date: date):
+        return self.schedule_point_repository.get_schedule_point_by_point_list_date(point_list, date)
     
     def get_last_schedule_point(self, schedule_id: int):
         return self.schedule_point_repository.get_last_schedule_point(schedule_id)
