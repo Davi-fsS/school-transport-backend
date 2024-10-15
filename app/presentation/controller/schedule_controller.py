@@ -24,6 +24,9 @@ class ScheduleController():
     def get_schedule_by_user(self, user_id: int):
         return self.schedule_service.get_schedule_by_user(user_id)
     
+    def get_schedule_by_driver(self, user_id: int):
+        return self.schedule_service.get_schedule_by_driver(user_id)
+    
     def create_schedule(self, schedule: CreateSchedule):
         return self.schedule_service.create_schedule(schedule)
     
@@ -41,6 +44,9 @@ class ScheduleController():
     
     def get_schedule_driver_historic_by_date(self, date: str, user_id: int):
         return self.schedule_service.get_schedule_driver_historic_by_date(date, user_id)
+    
+    def get_schedule_responsible_historic_by_date(self, date: str, user_id: int):
+        return self.schedule_service.get_schedule_responsible_historic_by_date(date, user_id)
     
     def get_schedule_driver_historic_details(self, schedule_id: int, user_id: int):
         return self.schedule_service.get_schedule_driver_historic_details(schedule_id, user_id)

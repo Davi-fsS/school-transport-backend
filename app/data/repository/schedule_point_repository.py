@@ -1,10 +1,11 @@
 from typing import List
 from sqlalchemy.orm import Session
 from sqlalchemy import desc
-from datetime import datetime
+from datetime import datetime, date
 from presentation.dto.PutSchedulePoint import PutSchedulePoint
 from data.model.schedule_point_model import SchedulePointModel
 from data.infrastructure.database import get_db
+from sqlalchemy import func, cast, Date
 
 class SchedulePointRepository():
     db: Session
@@ -29,6 +30,10 @@ class SchedulePointRepository():
     
     def get_schedule_point_by_point_list(self, point_list: List[int]):
         return self.db.query(SchedulePointModel).filter(SchedulePointModel.point_id.in_(point_list)).all()
+    
+    def get_schedule_point_by_point_list_date(self, point_list: List[int], date: date):
+        with self.db:
+            return self.db.query(SchedulePointModel).filter(SchedulePointModel.point_id.in_(point_list), cast(SchedulePointModel.real_date, Date) == date).all()
     
     def put_schedule_point(self, schedule_id: int, point_id: int, user_id: int, has_embarked: bool):
         try:

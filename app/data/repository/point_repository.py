@@ -14,20 +14,22 @@ class PointRepository():
         self.db = next(get_db())
 
     def get_points_by_point_list(self, point_id_list: List[int]):
-        try:
-            points = self.db.query(PointModel).filter(PointModel.id.in_(point_id_list), PointModel.disabled == False).all()
-            return points
-        except:
-            self.db.rollback()
-            raise ValueError("Erro ao fazer a leitura no sistema")
+        with self.db:
+            try:
+                points = self.db.query(PointModel).filter(PointModel.id.in_(point_id_list), PointModel.disabled == False).all()
+                return points
+            except:
+                self.db.rollback()
+                raise ValueError("Erro ao fazer a leitura no sistema")
             
     def get_points_home_by_point_list(self, point_id_list: List[int]):
-        try:
-            points = self.db.query(PointModel).filter(and_(PointModel.id.in_(point_id_list), PointModel.point_type_id == 1, PointModel.disabled == False)).all()
-            return points
-        except:
-            self.db.rollback()
-            raise ValueError("Erro ao fazer a leitura no sistema")
+        with self.db:
+            try:
+                points = self.db.query(PointModel).filter(and_(PointModel.id.in_(point_id_list), PointModel.point_type_id == 1, PointModel.disabled == False)).all()
+                return points
+            except:
+                self.db.rollback()
+                raise ValueError("Erro ao fazer a leitura no sistema")
             
     def get_points_school_by_point_list(self, point_id_list: List[int]):
         try:

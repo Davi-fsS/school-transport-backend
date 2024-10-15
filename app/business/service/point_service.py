@@ -230,7 +230,7 @@ class PointService():
 
         return points_list_dto
 
-    def get_point_home_list_by_user(self, point_list: List[int]):
+    def get_point_home_list_by_user(self, point_list: List[int]) -> List[Point]:
         points_list = self.point_repository.get_points_home_by_point_list(point_list)
 
         points_list_dto = []

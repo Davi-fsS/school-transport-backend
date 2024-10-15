@@ -12,4 +12,5 @@ class ScheduleUserRepository():
         return self.db.query(ScheduleUserModel).filter(ScheduleUserModel.schedule_id == schedule_id).first()
     
     def get_schedule_user_list_by_user_id(self, user_id: int):
-        return self.db.query(ScheduleUserModel).filter(ScheduleUserModel.user_id == user_id).all()
+        with self.db:   
+            return self.db.query(ScheduleUserModel).filter(ScheduleUserModel.user_id == user_id).all()

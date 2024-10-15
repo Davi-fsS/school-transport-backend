@@ -475,6 +475,13 @@ async def get_schedule_by_user(user_id: int):
         return schedule_controller.get_schedule_by_user(user_id)
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+
+@app.get("/schedule/get-current-schedules-by-driver",status_code=status.HTTP_200_OK)
+async def get_schedule_by_driver(user_id: int):
+    try:
+        return schedule_controller.get_schedule_by_driver(user_id)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
     
 @app.post("/schedule/create",status_code=status.HTTP_201_CREATED)
 async def create_schedule(schedule: CreateSchedule):
@@ -529,6 +536,13 @@ async def get_schedule_driver_historic_by_date(body: GetHistoricByDate):
 async def get_schedule_driver_historic_details(schedule_id : int = Header(), user_id : int = Header()):
     try:
         return schedule_controller.get_schedule_driver_historic_details(schedule_id, user_id)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+
+@app.post("/schedule/get-responsible-historic-by-date",status_code=status.HTTP_200_OK)
+async def get_schedule_responsible_historic_by_date(body: GetHistoricByDate):
+    try:
+        return schedule_controller.get_schedule_responsible_historic_by_date(body.date, body.user_id)
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
    
