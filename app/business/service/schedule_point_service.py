@@ -1,5 +1,6 @@
 from typing import List
 from datetime import date
+from presentation.dto.SchedulePoint import SchedulePoint
 from data.repository.schedule_repository import ScheduleRepository
 from presentation.dto.PutSchedulePoint import PutSchedulePoint
 from business.service.user_student_service import UserStudentService
@@ -53,13 +54,20 @@ class SchedulePointService():
             student_id_list.append(student.id)
 
         for point_dto in points_dto:
-            student_list = []
-            for student_dto in students_points:
-                if(student_dto.point_id == point_dto.id):
-                    student_list.append(student_dto)
+            schedule_point = list(filter(lambda schedPoint: schedPoint.point_id == point_dto.id, schedule_point_list))[0]
 
-            home_point = HomePoint(point=point_dto, student=student_list)
-            home_point_list.append(home_point)
+            schedule_point_dto = SchedulePoint(id=schedule_point.id, point=point_dto, planned_date=schedule_point.planned_date,
+                                               real_date=schedule_point.real_date, order=schedule_point.order, schedule_id=schedule_point.schedule_id,
+                                               has_embarked=schedule_point.has_embarked, creation_user=schedule_point.creation_user)
+
+            if(schedule_point_dto.has_embarked is None):
+                student_list = []
+                for student_dto in students_points:
+                    if(student_dto.point_id == point_dto.id):
+                        student_list.append(student_dto)
+
+                home_point = HomePoint(point=point_dto, student=student_list, status=schedule_point_dto)
+                home_point_list.append(home_point)
 
         return home_point_list
     

@@ -530,7 +530,7 @@ class ScheduleService():
                 if(student_dto.point_id == point.id):
                     student_dto_list.append(student_dto)
             
-            home_point = HomePoint(point=point, student=student_dto_list)
+            home_point = HomePoint(point=point, student=student_dto_list, status=None)
             home_point_list.append(home_point)
 
         return home_point_list
