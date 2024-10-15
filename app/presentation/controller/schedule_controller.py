@@ -24,6 +24,9 @@ class ScheduleController():
     def get_schedule_by_user(self, user_id: int):
         return self.schedule_service.get_schedule_by_user(user_id)
     
+    def get_schedule_by_driver(self, user_id: int):
+        return self.schedule_service.get_schedule_by_driver(user_id)
+    
     def create_schedule(self, schedule: CreateSchedule):
         return self.schedule_service.create_schedule(schedule)
     

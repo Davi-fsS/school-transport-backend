@@ -201,6 +201,18 @@ class ScheduleService():
         current_schedules = self.schedule_point_service.get_current_schedule_list_by_point_list(point_from_students)
 
         return current_schedules
+    
+    def get_schedule_by_driver(self, user_id: int):
+        driver = self.validating_driver(user_id)
+
+        current_schedule_by_driver = self.schedule_user_service.get_current_schedule_by_user(driver.id)
+
+        schedule_dto = Schedule(id=current_schedule_by_driver.id, name=current_schedule_by_driver.name, initial_date=current_schedule_by_driver.initial_date,
+                                end_date=current_schedule_by_driver.end_date, real_initial_date=current_schedule_by_driver.real_initial_date,
+                                real_end_date=current_schedule_by_driver.real_end_date, description=current_schedule_by_driver.description, 
+                                schedule_type_id=current_schedule_by_driver.schedule_type_id, creation_user=current_schedule_by_driver.creation_user)
+
+        return schedule_dto
 
     def create_schedule(self, schedule: CreateSchedule):
         driver = self.validating_driver(schedule.user_id)
