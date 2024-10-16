@@ -587,7 +587,7 @@ async def put_period_disabled(id: int = Header(), user_id : int = Header()):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
     
 # DEVICE ENDPOINTS
-@app.get("/device/create",status_code=status.HTTP_200_OK)
+@app.post("/device/create",status_code=status.HTTP_200_OK)
 async def create_device(device: CreateDevice):
     try:
         return device_controller.create_device(device)
