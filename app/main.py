@@ -1,5 +1,8 @@
 from datetime import datetime
 from fastapi import FastAPI, status, HTTPException, Header
+from presentation.dto.UpdateDevice import UpdateDevice
+from presentation.dto.CreateDevice import CreateDevice
+from presentation.controller.device_controller import DeviceController
 from presentation.dto.CreateParentNotification import CreateParentNotification
 from presentation.dto.GetHistoricByDate import GetHistoricByDate
 from presentation.controller.parent_notification_controller import ParentNotificationController
@@ -70,6 +73,7 @@ schedule_controller = ScheduleController()
 vehicle_point_controller = VehiclePointController()
 user_point_controller = UserPointController()
 parent_notification_controller = ParentNotificationController()
+device_controller = DeviceController()
 
 # USER ENDPOINTS
 @app.post("/user/create",status_code=status.HTTP_201_CREATED)
@@ -579,5 +583,34 @@ async def get_period_options():
 async def put_period_disabled(id: int = Header(), user_id : int = Header()):
     try:
         return parent_notification_controller.put_period_disabled(id, user_id)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    
+# DEVICE ENDPOINTS
+@app.post("/device/create",status_code=status.HTTP_200_OK)
+async def create_device(device: CreateDevice):
+    try:
+        return device_controller.create_device(device)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+
+@app.get("/device/get-all",status_code=status.HTTP_200_OK)
+async def get_all_device():
+    try:
+        return device_controller.get_all_device()
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+
+@app.put("/device/update",status_code=status.HTTP_200_OK)
+async def update_device(device: UpdateDevice):
+    try:
+        return device_controller.update_device(device)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+
+@app.delete("/device/delete",status_code=status.HTTP_200_OK)
+async def delete_device(id: int):
+    try:
+        return device_controller.delete_device(id)
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
