@@ -21,18 +21,20 @@ class DeviceService():
     def create_device(self, device: CreateDevice):
         self.validating_admin(device.user_id)
 
-        device = self.device_repository.get_device_by_code(device.code)
+        device_by_code = self.device_repository.get_device_by_code(device.code)
 
-        if device is not None:
+        if device_by_code is not None:
             raise ValueError("Dispositivo já cadastrado")
+        
+        self.validating_driver(device.device_user_id) 
 
         return self.device_repository.create_device(device)
     
     def delete_device(self, id: int):
         device = self.device_repository.get_device_by_id(id)
 
-        if device is not None:
-            raise ValueError("Dispositivo já cadastrado")
+        if device is None:
+            raise ValueError("Dispositivo inválido")
         
         return self.device_repository.delete_device(device.id)
 
@@ -40,14 +42,13 @@ class DeviceService():
         self.validating_admin(device.user_id)
 
         device_by_id = self.device_repository.get_device_by_id(device.id)
-
-        if device_by_id is not None:
-            raise ValueError("Dispositivo já cadastrado")
         
         device_by_code = self.device_repository.get_device_by_code(device.code)
 
-        if device_by_code.id != device_by_id.id :
+        if device_by_code is not None and device_by_code.id != device_by_id.id :
             raise ValueError("Código já cadastrado em outro dispositivo")
+        
+        self.validating_driver(device.device_user_id) 
 
         return self.device_repository.update_device(device)
 
@@ -59,5 +60,16 @@ class DeviceService():
 
         if(user.user_type_id != 1):
             raise ValueError("Usuário não é um administrador")
+        
+        return user
+    
+    def validating_driver(self, user_id: int):
+        user = self.user_repository.get_user(user_id)
+
+        if(user is None):
+            raise ValueError("Usuário inválido")
+
+        if(user.user_type_id == 3):
+            raise ValueError("Usuário não é um motorista")
         
         return user

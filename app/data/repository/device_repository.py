@@ -19,6 +19,8 @@ class DeviceRepository():
         try:
             device_model = DeviceModel(code=body.code, name=body.name, creation_user=body.user_id)
 
+            print("entrou aqui 1")
+
             self.db.add(device_model)
             self.db.flush()
 
@@ -56,14 +58,11 @@ class DeviceRepository():
     def delete_device(self, id: int):
         try:
             device_model = self.get_device_by_id(id)
+            device_user_model = self.get_device_user_by_device(device_model.id)
 
-            device_model.disabled = False
-
+            device_model.disabled = True
+            device_user_model.disabled = True
             self.db.flush()
-
-            device_user_model = self.device_user_repository.get_device_user_by_device(device_model.id)
-
-            device_user_model.disabled = False
 
             self.db.commit()
             return device_model.id
@@ -71,6 +70,9 @@ class DeviceRepository():
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema") 
         
+    def get_device_user_by_device(self, device_id: int):
+        return self.db.query(DeviceUserModel).filter(DeviceUserModel.device_id == device_id, DeviceUserModel.disabled == False).first()
+
     def get_all_devices(self):
         return self.db.query(DeviceModel).filter(DeviceModel.disabled == False).all()
     
