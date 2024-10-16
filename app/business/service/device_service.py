@@ -15,6 +15,8 @@ class DeviceService():
         self.device_user_repository = DeviceUserRepository()
         self.user_repository = UserRepository()
 
+    def get_all_device(self):
+        return self.device_repository.get_all_devices()
 
     def create_device(self, device: CreateDevice):
         self.validating_admin(device.user_id)

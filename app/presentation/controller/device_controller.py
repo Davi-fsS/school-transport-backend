@@ -13,5 +13,8 @@ class DeviceController():
     def create_device(self, device: CreateDevice):
         return self.device_service.create_device(device)
     
+    def get_all_device(self):
+        return self.device_service.get_all_device()
+    
     def update_device(self, device: UpdateDevice):
         return self.device_service.update_device(device)

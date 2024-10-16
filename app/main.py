@@ -594,6 +594,13 @@ async def create_device(device: CreateDevice):
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
 
+@app.get("/device/get-all",status_code=status.HTTP_200_OK)
+async def get_all_device():
+    try:
+        return device_controller.get_all_device()
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+
 @app.put("/device/update",status_code=status.HTTP_200_OK)
 async def update_device(device: UpdateDevice):
     try:
