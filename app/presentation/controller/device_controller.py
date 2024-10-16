@@ -1,3 +1,4 @@
+from presentation.dto.UpdateDevice import UpdateDevice
 from presentation.dto.CreateDevice import CreateDevice
 from business.service.device_service import DeviceService
 from presentation.dto import SaveCoordinate
@@ -11,3 +12,6 @@ class DeviceController():
 
     def create_device(self, device: CreateDevice):
         return self.device_service.create_device(device)
+    
+    def update_device(self, device: UpdateDevice):
+        return self.device_service.update_device(device)
