@@ -19,4 +19,4 @@ class DeviceUserRepository():
             raise ValueError("Erro ao salvar no sistema")
         
     def get_device_user_by_device(self, device_id: int):
-        return self.db.query(DeviceUserModel).filter(DeviceUserModel.device_id == device_id ,DeviceUserModel.disabled == False).first()
+        return self.db.query(DeviceUserModel).filter(DeviceUserModel.device_id == device_id, DeviceUserModel.disabled == False).first()

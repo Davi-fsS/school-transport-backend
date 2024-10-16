@@ -28,6 +28,14 @@ class DeviceService():
 
         return self.device_repository.create_device(device)
     
+    def delete_device(self, id: int):
+        device = self.device_repository.get_device_by_id(id)
+
+        if device is not None:
+            raise ValueError("Dispositivo já cadastrado")
+        
+        return self.device_repository.delete_device(device.id)
+
     def update_device(self, device: UpdateDevice):
         self.validating_admin(device.user_id)
 

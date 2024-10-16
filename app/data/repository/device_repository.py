@@ -53,6 +53,24 @@ class DeviceRepository():
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
         
+    def delete_device(self, id: int):
+        try:
+            device_model = self.get_device_by_id(id)
+
+            device_model.disabled = False
+
+            self.db.flush()
+
+            device_user_model = self.device_user_repository.get_device_user_by_device(device_model.id)
+
+            device_user_model.disabled = False
+
+            self.db.commit()
+            return device_model.id
+        except:
+            self.db.rollback()
+            raise ValueError("Erro ao salvar no sistema") 
+        
     def get_all_devices(self):
         return self.db.query(DeviceModel).filter(DeviceModel.disabled == False).all()
     

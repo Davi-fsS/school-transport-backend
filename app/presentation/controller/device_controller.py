@@ -18,3 +18,6 @@ class DeviceController():
     
     def update_device(self, device: UpdateDevice):
         return self.device_service.update_device(device)
+    
+    def delete_device(self, id: int):
+        return self.device_service.delete_device(id)

@@ -607,3 +607,10 @@ async def update_device(device: UpdateDevice):
         return device_controller.update_device(device)
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+
+@app.delete("/device/delete",status_code=status.HTTP_200_OK)
+async def delete_device(id: int):
+    try:
+        return device_controller.delete_device(id)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
