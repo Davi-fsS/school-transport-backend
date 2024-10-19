@@ -474,6 +474,7 @@ async def get_last_coordinate_by_schedule(schedule_id : int = Header(), user_id 
 @app.post("/coordinate/save-coordinates-lora",status_code=status.HTTP_201_CREATED)
 async def save_coordinates_lora(coordinates: SaveLoraCoordinate):
     try:
+        print("chamou o endpoint")
         return coordinate_controller.save_coordinate_lora(coordinates)
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
