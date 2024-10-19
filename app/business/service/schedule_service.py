@@ -437,9 +437,14 @@ class ScheduleService():
         
         coordinates_from_schedules = self.coordinate_repository.get_list_coordinates_by_schedule_list(schedules_ids)
 
+        lora_coordinates_from_schedules = self.coordinate_repository.get_list_lora_coordinates_by_schedule_list(schedules_ids)
+
         for schedule_date in schedules_from_date:
             coordinate_dto : List[Coordinate] = []
+            lora_coordinate_dto: List[Coordinate] = []
             coordinates_to_schedule = list(filter(lambda coord: coord.schedule_id == schedule_date.id, coordinates_from_schedules))
+
+            lora_coordinates_from_schedule = list(filter(lambda coord: coord.schedule_id == schedule_date.id, lora_coordinates_from_schedules))
 
             schedule_dto = Schedule(id=schedule_date.id, name=schedule_date.name, initial_date=schedule_date.initial_date, end_date=schedule_date.end_date,
                                 real_initial_date=schedule_date.real_initial_date, real_end_date=schedule_date.real_end_date, description=schedule_date.description,
@@ -448,8 +453,12 @@ class ScheduleService():
             for coordinate in coordinates_to_schedule:
                 coordinate_dto.append(Coordinate(lat=coordinate.lat, lng=coordinate.lng, coordinate_type_id=coordinate.coordinate_type_id,
                                                  schedule_id=coordinate.schedule_id, register_date=coordinate.register_date, creation_user=coordinate.creation_user))
+            
+            for lora_coordinate in lora_coordinates_from_schedule:
+                lora_coordinate_dto.append(Coordinate(lat=lora_coordinate.lat, lng=lora_coordinate.lng, coordinate_type_id=lora_coordinate.coordinate_type_id,
+                                                 schedule_id=lora_coordinate.schedule_id, register_date=lora_coordinate.register_date, creation_user=lora_coordinate.creation_user))
 
-            schedule_historic.append(ScheduleHistoric(schedule=schedule_dto, coordinates=coordinate_dto))
+            schedule_historic.append(ScheduleHistoric(schedule=schedule_dto, coordinates=coordinate_dto, coordinates_lora=lora_coordinate_dto))
         
         return schedule_historic
 

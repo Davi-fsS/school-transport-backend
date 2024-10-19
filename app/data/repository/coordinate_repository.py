@@ -23,7 +23,10 @@ class CoordinateRepository():
         return self.db.query(CoordinateModel).filter(CoordinateModel.schedule_id == schedule_id).all()
     
     def get_list_coordinates_by_schedule_list(self, schedule_list: List[int]):
-        return self.db.query(CoordinateModel).filter(CoordinateModel.schedule_id.in_(schedule_list)).all()
+        return self.db.query(CoordinateModel).filter(CoordinateModel.schedule_id.in_(schedule_list), CoordinateModel.coordinate_type_id == 1).all()
     
+    def get_list_lora_coordinates_by_schedule_list(self, schedule_list: List[int]):
+        return self.db.query(CoordinateModel).filter(CoordinateModel.schedule_id.in_(schedule_list), CoordinateModel.coordinate_type_id == 2).all()
+
     def get_last_coordinate_by_schedule_id(self, schedule_id: int):
         return self.db.query(CoordinateModel).filter(CoordinateModel.schedule_id == schedule_id).order_by(desc(CoordinateModel.id)).first()

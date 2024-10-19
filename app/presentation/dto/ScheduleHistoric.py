@@ -7,3 +7,4 @@ from presentation.dto.Coordinate import Coordinate
 class ScheduleHistoric(BaseModel):
     schedule: Schedule
     coordinates: List[Coordinate]
+    coordinates_lora: List[Coordinate]
