@@ -23,12 +23,10 @@ class ScheduleUserService():
         return self.schedule_user_repository.get_schedule_user_list_by_user_id(user_id)
 
     def get_current_schedule_by_user(self, user_id: int):
-        print("*******")
-        print(user_id)
-        print("*******")
         schedule_users_list = self.schedule_user_repository.get_schedule_user_list_by_user_id(user_id)
 
-        print("tamanho schedules_user:", len(schedule_users_list))
+        if len(schedule_users_list) == 0: 
+            return None
 
         schedule_ids = []
         for schedule_user in schedule_users_list:

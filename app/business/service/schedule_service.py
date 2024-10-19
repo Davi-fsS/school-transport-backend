@@ -207,6 +207,9 @@ class ScheduleService():
 
         current_schedule_by_driver = self.schedule_user_service.get_current_schedule_by_user(driver.id)
 
+        if current_schedule_by_driver is None:
+            return None
+
         schedule_dto = Schedule(id=current_schedule_by_driver.id, name=current_schedule_by_driver.name, initial_date=current_schedule_by_driver.initial_date,
                                 end_date=current_schedule_by_driver.end_date, real_initial_date=current_schedule_by_driver.real_initial_date,
                                 real_end_date=current_schedule_by_driver.real_end_date, description=current_schedule_by_driver.description, 

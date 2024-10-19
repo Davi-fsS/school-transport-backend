@@ -19,8 +19,6 @@ class DeviceRepository():
         try:
             device_model = DeviceModel(code=body.code, name=body.name, creation_user=body.user_id)
 
-            print("entrou aqui 1")
-
             self.db.add(device_model)
             self.db.flush()
 

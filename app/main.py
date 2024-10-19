@@ -1,5 +1,6 @@
 from datetime import datetime
 from fastapi import FastAPI, status, HTTPException, Header
+from presentation.dto.SaveLoraCoordinate import SaveLoraCoordinate
 from presentation.dto.UpdateDevice import UpdateDevice
 from presentation.dto.CreateDevice import CreateDevice
 from presentation.controller.device_controller import DeviceController
@@ -451,6 +452,13 @@ async def get_last_coordinate_by_schedule(schedule_id : int = Header(), user_id 
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
     
+@app.post("/coordinate/save-coordinates-lora",status_code=status.HTTP_201_CREATED)
+async def save_coordinates_lora(coordinates: SaveLoraCoordinate):
+    try:
+        return coordinate_controller.save_coordinate_lora(coordinates)
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+
 #SCHEDULE ENDPOINTS
 @app.get("/schedule/by-student", status_code=status.HTTP_200_OK)
 async def get_schedule_by_student(student_id: int = Header(), user_id: int = Header()):
