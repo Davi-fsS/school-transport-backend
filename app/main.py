@@ -1,5 +1,6 @@
 from datetime import datetime
 import json
+import requests
 import paho.mqtt.client as mqtt
 from contextlib import asynccontextmanager
 import asyncio
@@ -474,7 +475,6 @@ async def get_last_coordinate_by_schedule(schedule_id : int = Header(), user_id 
 @app.post("/coordinate/save-coordinates-lora",status_code=status.HTTP_201_CREATED)
 async def save_coordinates_lora(coordinates: SaveLoraCoordinate):
     try:
-        print("chamou o endpoint")
         return coordinate_controller.save_coordinate_lora(coordinates)
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
@@ -654,18 +654,17 @@ def on_message(client, userdata, message):
     try:
         payload = json.loads(payload_str)
         
-        # Extrai os dados do payload
+        # Constrói o corpo da requisição usando os dados do payload
         data = {
             "lat": payload["data"]["lat"],
             "lng": payload["data"]["lon"],
             "device_code": payload["props"]["deviceId"]
         }
 
-        if main_loop:
-            print(data)
-            asyncio.run_coroutine_threadsafe(save_coordinates_lora(data), main_loop)
-        else:
-            print("Event loop principal não disponível")
+        # Faz a requisição POST ao endpoint
+        response = requests.post("https://school-transport-backend-3fec5c45f086.herokuapp.com/coordinate/save-coordinates-lora", json=data)
+        print(f"Resposta do servidor: {response.status_code} - {response.text}")
+
 
     except json.JSONDecodeError as e:
         print(f"Erro ao decodificar o JSON: {e}")
@@ -673,6 +672,8 @@ def on_message(client, userdata, message):
         print(f"Chave ausente no payload: {e}")
     except Exception as e:
         print(f"Erro ao processar a mensagem: {e}")
+
+
 
 # Função para configurar o cliente MQTT e iniciar a escuta
 def setup_mqtt():
