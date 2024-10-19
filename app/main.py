@@ -1,4 +1,8 @@
 from datetime import datetime
+import json
+import paho.mqtt.client as mqtt
+from contextlib import asynccontextmanager
+import asyncio
 from fastapi import FastAPI, status, HTTPException, Header
 from presentation.dto.SaveLoraCoordinate import SaveLoraCoordinate
 from presentation.dto.UpdateDevice import UpdateDevice
@@ -42,7 +46,22 @@ from presentation.dto.CreateSchedule import CreateSchedule
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
 
-app = FastAPI()
+# FastAPI startup event para iniciar o MQTT quando o servidor subir
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    global main_loop
+
+    main_loop = asyncio.get_event_loop()
+
+    # Executa o setup MQTT de forma não bloqueante
+    loop = asyncio.get_event_loop()
+    loop.run_in_executor(None, setup_mqtt)
+
+    yield
+
+    print("Aplicação desligada")
+
+app = FastAPI(lifespan=lifespan)
 
 origins = [
     "http://localhost",
@@ -622,3 +641,52 @@ async def delete_device(id: int):
         return device_controller.delete_device(id)
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    
+
+# WORKER
+def on_message(client, userdata, message):
+    global main_loop
+    payload_str = message.payload.decode("utf-8")
+    print("Mensagem recebida:", payload_str)
+
+    # Processa o payload
+    try:
+        payload = json.loads(payload_str)
+        
+        # Extrai os dados do payload
+        data = {
+            "lat": payload["data"]["lat"],
+            "lng": payload["data"]["lon"],
+            "device_code": payload["props"]["deviceId"]
+        }
+
+        if main_loop:
+            print(data)
+            asyncio.run_coroutine_threadsafe(save_coordinates_lora(data), main_loop)
+        else:
+            print("Event loop principal não disponível")
+
+    except json.JSONDecodeError as e:
+        print(f"Erro ao decodificar o JSON: {e}")
+    except KeyError as e:
+        print(f"Chave ausente no payload: {e}")
+    except Exception as e:
+        print(f"Erro ao processar a mensagem: {e}")
+
+# Função para configurar o cliente MQTT e iniciar a escuta
+def setup_mqtt():
+    MQTT_HOST = "smartcampus.maua.br"
+    MQTT_PORT = 1883
+    MQTT_TOPIC = "IMT/LNS/TccTransporteEscolar/0004a30b00e98398/up/imt"
+    
+    client = mqtt.Client(client_id="", protocol=mqtt.MQTTv311)
+    client.username_pw_set(username="PUBLIC", password="public")
+    
+    client.on_message = on_message
+    client.connect(MQTT_HOST, MQTT_PORT)
+    
+    # Subscreve ao tópico
+    client.subscribe(MQTT_TOPIC, qos=0)
+
+    # Inicia o loop MQTT de forma não bloqueante
+    client.loop_start()
