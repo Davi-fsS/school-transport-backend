@@ -8,7 +8,7 @@ class ScheduleMapsInfosModel(Base):
     id = Column(Integer, primary_key=True, index=True)
     schedule_id = Column(Integer)
     encoded_points = Column(String(3000))
-    legs_info = Column(String(800))
+    legs_info = Column(String(2000))
     eta = Column(String(500))
     creation_user = Column(Integer)
     change_date = Column(DateTime, nullable=True)
