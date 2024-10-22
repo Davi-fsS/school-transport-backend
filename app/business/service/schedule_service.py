@@ -393,6 +393,24 @@ class ScheduleService():
 
         points = self.point_service.get_point_list_by_list(points_in_schedule_ids)
 
+        coordinates = self.coordinate_repository.get_list_coordinates_by_schedule_list(schedule_ids)
+
+        coordinates_dto : List[Coordinate] = []
+
+        for coordinate in coordinates:
+            coordinates_dto.append(Coordinate(lat=coordinate.lat, lng=coordinate.lng, coordinate_type_id=coordinate.coordinate_type_id,
+                                              schedule_id=coordinate.schedule_id, register_date=coordinate.register_date,
+                                              creation_user=coordinate.creation_user))
+        
+        lora_coordinates_dto : List[Coordinate] = []
+
+        lora_coordinates = self.coordinate_repository.get_list_lora_coordinates_by_schedule_list(schedule_ids)
+
+        for coordinate in lora_coordinates:
+            lora_coordinates_dto.append(Coordinate(lat=coordinate.lat, lng=coordinate.lng, coordinate_type_id=coordinate.coordinate_type_id,
+                                              schedule_id=coordinate.schedule_id, register_date=coordinate.register_date,
+                                              creation_user=coordinate.creation_user))
+
         for schedule_point in schedules_points_from_date:
             schedule = list(filter(lambda sched: sched.id == schedule_point.schedule_id, schedules))[0]
 
@@ -403,7 +421,11 @@ class ScheduleService():
             if schedule is not None:
                 point_dto = list(filter(lambda poi: poi.id == schedule_point.point_id, points))
 
-                schedule_historic_item = ScheduleHistoricResponsible(schedule=schedule_dto, points=point_dto, coordinates=None)
+                coordinate_dto = list(filter(lambda coord: coord.schedule_id == schedule.id, coordinates_dto))
+
+                lora_coordinate = list(filter(lambda coord: coord.schedule_id == schedule.id, lora_coordinates_dto))
+
+                schedule_historic_item = ScheduleHistoricResponsible(schedule=schedule_dto, points=point_dto, coordinates=coordinate_dto, coordinates_lora=lora_coordinate)
 
                 schedule_historic.append(schedule_historic_item)
 

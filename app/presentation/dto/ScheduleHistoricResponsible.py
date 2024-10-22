@@ -9,3 +9,4 @@ class ScheduleHistoricResponsible(BaseModel):
     schedule: Schedule
     points: List[Point]
     coordinates: List[Coordinate] | None
+    coordinates_lora: List[Coordinate] | None
