@@ -449,6 +449,9 @@ class ScheduleService():
         
         schedules = self.schedule_repository.get_schedule_list_by_list(schedule_ids)
 
+        if len(schedules) == 0:
+            raise ValueError("Não existe nenhuma viagem")
+
         points = self.point_service.get_point_list_by_list(points_in_schedule_ids)
 
         coordinates = self.coordinate_repository.get_list_coordinates_by_schedule_list(schedule_ids)
