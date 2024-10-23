@@ -1,5 +1,6 @@
 from datetime import date, datetime
 from typing import List
+from presentation.dto.ScheduleHistoricDetailsResponsible import ScheduleHistoricDetailsResponsible
 from presentation.dto.ScheduleHistoricResponsible import ScheduleHistoricResponsible
 from presentation.dto.ScheduleHistoricDetails import ScheduleHistoricDetails
 from presentation.dto.SchedulePoint import SchedulePoint
@@ -282,6 +283,63 @@ class ScheduleService():
         self.validating_schedule_last_point(schedule_id)
         
         self.schedule_repository.put_schedule_end(schedule, user_id)
+
+    def get_schedule_responsible_historic_details(self, schedule_id: int, user_id: int, point_id: int):
+        self.validating_responsible(user_id)
+
+        schedule = self.schedule_repository.get_schedule_by_id(schedule_id)
+
+        if schedule is None:
+            raise ValueError("Viagem inválida")
+
+        schedule_points = self.schedule_point_service.get_schedule_point_by_schedule_id(schedule_id)
+
+        schedule_points_dto : List[SchedulePoint] = []
+        point_ids = []
+
+        for schedule_point in schedule_points:
+            point_ids.append(schedule_point.point_id)
+
+        points = self.point_service.get_point_list_by_list(point_ids)
+
+        for schedule_point in schedule_points:
+            point_dto = list(filter(lambda point: point.id == schedule_point.point_id, points))[0]
+
+            if(point_dto.id == point_id):
+                schedule_points_dto.append(SchedulePoint(id=schedule_point.id, planned_date=schedule_point.planned_date,
+                                                        real_date=schedule_point.real_date, order=schedule_point.order,
+                                                        schedule_id=schedule_point.schedule_id, has_embarked=schedule_point.has_embarked,
+                                                        creation_user=schedule_point.creation_user, point=point_dto))
+
+        end_date = schedule.end_date
+
+        if(end_date is None):
+            end_date = datetime.now()
+
+        duration = end_date - schedule.initial_date
+
+        duration_in_datetime = datetime.min + duration
+
+        real_end_date = schedule.real_end_date
+
+        if(real_end_date is None):
+            real_end_date = datetime.now()
+
+        real_duration = real_end_date - schedule.real_initial_date
+
+        real_duration_in_datetime = datetime.min + real_duration
+
+        schedule_type = "Ida"
+
+        if schedule.schedule_type_id == 2:
+            schedule_type = "Volta"
+
+        schedule_driver_historic_dto = ScheduleHistoricDetailsResponsible(real_duration=real_duration_in_datetime, planned_duration=duration_in_datetime, 
+                                                               id=schedule.id, initial_date=schedule.initial_date, end_date=schedule.end_date,
+                                                                real_initial_date=schedule.real_initial_date, real_end_date=schedule.real_end_date,
+                                                                name=schedule.name, schedule_type=schedule_type, point=schedule_points_dto[0])
+
+        return schedule_driver_historic_dto
 
     def get_schedule_driver_historic_details(self, schedule_id: int, user_id: int):
         self.validating_driver(user_id)
