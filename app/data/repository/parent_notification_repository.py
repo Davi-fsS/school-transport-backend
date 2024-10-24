@@ -14,60 +14,39 @@ class ParentNotificationRepository():
         self.db = next(self.session_manager.get_db())
 
     def get_notification_list_by_user(self, user_id: int):
-        try:
-            return self.db.query(ParentNotificationModel).filter(ParentNotificationModel.user_id == user_id, ParentNotificationModel.disabled == False).all()
-        finally:
-            self.session_manager.close(self.db)
+        return self.db.query(ParentNotificationModel).filter(ParentNotificationModel.user_id == user_id, ParentNotificationModel.disabled == False).all()
 
     def get_notification_list_by_student_list(self, student_list: List[int]):
-        try:
-            timezone = pytz.timezone('America/Sao_Paulo')
-            current_date = datetime.now(timezone).date()
+        timezone = pytz.timezone('America/Sao_Paulo')
+        current_date = datetime.now(timezone).date()
 
-            return self.db.query(ParentNotificationModel).filter(
-                ParentNotificationModel.student_id.in_(student_list),
-                cast(ParentNotificationModel.inative_day, Date) == current_date,
-                ParentNotificationModel.disabled == False
-            ).all()
-        finally:
-            self.session_manager.close(self.db)
-    
+        return self.db.query(ParentNotificationModel).filter(
+            ParentNotificationModel.student_id.in_(student_list),
+            cast(ParentNotificationModel.inative_day, Date) == current_date,
+            ParentNotificationModel.disabled == False
+        ).all()
+
     def get_parent_notification_list_by_student_today(self, student_id: int):
-        try:
-            timezone = pytz.timezone('America/Sao_Paulo')
-            current_date = datetime.now(timezone).date()
+        timezone = pytz.timezone('America/Sao_Paulo')
+        current_date = datetime.now(timezone).date()
 
-            return self.db.query(ParentNotificationModel).filter(
-                ParentNotificationModel.student_id == student_id,
-                cast(ParentNotificationModel.inative_day, Date) == current_date,
-                ParentNotificationModel.disabled == False
-            ).all()
-        finally:
-            self.session_manager.close(self.db)
+        return self.db.query(ParentNotificationModel).filter(
+            ParentNotificationModel.student_id == student_id,
+            cast(ParentNotificationModel.inative_day, Date) == current_date,
+            ParentNotificationModel.disabled == False
+        ).all()
 
     def get_canceled_notification_list_by_user(self, user_id: int):
-        try:
-            return self.db.query(ParentNotificationModel).filter(ParentNotificationModel.user_id == user_id, ParentNotificationModel.disabled == True).all()
-        finally:
-            self.session_manager.close(self.db)
+        return self.db.query(ParentNotificationModel).filter(ParentNotificationModel.user_id == user_id, ParentNotificationModel.disabled == True).all()
 
     def get_by_id(self, id: int):
-        try:
-            return self.db.query(ParentNotificationModel).filter(ParentNotificationModel.id == id, ParentNotificationModel.disabled == False).first()
-        finally:
-            self.session_manager.close(self.db)
+        return self.db.query(ParentNotificationModel).filter(ParentNotificationModel.id == id, ParentNotificationModel.disabled == False).first()
 
     def get_notification_list_after_today_by_user(self, user_id: int):
-        try:
-            return self.db.query(ParentNotificationModel).filter(ParentNotificationModel.user_id == user_id, cast(ParentNotificationModel.inative_day, Date) >= cast(func.now(), Date),ParentNotificationModel.disabled == False).all()
-        finally:
-            self.session_manager.close(self.db)
+        return self.db.query(ParentNotificationModel).filter(ParentNotificationModel.user_id == user_id, cast(ParentNotificationModel.inative_day, Date) >= cast(func.now(), Date),ParentNotificationModel.disabled == False).all()
 
     def get_notification_list_past_by_user(self, user_id: int):
-        try:
-            return self.db.query(ParentNotificationModel).filter(ParentNotificationModel.user_id == user_id, cast(ParentNotificationModel.inative_day, Date) < cast(func.now(), Date),ParentNotificationModel.disabled == False).all()
-        finally:
-            self.session_manager.close(self.db)
+        return self.db.query(ParentNotificationModel).filter(ParentNotificationModel.user_id == user_id, cast(ParentNotificationModel.inative_day, Date) < cast(func.now(), Date),ParentNotificationModel.disabled == False).all()
 
     def create_notification(self, body: ParentNotificationModel):
         try:
@@ -77,8 +56,6 @@ class ParentNotificationRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
-        finally:
-            self.session_manager.close(self.db)
     
     def put_notification_disabled(self, id: int):
         try:
@@ -92,5 +69,3 @@ class ParentNotificationRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
-        finally:
-            self.session_manager.close(self.db)

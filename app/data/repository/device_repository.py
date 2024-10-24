@@ -32,8 +32,6 @@ class DeviceRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
-        finally:
-            self.session_manager.close(self.db)
     
     def update_device(self, body: UpdateDevice):
         try:
@@ -55,8 +53,6 @@ class DeviceRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
-        finally:
-            self.session_manager.close(self.db)
         
     def delete_device(self, id: int):
         try:
@@ -72,29 +68,15 @@ class DeviceRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema") 
-        finally:
-            self.session_manager.close(self.db)
         
     def get_device_user_by_device(self, device_id: int):
-        try:
-            return self.db.query(DeviceUserModel).filter(DeviceUserModel.device_id == device_id, DeviceUserModel.disabled == False).first()
-        finally:
-            self.session_manager.close(self.db)
+        return self.db.query(DeviceUserModel).filter(DeviceUserModel.device_id == device_id, DeviceUserModel.disabled == False).first()
 
     def get_all_devices(self):
-        try:
-            return self.db.query(DeviceModel).filter(DeviceModel.disabled == False).all()
-        finally:
-            self.session_manager.close(self.db)
+        return self.db.query(DeviceModel).filter(DeviceModel.disabled == False).all()
 
     def get_device_by_code(self, code: str) -> DeviceModel:
-        try:
-            return self.db.query(DeviceModel).filter(DeviceModel.code == code, DeviceModel.disabled == False).first()
-        finally:
-            self.session_manager.close(self.db)
+        return self.db.query(DeviceModel).filter(DeviceModel.code == code, DeviceModel.disabled == False).first()
 
     def get_device_by_id(self, id: int) -> DeviceModel:
-        try:
-            return self.db.query(DeviceModel).filter(DeviceModel.id == id, DeviceModel.disabled == False).first()   
-        finally:
-            self.session_manager.close(self.db)
+        return self.db.query(DeviceModel).filter(DeviceModel.id == id, DeviceModel.disabled == False).first()   

@@ -10,7 +10,4 @@ class ScheduleMapsInfosRepository():
         self.db = next(self.session_manager.get_db())
 
     def get_schedule_maps_infos_by_schedule_id(self, schedule_id: int):
-        try:
-            return self.db.query(ScheduleMapsInfosModel).filter(ScheduleMapsInfosModel.schedule_id == schedule_id).first()
-        finally:
-            self.session_manager.close(self.db)
+        return self.db.query(ScheduleMapsInfosModel).filter(ScheduleMapsInfosModel.schedule_id == schedule_id).first()

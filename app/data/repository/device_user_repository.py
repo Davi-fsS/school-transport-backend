@@ -19,23 +19,12 @@ class DeviceUserRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
-        finally:
-            self.session_manager.close(self.db)
         
     def get_device_user_by_device(self, device_id: int):
-        try:
-            return self.db.query(DeviceUserModel).filter(DeviceUserModel.device_id == device_id, DeviceUserModel.disabled == False).first()
-        finally:
-            self.session_manager.close(self.db)
+        return self.db.query(DeviceUserModel).filter(DeviceUserModel.device_id == device_id, DeviceUserModel.disabled == False).first()
 
     def get_device_user_by_user(self, user_id: int):
-        try:
-            return self.db.query(DeviceUserModel).filter(DeviceUserModel.user_id == user_id, DeviceUserModel.disabled == False).first()
-        finally:
-            self.session_manager.close(self.db)
+        return self.db.query(DeviceUserModel).filter(DeviceUserModel.user_id == user_id, DeviceUserModel.disabled == False).first()
 
     def get_device_user_list_by_device_list(self, device_list: List[int]):
-        try:
-            return self.db.query(DeviceUserModel).filter(DeviceUserModel.device_id.in_(device_list), DeviceUserModel.disabled == False).all()
-        finally:
-            self.session_manager.close(self.db)
+        return self.db.query(DeviceUserModel).filter(DeviceUserModel.device_id.in_(device_list), DeviceUserModel.disabled == False).all()

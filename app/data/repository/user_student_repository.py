@@ -21,8 +21,6 @@ class UserStudentRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema") 
-        finally:
-            self.session_manager.close(self.db)
 
     def get_user_student_by_student_id(self, student_id: int):
         try:
@@ -35,8 +33,6 @@ class UserStudentRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")    
-        finally:
-            self.session_manager.close(self.db)
         
     def get_all_user_student_by_student_id(self, student_id: int):
         try:
@@ -49,15 +45,10 @@ class UserStudentRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
-        finally:
-            self.session_manager.close(self.db)
         
     def get_user_students_by_student_list(self, student_list : List[int]):
-        try:
-            user_student_list = self.db.query(UserStudentModel).filter(UserStudentModel.student_id.in_(student_list), UserStudentModel.disabled == False).all()
-            return user_student_list
-        finally:
-            self.session_manager.close(self.db)
+        user_student_list = self.db.query(UserStudentModel).filter(UserStudentModel.student_id.in_(student_list), UserStudentModel.disabled == False).all()
+        return user_student_list
 
     def get_students_by_responsible(self, responsible_id: int):
         try:
@@ -67,8 +58,6 @@ class UserStudentRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
-        finally:
-            self.session_manager.close(self.db)
         
     def create_user_student(self, db_user_student: UserStudentModel):
         try:
@@ -78,8 +67,6 @@ class UserStudentRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
-        finally:
-            self.session_manager.close(self.db)
         
     def create_user_student_list(self, db_user_student_list: List[UserStudentModel]):
         created_ids = []
@@ -93,8 +80,6 @@ class UserStudentRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
-        finally:
-            self.session_manager.close(self.db)
         
     def delete_user_student_by_student_id(self, student_id: int):
         try:
@@ -104,8 +89,6 @@ class UserStudentRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
-        finally:
-            self.session_manager.close(self.db)
         
     def delete_user_student_list_by_student_id(self, student_id: int):
         try:
@@ -117,8 +100,6 @@ class UserStudentRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
-        finally:
-            self.session_manager.close(self.db)
         
     def delete_all_user_student_by_student_id(self, student_id: int):
         try:
@@ -130,8 +111,6 @@ class UserStudentRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
-        finally:
-            self.session_manager.close(self.db)
         
     def delete_user_student(self, student_id: int, responsible_id: int):
         try:
@@ -141,5 +120,3 @@ class UserStudentRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
-        finally:
-            self.session_manager.close(self.db)

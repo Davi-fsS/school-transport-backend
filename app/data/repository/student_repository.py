@@ -13,15 +13,12 @@ class StudentRepository():
         self.db = next(self.session_manager.get_db())
 
     def get_student(self, student_id: int):
-        try:
-            student = self.db.query(StudentModel).filter(StudentModel.id == student_id, StudentModel.disabled == False).first()
+        student = self.db.query(StudentModel).filter(StudentModel.id == student_id, StudentModel.disabled == False).first()
 
-            if student is None:
-                raise ValueError("Aluno não encontrado")
+        if student is None:
+            raise ValueError("Aluno não encontrado")
 
-            return student
-        finally:
-            self.session_manager.close(self.db)
+        return student
         
     def get_student_by_code(self, student_code: str):
         try:
@@ -31,8 +28,6 @@ class StudentRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
-        finally:
-            self.session_manager.close(self.db)
         
     def get_students_by_student_list(self, student_id_list: List[int]):
         try:
@@ -41,8 +36,6 @@ class StudentRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
-        finally:
-            self.session_manager.close(self.db)
     
     def get_students_by_student_list_and_point(self, student_id_list: List[int], point_id: int):
         try:
@@ -51,14 +44,9 @@ class StudentRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
-        finally:
-            self.session_manager.close(self.db)
         
     def get_students_by_point_list(self, point_list: List[int]):
-        try:
-            return self.db.query(StudentModel).filter(StudentModel.point_id.in_(point_list), StudentModel.disabled == False).all()
-        finally:
-            self.session_manager.close(self.db)
+        return self.db.query(StudentModel).filter(StudentModel.point_id.in_(point_list), StudentModel.disabled == False).all()
 
     def create_student(self, student: StudentModel):
         try:
@@ -69,8 +57,6 @@ class StudentRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
-        finally:
-            self.session_manager.close(self.db)
 
     def create_student_list(self, db_student_list: List[StudentModel]):
         created_ids = []
@@ -84,8 +70,6 @@ class StudentRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
-        finally:
-            self.session_manager.close(self.db)
         
     def update_student(self, student_update: UpdateStudent):
         try:
@@ -96,8 +80,6 @@ class StudentRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
-        finally:
-            self.session_manager.close(self.db)
     
     def update_student_address(self, student_id: int, point_id: int, user_id: int):
         try:
@@ -110,8 +92,6 @@ class StudentRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
-        finally:
-            self.session_manager.close(self.db)
         
     def delete_student(self, student_id: int):
         try:
@@ -120,6 +100,4 @@ class StudentRepository():
             self.db.commit()
         except:
             self.db.rollback()
-            raise ValueError("Erro ao salvar no sistema")   
-        finally:
-            self.session_manager.close(self.db)    
+            raise ValueError("Erro ao salvar no sistema")

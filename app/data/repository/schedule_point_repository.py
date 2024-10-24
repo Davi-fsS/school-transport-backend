@@ -15,46 +15,25 @@ class SchedulePointRepository():
         self.db = next(self.session_manager.get_db())
 
     def get_schedule_point_list_by_schedule_id(self, schedule_id: int):
-        try:
-            return self.db.query(SchedulePointModel).filter(SchedulePointModel.schedule_id == schedule_id).order_by(SchedulePointModel.order).all()
-        finally:
-            self.session_manager.close(self.db)
+        return self.db.query(SchedulePointModel).filter(SchedulePointModel.schedule_id == schedule_id).order_by(SchedulePointModel.order).all()
 
     def get_schedule_point_by_id(self, id: int):
-        try:
-            return self.db.query(SchedulePointModel).filter(SchedulePointModel.id == id).first()
-        finally:
-            self.session_manager.close(self.db)
+        return self.db.query(SchedulePointModel).filter(SchedulePointModel.id == id).first()
 
     def get_last_schedule_point(self, schedule_id : int):
-        try:
-            return self.db.query(SchedulePointModel).filter(SchedulePointModel.schedule_id == schedule_id).order_by(desc(SchedulePointModel.order)).first()
-        finally:
-            self.session_manager.close(self.db)
+        return self.db.query(SchedulePointModel).filter(SchedulePointModel.schedule_id == schedule_id).order_by(desc(SchedulePointModel.order)).first()
 
     def get_current_schedule_point_by_schedule_id(self, schedule_id: int):
-        try:
-            return self.db.query(SchedulePointModel).filter(SchedulePointModel.schedule_id == schedule_id, SchedulePointModel.real_date == None).first()
-        finally:
-            self.session_manager.close(self.db)
+        return self.db.query(SchedulePointModel).filter(SchedulePointModel.schedule_id == schedule_id, SchedulePointModel.real_date == None).first()
 
     def get_schedule_point_by_point_id(self, schedule_id: int, point_id: int):
-        try:
-            return self.db.query(SchedulePointModel).filter(SchedulePointModel.point_id == point_id,SchedulePointModel.schedule_id == schedule_id, SchedulePointModel.real_date == None).first()
-        finally:
-            self.session_manager.close(self.db)
+        return self.db.query(SchedulePointModel).filter(SchedulePointModel.point_id == point_id,SchedulePointModel.schedule_id == schedule_id, SchedulePointModel.real_date == None).first()
 
     def get_schedule_point_by_point_list(self, point_list: List[int]):
-        try:
-            return self.db.query(SchedulePointModel).filter(SchedulePointModel.point_id.in_(point_list)).all()
-        finally:
-            self.session_manager.close(self.db)
+        return self.db.query(SchedulePointModel).filter(SchedulePointModel.point_id.in_(point_list)).all()
     
     def get_schedule_point_by_point_list_date(self, point_list: List[int], date: date):
-        try:
-            return self.db.query(SchedulePointModel).filter(SchedulePointModel.point_id.in_(point_list), cast(SchedulePointModel.real_date, Date) == date).all()
-        finally:
-            self.session_manager.close(self.db)
+        return self.db.query(SchedulePointModel).filter(SchedulePointModel.point_id.in_(point_list), cast(SchedulePointModel.real_date, Date) == date).all()
 
     def put_schedule_point(self, schedule_id: int, point_id: int, user_id: int, has_embarked: bool):
         try:
@@ -69,5 +48,3 @@ class SchedulePointRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
-        finally:
-            self.session_manager.close(self.db)

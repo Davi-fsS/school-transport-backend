@@ -21,8 +21,6 @@ class UserRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")   
-        finally:
-            self.session_manager.close(self.db)
 
     def get_user_by_code(self, code: str):
         try:
@@ -30,8 +28,6 @@ class UserRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")   
-        finally:
-            self.session_manager.close(self.db)
 
     def get_user_by_list(self, user_id_list : List[int]):
         try:
@@ -39,14 +35,9 @@ class UserRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
-        finally:
-            self.session_manager.close(self.db)
         
     def get_responsibles_by_list(self, user_id_list : List[int]):
-        try:
-            return self.db.query(UserModel).filter(UserModel.id.in_(user_id_list), UserModel.user_type_id != 2).all()
-        finally:
-            self.session_manager.close(self.db)
+        return self.db.query(UserModel).filter(UserModel.id.in_(user_id_list), UserModel.user_type_id != 2).all()
 
     def get_all_drivers(self):
         try:
@@ -54,8 +45,6 @@ class UserRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
-        finally:
-            self.session_manager.close(self.db)
 
     def get_user_by_email(self, email: str):
         try:
@@ -63,8 +52,6 @@ class UserRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")    
-        finally:
-            self.session_manager.close(self.db)
             
     def get_user_by_cnh(self, cnh: str):
         try:
@@ -72,8 +59,6 @@ class UserRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")    
-        finally:
-            self.session_manager.close(self.db)
 
     def get_user_by_cpf(self, cpf: str):
         try:
@@ -81,8 +66,6 @@ class UserRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
-        finally:
-            self.session_manager.close(self.db)
 
     def get_user_by_rg(self, rg: str):
         try:
@@ -90,8 +73,6 @@ class UserRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")       
-        finally:
-            self.session_manager.close(self.db)
 
     def create_user(self, db_user: UserModel):
         try:
@@ -101,8 +82,6 @@ class UserRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
-        finally:
-            self.session_manager.close(self.db)
 
     def update_user_uuid(self, id: int, uuid: str):
         try:
@@ -114,9 +93,7 @@ class UserRepository():
             self.db.commit()
         except:
             self.db.rollback()
-            raise ValueError("Erro ao salvar no sistema")
-        finally:
-            self.session_manager.close(self.db)        
+            raise ValueError("Erro ao salvar no sistema")        
 
     def update_user(self, user_update: UpdateUser):
         try:
@@ -143,8 +120,6 @@ class UserRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
-        finally:
-            self.session_manager.close(self.db)
 
     def delete_user(self, user: UserModel, user_point_list: List[UserPointModel], user_phone_list: List[UserPhoneModel], 
                 user_students: List[UserStudentModel], others_user_students: List[UserStudentModel], 
@@ -202,5 +177,3 @@ class UserRepository():
         except Exception as e:
             self.db.rollback()
             raise ValueError(f"Erro ao salvar no sistema: {e}")
-        finally:
-            self.session_manager.close(self.db)

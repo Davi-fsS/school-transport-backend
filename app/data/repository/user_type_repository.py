@@ -15,5 +15,3 @@ class UserTypeRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
-        finally:
-            self.session_manager.close(self.db)

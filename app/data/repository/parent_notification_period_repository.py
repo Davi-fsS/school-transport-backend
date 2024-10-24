@@ -10,7 +10,5 @@ class ParentNotificationPeriodRepository():
         self.db = next(self.session_manager.get_db())
 
     def get_all(self):
-        try:
-            return self.db.query(ParentNotificationPeriodModel).all()
-        finally:
-            self.session_manager.close(self.db)
+        return self.db.query(ParentNotificationPeriodModel).all()
+        
