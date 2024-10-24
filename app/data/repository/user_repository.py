@@ -131,9 +131,7 @@ class UserRepository():
             self.db.commit()
         except:
             self.db.rollback()
-            raise ValueError("Erro ao salvar no sistema") 
-        finally:
-            self.session_manager.close(self.db)       
+            raise ValueError("Erro ao salvar no sistema")
 
     def update_user_code(self, user_update_id: int, code: str):
         try:
