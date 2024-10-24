@@ -11,3 +11,5 @@ class ScheduleDetails(BaseModel):
     driver: User
     vehicle: Vehicle
     points: List[HomePoint]
+    school: HomePoint
+    destination: HomePoint

@@ -105,6 +105,12 @@ class ScheduleService():
     def get_schedule_in_progress(self, schedule_id: int):
         return self.schedule_repository.get_schedule_in_progress(schedule_id)
 
+    def get_school_on_schedule(self, schedule_points : List[HomePoint], schedule_type_id: int):
+        if(schedule_type_id == 1):
+            return schedule_points[-1]
+        
+        return schedule_points[0]
+
     def get_driver_schedule_details_by_schedule_id(self, schedule_id: int):
         schedule = self.schedule_repository.get_schedule_in_progress(schedule_id)
 
@@ -122,7 +128,8 @@ class ScheduleService():
 
         schedule_points = self.schedule_point_service.get_points_by_schedule_id(schedule_id)
 
-        schedule_details = ScheduleDetails(schedule=schedule_dto, driver=schedule_user, 
+        schedule_details = ScheduleDetails(schedule=schedule_dto, driver=schedule_user, destination=schedule_points[-1],
+                                           school=self.get_school_on_schedule(schedule_points, schedule.schedule_type_id),
                                            vehicle=schedule_vehicle, points=schedule_points)
 
         return schedule_details

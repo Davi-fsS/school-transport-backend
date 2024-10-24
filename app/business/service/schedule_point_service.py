@@ -69,7 +69,7 @@ class SchedulePointService():
                 home_point = HomePoint(point=point_dto, student=student_list, status=schedule_point_dto)
                 home_point_list.append(home_point)
 
-        return home_point_list
+        return sorted(home_point_list, key=lambda home_point: home_point.status.order)
     
     def get_schedule_point_by_id(self, id: int):
         return self.schedule_point_repository.get_schedule_point_by_id(id)
