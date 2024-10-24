@@ -1,13 +1,14 @@
 from typing import List
 from sqlalchemy.orm import Session
+from data.infrastructure.database import SessionManager
 from data.model.user_point_model import UserPointModel
-from data.infrastructure.database import get_db
 
 class UserPointRepository():
     db: Session
 
     def __init__(self):
-        self.db = next(get_db())
+        self.session_manager = SessionManager()
+        self.db = next(self.session_manager.get_db())
 
     def get_user_point_list(self, user_id: int):
         try:
@@ -15,14 +16,17 @@ class UserPointRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
+        finally:
+            self.session_manager.close(self.db)
         
     def get_user_point_list_by_user_list(self, user_list: List[int]):
-        with self.db:
-            try:
-                return self.db.query(UserPointModel).filter(UserPointModel.user_id.in_(user_list), UserPointModel.disabled == False).all()
-            except:
-                self.db.rollback()
-                raise ValueError("Erro ao fazer a leitura no sistema")
+        try:
+            return self.db.query(UserPointModel).filter(UserPointModel.user_id.in_(user_list), UserPointModel.disabled == False).all()
+        except:
+            self.db.rollback()
+            raise ValueError("Erro ao fazer a leitura no sistema")
+        finally:
+            self.session_manager.close(self.db)
         
     def get_user_point_list_by_point(self, point_id: int):
         try:
@@ -30,6 +34,8 @@ class UserPointRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
+        finally:
+            self.session_manager.close(self.db)
     
     def get_user_point_by_point(self, point_id: int):
         try:
@@ -37,6 +43,8 @@ class UserPointRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
+        finally:
+            self.session_manager.close(self.db)
         
     def get_user_point(self, user_id: int, point_id: int):
         try:
@@ -44,6 +52,8 @@ class UserPointRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
+        finally:
+            self.session_manager.close(self.db)
         
     def get_user_point_by_code(self, code: str):
         try:
@@ -51,6 +61,8 @@ class UserPointRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
+        finally:
+            self.session_manager.close(self.db)
         
     def delete_user_point(self, user_id: int, point_id: int):
         try:
@@ -61,6 +73,8 @@ class UserPointRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
+        finally:
+            self.session_manager.close(self.db)
         
     def delete_user_point_list_by_point(self, point_id: int):
         try:
@@ -72,6 +86,8 @@ class UserPointRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
+        finally:
+            self.session_manager.close(self.db)
 
     def create_user_point(self, db_user_point: UserPointModel):
         try:
@@ -81,5 +97,7 @@ class UserPointRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
+        finally:
+            self.session_manager.close(self.db)
 
     

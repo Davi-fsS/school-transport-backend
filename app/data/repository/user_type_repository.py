@@ -1,12 +1,13 @@
 from sqlalchemy.orm import Session
+from data.infrastructure.database import SessionManager
 from data.model.user_type_model import UserTypeModel
-from data.infrastructure.database import get_db
 
 class UserTypeRepository():
     db: Session
 
     def __init__(self):
-        self.db = next(get_db())
+        self.session_manager = SessionManager()
+        self.db = next(self.session_manager.get_db())
 
     def get_type(self, type_id: int):
         try:
@@ -14,3 +15,5 @@ class UserTypeRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
+        finally:
+            self.session_manager.close(self.db)

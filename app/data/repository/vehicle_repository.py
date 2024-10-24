@@ -1,13 +1,14 @@
 from sqlalchemy.orm import Session
+from data.infrastructure.database import SessionManager
 from data.model.vehicle_model import VehicleModel
 from presentation.dto.UpdateVehicle import UpdateVehicle
-from data.infrastructure.database import get_db
 
 class VehicleRepository():
     db: Session
 
     def __init__(self):
-        self.db = next(get_db())
+        self.session_manager = SessionManager()
+        self.db = next(self.session_manager.get_db())
 
     def get_vehicle(self, id: int):
         try:
@@ -20,6 +21,8 @@ class VehicleRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
+        finally:
+            self.session_manager.close(self.db)
     
     def get_vehicle_by_code(self, code: str):
         try:
@@ -29,6 +32,8 @@ class VehicleRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
+        finally:
+            self.session_manager.close(self.db)
         
     def get_all_vehicle(self):
         try:
@@ -38,6 +43,8 @@ class VehicleRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
+        finally:
+            self.session_manager.close(self.db)
         
     def get_vehicle_by_plate(self, plate: str):
         try:
@@ -46,7 +53,9 @@ class VehicleRepository():
             return vehicle
         except:
             self.db.rollback()
-            raise ValueError("Erro ao fazer a leitura no sistema")    
+            raise ValueError("Erro ao fazer a leitura no sistema")   
+        finally:
+            self.session_manager.close(self.db) 
         
     def get_vehicle_by_driver(self, user_id: int):
         try:
@@ -56,6 +65,8 @@ class VehicleRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
+        finally:
+            self.session_manager.close(self.db)
         
     def get_vehicle_list_by_driver(self, user_id: int):
         try:
@@ -65,6 +76,8 @@ class VehicleRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
+        finally:
+            self.session_manager.close(self.db)
         
     def create_vehicle(self, db_vehicle: VehicleModel):
         try:
@@ -74,6 +87,8 @@ class VehicleRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
+        finally:
+            self.session_manager.close(self.db)
         
     def update_vehicle(self, vehicle_update: UpdateVehicle, code: str):
         try:
@@ -89,6 +104,8 @@ class VehicleRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
+        finally:
+            self.session_manager.close(self.db)
         
     def associate_vehicle_point(self, vehicle_id: int, point_id: int):
         try:
@@ -100,6 +117,8 @@ class VehicleRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
+        finally:
+            self.session_manager.close(self.db)
     
     def disassociate_vehicle_point(self, vehicle_id: int):
         try:
@@ -111,6 +130,8 @@ class VehicleRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
+        finally:
+            self.session_manager.close(self.db)
         
     def delete_vehicle(self, vehicle_id: int):
         try:
@@ -120,4 +141,6 @@ class VehicleRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
+        finally:
+            self.session_manager.close(self.db)
         
