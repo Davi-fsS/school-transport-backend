@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import List
 from sqlalchemy.orm import Session
-from data.infrastructure.database import SessionManager
+from data.infrastructure.database import get_db
 from data.model.student_model import StudentModel
 from presentation.dto.UpdateStudent import UpdateStudent
 
@@ -9,8 +9,7 @@ class StudentRepository():
     db: Session
 
     def __init__(self):
-        self.session_manager = SessionManager()
-        self.db = next(self.session_manager.get_db())
+        self.db = next(get_db())
 
     def get_student(self, student_id: int):
         student = self.db.query(StudentModel).filter(StudentModel.id == student_id, StudentModel.disabled == False).first()

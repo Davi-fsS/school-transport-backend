@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import and_
-from data.infrastructure.database import SessionManager
+from data.infrastructure.database import get_db
 from data.model.point_model import PointModel
 from presentation.dto.UpdateSchool import UpdateSchool
 from presentation.dto.UpdatePoint import UpdatePoint
@@ -11,8 +11,7 @@ class PointRepository():
     db: Session
 
     def __init__(self):
-        self.session_manager = SessionManager()
-        self.db = next(self.session_manager.get_db())
+        self.db = next(get_db())
 
     def get_points_by_point_list(self, point_id_list: List[int]):
         try:

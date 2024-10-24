@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from data.infrastructure.database import SessionManager
+from data.infrastructure.database import get_db
 from data.model.student_model import StudentModel
 from data.model.user_student_model import UserStudentModel
 from data.model.user_phone_model import UserPhoneModel
@@ -12,8 +12,7 @@ from sqlalchemy import inspect
 
 class UserRepository():
     def __init__(self):
-        self.session_manager = SessionManager()
-        self.db = next(self.session_manager.get_db())
+        self.db = next(get_db())
 
     def get_user(self, user_id: int):
         try:

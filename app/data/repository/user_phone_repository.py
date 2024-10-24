@@ -1,6 +1,6 @@
 from typing import List
 from sqlalchemy.orm import Session
-from data.infrastructure.database import SessionManager
+from data.infrastructure.database import get_db
 from data.model.user_phone_model import UserPhoneModel
 from presentation.dto.UpdatePhone import UpdatePhone
 
@@ -8,8 +8,7 @@ class UserPhoneRepository():
     db: Session
 
     def __init__(self):
-        self.session_manager = SessionManager()
-        self.db = next(self.session_manager.get_db())
+        self.db = next(get_db())
 
     def get_user_phone_list(self, user_id: int):
         try:

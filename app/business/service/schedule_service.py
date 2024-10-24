@@ -1,6 +1,5 @@
 from datetime import date, datetime
 from typing import List
-from data.repository.session_repository import SessionRepository
 from presentation.dto.ScheduleHistoricDetailsResponsible import ScheduleHistoricDetailsResponsible
 from presentation.dto.ScheduleHistoricResponsible import ScheduleHistoricResponsible
 from presentation.dto.ScheduleHistoricDetails import ScheduleHistoricDetails
@@ -49,7 +48,6 @@ class ScheduleService():
     schedule_maps_infos_repository: ScheduleMapsInfosRepository
     parent_notification_service: ParentNotificationService
     coordinate_repository: CoordinateRepository
-    session_repository: SessionRepository
 
     def __init__(self):
         self.schedule_repository = ScheduleRepository()
@@ -65,7 +63,6 @@ class ScheduleService():
         self.schedule_maps_infos_repository = ScheduleMapsInfosRepository()
         self.parent_notification_service = ParentNotificationService()
         self.coordinate_repository = CoordinateRepository()
-        self.session_repository = SessionRepository()
 
     def get_schedule_by_id(self, schedule_id: int):
         schedule = self.schedule_repository.get_schedule_by_id(schedule_id)

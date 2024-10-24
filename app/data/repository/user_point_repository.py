@@ -1,14 +1,13 @@
 from typing import List
 from sqlalchemy.orm import Session
-from data.infrastructure.database import SessionManager
+from data.infrastructure.database import get_db
 from data.model.user_point_model import UserPointModel
 
 class UserPointRepository():
     db: Session
 
     def __init__(self):
-        self.session_manager = SessionManager()
-        self.db = next(self.session_manager.get_db())
+        self.db = next(get_db())
 
     def get_user_point_list(self, user_id: int):
         try:

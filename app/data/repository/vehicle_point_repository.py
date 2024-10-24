@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import List
 from sqlalchemy.orm import Session
-from data.infrastructure.database import SessionManager
+from data.infrastructure.database import get_db
 from presentation.dto.UpdateVehiclePoint import UpdateVehiclePoint
 from data.model.vehicle_point_model import VehiclePointModel
 
@@ -9,8 +9,7 @@ class VehiclePointRepository():
     db: Session
 
     def __init__(self):
-        self.session_manager = SessionManager()
-        self.db = next(self.session_manager.get_db())
+        self.db = next(get_db())
 
     def get_vehicle_point_by_id(self, id: int):
         return self.db.query(VehiclePointModel).filter(VehiclePointModel.id == id, VehiclePointModel.disabled == False).first() 

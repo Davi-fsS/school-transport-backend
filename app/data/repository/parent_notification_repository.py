@@ -1,6 +1,6 @@
 from typing import List
 from sqlalchemy.orm import Session
-from data.infrastructure.database import SessionManager
+from data.infrastructure.database import get_db
 from data.model.parent_notification_model import ParentNotificationModel
 from datetime import datetime
 from sqlalchemy import func, cast, Date
@@ -10,8 +10,7 @@ class ParentNotificationRepository():
     db: Session
 
     def __init__(self):
-        self.session_manager = SessionManager()
-        self.db = next(self.session_manager.get_db())
+        self.db = next(get_db())
 
     def get_notification_list_by_user(self, user_id: int):
         return self.db.query(ParentNotificationModel).filter(ParentNotificationModel.user_id == user_id, ParentNotificationModel.disabled == False).all()

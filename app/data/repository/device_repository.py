@@ -1,6 +1,6 @@
 from datetime import datetime
 from sqlalchemy.orm import Session
-from data.infrastructure.database import SessionManager
+from data.infrastructure.database import get_db
 from data.repository.device_user_repository import DeviceUserRepository
 from presentation.dto.UpdateDevice import UpdateDevice
 from data.model.device_user_model import DeviceUserModel
@@ -9,11 +9,9 @@ from data.model.device_model import DeviceModel
 
 class DeviceRepository():
     db: Session
-    device_user_repository: DeviceUserRepository
 
     def __init__(self):
-        self.session_manager = SessionManager()
-        self.db = next(self.session_manager.get_db())
+        self.db = next(get_db())
         self.device_user_repository = DeviceUserRepository()
 
     def create_device(self, body: CreateDevice):

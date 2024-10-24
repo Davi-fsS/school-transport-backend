@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from data.infrastructure.database import SessionManager
+from data.infrastructure.database import get_db
 from data.model.vehicle_model import VehicleModel
 from presentation.dto.UpdateVehicle import UpdateVehicle
 
@@ -7,8 +7,7 @@ class VehicleRepository():
     db: Session
 
     def __init__(self):
-        self.session_manager = SessionManager()
-        self.db = next(self.session_manager.get_db())
+        self.db = next(get_db())
 
     def get_vehicle(self, id: int):
         try:

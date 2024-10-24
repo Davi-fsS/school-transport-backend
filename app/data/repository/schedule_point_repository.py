@@ -2,7 +2,7 @@ from typing import List
 from sqlalchemy.orm import Session
 from sqlalchemy import desc
 from datetime import datetime, date
-from data.infrastructure.database import SessionManager
+from data.infrastructure.database import get_db
 from presentation.dto.PutSchedulePoint import PutSchedulePoint
 from data.model.schedule_point_model import SchedulePointModel
 from sqlalchemy import func, cast, Date
@@ -11,8 +11,7 @@ class SchedulePointRepository():
     db: Session
 
     def __init__(self):
-        self.session_manager = SessionManager()
-        self.db = next(self.session_manager.get_db())
+        self.db = next(get_db())
 
     def get_schedule_point_list_by_schedule_id(self, schedule_id: int):
         return self.db.query(SchedulePointModel).filter(SchedulePointModel.schedule_id == schedule_id).order_by(SchedulePointModel.order).all()
