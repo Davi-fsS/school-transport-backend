@@ -1,9 +1,9 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import and_
+from data.infrastructure.database import SessionManager
 from data.model.point_model import PointModel
 from presentation.dto.UpdateSchool import UpdateSchool
 from presentation.dto.UpdatePoint import UpdatePoint
-from data.infrastructure.database import get_db
 from datetime import datetime
 from typing import List
 
@@ -11,25 +11,28 @@ class PointRepository():
     db: Session
 
     def __init__(self):
-        self.db = next(get_db())
+        self.session_manager = SessionManager()
+        self.db = next(self.session_manager.get_db())
 
     def get_points_by_point_list(self, point_id_list: List[int]):
-        with self.db:
-            try:
-                points = self.db.query(PointModel).filter(PointModel.id.in_(point_id_list), PointModel.disabled == False).all()
-                return points
-            except:
-                self.db.rollback()
-                raise ValueError("Erro ao fazer a leitura no sistema")
+        try:
+            points = self.db.query(PointModel).filter(PointModel.id.in_(point_id_list), PointModel.disabled == False).all()
+            return points
+        except:
+            self.db.rollback()
+            raise ValueError("Erro ao fazer a leitura no sistema")
+        finally:
+            self.session_manager.close(self.db)
             
     def get_points_home_by_point_list(self, point_id_list: List[int]):
-        with self.db:
-            try:
-                points = self.db.query(PointModel).filter(and_(PointModel.id.in_(point_id_list), PointModel.point_type_id == 1, PointModel.disabled == False)).all()
-                return points
-            except:
-                self.db.rollback()
-                raise ValueError("Erro ao fazer a leitura no sistema")
+        try:
+            points = self.db.query(PointModel).filter(and_(PointModel.id.in_(point_id_list), PointModel.point_type_id == 1, PointModel.disabled == False)).all()
+            return points
+        except:
+            self.db.rollback()
+            raise ValueError("Erro ao fazer a leitura no sistema")
+        finally:
+            self.session_manager.close(self.db)
             
     def get_points_school_by_point_list(self, point_id_list: List[int]):
         try:
@@ -38,6 +41,8 @@ class PointRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
+        finally:
+            self.session_manager.close(self.db)
             
     def get_first_point_school_by_point_list(self, point_id_list: List[int]):
         try:
@@ -46,6 +51,8 @@ class PointRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
+        finally:
+            self.session_manager.close(self.db)
         
     def get_point(self, point_id: int):
         try:
@@ -53,6 +60,8 @@ class PointRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
+        finally:
+            self.session_manager.close(self.db)
         
     def get_school(self, school_id: int):
         try:
@@ -60,6 +69,8 @@ class PointRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
+        finally:
+            self.session_manager.close(self.db)
         
     def get_all_school_list(self):
         try:
@@ -67,6 +78,8 @@ class PointRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
+        finally:
+            self.session_manager.close(self.db)
         
     def create_point(self, db_point: PointModel):
         try:
@@ -76,6 +89,8 @@ class PointRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
+        finally:
+            self.session_manager.close(self.db)
             
     def update_point(self, lat: float, lng: float, point_update: UpdatePoint):
         try:
@@ -96,6 +111,8 @@ class PointRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
+        finally:
+            self.session_manager.close(self.db)
         
     def update_school(self, lat: float, lng: float, school_update: UpdateSchool):
         try:
@@ -116,6 +133,8 @@ class PointRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
+        finally:
+            self.session_manager.close(self.db)
         
     def delete_point(self, point_id: int):
         try:
@@ -125,4 +144,6 @@ class PointRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
+        finally:
+            self.session_manager.close(self.db)
     

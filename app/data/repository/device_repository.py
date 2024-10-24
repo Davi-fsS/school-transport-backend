@@ -1,18 +1,19 @@
 from datetime import datetime
 from sqlalchemy.orm import Session
+from data.infrastructure.database import SessionManager
 from data.repository.device_user_repository import DeviceUserRepository
 from presentation.dto.UpdateDevice import UpdateDevice
 from data.model.device_user_model import DeviceUserModel
 from presentation.dto.CreateDevice import CreateDevice
 from data.model.device_model import DeviceModel
-from data.infrastructure.database import get_db
 
 class DeviceRepository():
     db: Session
     device_user_repository: DeviceUserRepository
 
     def __init__(self):
-        self.db = next(get_db())
+        self.session_manager = SessionManager()
+        self.db = next(self.session_manager.get_db())
         self.device_user_repository = DeviceUserRepository()
 
     def create_device(self, body: CreateDevice):
@@ -31,6 +32,8 @@ class DeviceRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
+        finally:
+            self.session_manager.close(self.db)
     
     def update_device(self, body: UpdateDevice):
         try:
@@ -52,6 +55,8 @@ class DeviceRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
+        finally:
+            self.session_manager.close(self.db)
         
     def delete_device(self, id: int):
         try:
@@ -67,15 +72,29 @@ class DeviceRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema") 
+        finally:
+            self.session_manager.close(self.db)
         
     def get_device_user_by_device(self, device_id: int):
-        return self.db.query(DeviceUserModel).filter(DeviceUserModel.device_id == device_id, DeviceUserModel.disabled == False).first()
+        try:
+            return self.db.query(DeviceUserModel).filter(DeviceUserModel.device_id == device_id, DeviceUserModel.disabled == False).first()
+        finally:
+            self.session_manager.close(self.db)
 
     def get_all_devices(self):
-        return self.db.query(DeviceModel).filter(DeviceModel.disabled == False).all()
-    
+        try:
+            return self.db.query(DeviceModel).filter(DeviceModel.disabled == False).all()
+        finally:
+            self.session_manager.close(self.db)
+
     def get_device_by_code(self, code: str) -> DeviceModel:
-        return self.db.query(DeviceModel).filter(DeviceModel.code == code, DeviceModel.disabled == False).first()
-    
+        try:
+            return self.db.query(DeviceModel).filter(DeviceModel.code == code, DeviceModel.disabled == False).first()
+        finally:
+            self.session_manager.close(self.db)
+
     def get_device_by_id(self, id: int) -> DeviceModel:
-        return self.db.query(DeviceModel).filter(DeviceModel.id == id, DeviceModel.disabled == False).first()
+        try:
+            return self.db.query(DeviceModel).filter(DeviceModel.id == id, DeviceModel.disabled == False).first()   
+        finally:
+            self.session_manager.close(self.db)

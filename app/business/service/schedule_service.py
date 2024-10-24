@@ -1,5 +1,6 @@
 from datetime import date, datetime
 from typing import List
+from data.repository.session_repository import SessionRepository
 from presentation.dto.ScheduleHistoricDetailsResponsible import ScheduleHistoricDetailsResponsible
 from presentation.dto.ScheduleHistoricResponsible import ScheduleHistoricResponsible
 from presentation.dto.ScheduleHistoricDetails import ScheduleHistoricDetails
@@ -48,6 +49,7 @@ class ScheduleService():
     schedule_maps_infos_repository: ScheduleMapsInfosRepository
     parent_notification_service: ParentNotificationService
     coordinate_repository: CoordinateRepository
+    session_repository: SessionRepository
 
     def __init__(self):
         self.schedule_repository = ScheduleRepository()
@@ -63,6 +65,7 @@ class ScheduleService():
         self.schedule_maps_infos_repository = ScheduleMapsInfosRepository()
         self.parent_notification_service = ParentNotificationService()
         self.coordinate_repository = CoordinateRepository()
+        self.session_repository = SessionRepository()
 
     def get_schedule_by_id(self, schedule_id: int):
         schedule = self.schedule_repository.get_schedule_by_id(schedule_id)
@@ -100,6 +103,8 @@ class ScheduleService():
                notification.parent_notification_period_id == 3):
                 raise ValueError("Este aluno não está utilizando o transporte no momento")
 
+        self.session_repository.close_db()
+
         return driver_schedule
 
     def get_schedule_in_progress(self, schedule_id: int):
@@ -131,6 +136,8 @@ class ScheduleService():
         schedule_details = ScheduleDetails(schedule=schedule_dto, driver=schedule_user, destination=schedule_points[-1],
                                            school=self.get_school_on_schedule(schedule_points, schedule.schedule_type_id),
                                            vehicle=schedule_vehicle, points=schedule_points)
+
+        self.session_repository.close_db()
 
         return schedule_details
     
@@ -183,6 +190,8 @@ class ScheduleService():
 
         vehicle = self.schedule_vehicle_service.get_vehicle_by_schedule_id(schedule.id)
 
+        self.session_repository.close_db()
+
         return ScheduleResponsibleDetail(point=user_home, students_in_home=students_in_home_dto, students_in_other_home=students_in_other_home_dto, driver=driver, vehicle=vehicle)
     
     def get_schedule_by_user(self, user_id: int):
@@ -207,6 +216,8 @@ class ScheduleService():
             point_from_students.append(student.point_id)
 
         current_schedules = self.schedule_point_service.get_current_schedule_list_by_point_list(point_from_students)
+
+        self.session_repository.close_db()
 
         return current_schedules
     
@@ -240,6 +251,8 @@ class ScheduleService():
         
         schedule_created = ScheduleCreated(points=students_points, school=school_dto, schedule_id=schedule_id, students_inactive=students_inactive)
 
+        self.session_repository.close_db()
+
         return schedule_created
     
     def put_schedule_start(self, start: StartSchedule):
@@ -256,6 +269,8 @@ class ScheduleService():
 
         self.schedule_repository.put_schedule_start(start, school, destiny)
 
+        self.session_repository.close_db()
+
     def put_schedule_point(self, schedule_point: PutSchedulePoint):
         self.validating_driver(schedule_point.user_id)
         
@@ -264,6 +279,8 @@ class ScheduleService():
         self.validating_point_to_embark(schedule_point.schedule_id, schedule_point.point_id)
 
         self.schedule_point_service.put_schedule_point(schedule_point.schedule_id, schedule_point.point_id, schedule_point.user_id, schedule_point.has_embarked)
+
+        self.session_repository.close_db()
 
     def validating_destiny_schedule(self, driver_id: int, destiny_id: int):
         driver_point_list = self.user_point_service.get_user_point_list(driver_id)
@@ -290,6 +307,8 @@ class ScheduleService():
         self.validating_schedule_last_point(schedule_id)
         
         self.schedule_repository.put_schedule_end(schedule, user_id)
+
+        self.session_repository.close_db()
 
     def get_schedule_responsible_historic_details(self, schedule_id: int, user_id: int, point_id: int):
         self.validating_responsible(user_id)
@@ -345,6 +364,8 @@ class ScheduleService():
                                                                id=schedule.id, initial_date=schedule.initial_date, end_date=schedule.end_date,
                                                                 real_initial_date=schedule.real_initial_date, real_end_date=schedule.real_end_date,
                                                                 name=schedule.name, schedule_type=schedule_type, point=schedule_points_dto[0])
+
+        self.session_repository.close_db()
 
         return schedule_driver_historic_dto
 
@@ -406,6 +427,8 @@ class ScheduleService():
                                                                id=schedule.id, initial_date=schedule.initial_date, end_date=schedule.end_date,
                                                                 real_initial_date=schedule.real_initial_date, real_end_date=schedule.real_end_date,
                                                                 name=schedule.name, schedule_type=schedule_type, points=schedule_points_dto)
+
+        self.session_repository.close_db()
 
         return schedule_driver_historic_dto
 
@@ -550,6 +573,8 @@ class ScheduleService():
 
             schedule_historic.append(ScheduleHistoric(schedule=schedule_dto, coordinates=coordinate_dto, coordinates_lora=lora_coordinate_dto))
         
+        self.session_repository.close_db()
+
         return schedule_historic
 
     def get_schedule_student_position(self, schedule_id: int, user_id: int):
@@ -596,6 +621,8 @@ class ScheduleService():
         if user_home_in_schedule_order < schedule_points_already_completed:
             raise ValueError("Seu estudante já embarcou")
         
+        self.session_repository.close_db()
+        
         return user_home_in_schedule_order - schedule_points_already_completed
 
     def get_schedule_maps_infos(self, schedule_id: int, user_id: int):
@@ -612,7 +639,11 @@ class ScheduleService():
         if schedule is None:
             raise ValueError("Viagem inválida")
         
-        return self.schedule_maps_infos_repository.get_schedule_maps_infos_by_schedule_id(schedule.id)
+        infos =  self.schedule_maps_infos_repository.get_schedule_maps_infos_by_schedule_id(schedule.id)
+
+        self.session_repository.close_db()
+
+        return infos
 
     def get_points_by_student_list(self, student_ids: List[int], student_point_ids: List[int]):
         home_point_list: List[HomePoint] = []
