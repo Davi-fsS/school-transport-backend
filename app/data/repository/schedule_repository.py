@@ -2,6 +2,7 @@ from datetime import date, datetime
 from sqlalchemy import Date, desc
 from typing import List
 from sqlalchemy.orm import Session
+from data.infrastructure.database import SessionManager
 from data.model.schedule_maps_infos_model import ScheduleMapsInfosModel
 from presentation.dto.StartSchedule import StartSchedule
 from presentation.dto.Point import Point
@@ -13,41 +14,60 @@ from data.model.user_model import UserModel
 from data.model.vehicle_model import VehicleModel
 from presentation.dto.CreateSchedule import CreateSchedule
 from data.model.schedule_model import ScheduleModel
-from data.infrastructure.database import get_db
 from sqlalchemy import func, cast, Date
 
 class ScheduleRepository():
     db: Session
 
     def __init__(self):
-        self.db = next(get_db())
+        self.session_manager = SessionManager()
+        self.db = next(self.session_manager.get_db())
 
     def get_schedule_by_id(self, schedule_id : int):
-        return self.db.query(ScheduleModel).filter(ScheduleModel.id == schedule_id).first()
-    
+        try:
+            return self.db.query(ScheduleModel).filter(ScheduleModel.id == schedule_id).first()
+        finally:
+            self.session_manager.close(self.db)
+
     def get_last_schedule_point(self, schedule_id : int):
-        return self.db.query(SchedulePointModel).filter(SchedulePointModel.schedule_id == schedule_id).order_by(desc(SchedulePointModel.order)).first()
-    
+        try:
+            return self.db.query(SchedulePointModel).filter(SchedulePointModel.schedule_id == schedule_id).order_by(desc(SchedulePointModel.order)).first()
+        finally:
+            self.session_manager.close(self.db)
+
     def get_schedule_not_started(self, schedule_id: int):
-        return self.db.query(ScheduleModel).filter(ScheduleModel.id == schedule_id, ScheduleModel.real_initial_date == None, 
-                                                   ScheduleModel.real_end_date == None).first()
+        try:
+            return self.db.query(ScheduleModel).filter(ScheduleModel.id == schedule_id, ScheduleModel.real_initial_date == None, 
+                                                ScheduleModel.real_end_date == None).first()
+        finally:
+            self.session_manager.close(self.db)
 
     def get_schedule_in_progress(self, schedule_id: int):
-        return self.db.query(ScheduleModel).filter(ScheduleModel.id == schedule_id, ScheduleModel.real_initial_date != None, 
+        try:
+            return self.db.query(ScheduleModel).filter(ScheduleModel.id == schedule_id, ScheduleModel.real_initial_date != None, 
                                                    ScheduleModel.real_end_date == None).first()
-    
+        finally:
+            self.session_manager.close(self.db)
+
     def get_schedule_list_in_progress_by_list(self, schedule_id_list: List[int]):
-        return self.db.query(ScheduleModel).filter(ScheduleModel.id.in_(schedule_id_list), ScheduleModel.real_initial_date != None, 
+        try:
+            return self.db.query(ScheduleModel).filter(ScheduleModel.id.in_(schedule_id_list), ScheduleModel.real_initial_date != None, 
                                                    ScheduleModel.real_end_date == None).all()
-   
+        finally:
+            self.session_manager.close(self.db)
+
     def get_schedule_list_by_list_and_date(self, schedule_id_list: List[int], date: date):
-        with self.db:
+        try:
             return self.db.query(ScheduleModel).filter(ScheduleModel.id.in_(schedule_id_list), 
                                                    cast(ScheduleModel.initial_date, Date) == date).all()
-    
+        finally:
+            self.session_manager.close(self.db)
+
     def get_schedule_list_by_list(self, schedule_id_list: List[int]):
-        with self.db:
+        try:
             return self.db.query(ScheduleModel).filter(ScheduleModel.id.in_(schedule_id_list)).all()
+        finally:
+            self.session_manager.close(self.db)
 
     def create_schedule(self, schedule: CreateSchedule, driver: UserModel, vehicle: VehicleModel, school: PointModel):
         try:
@@ -83,6 +103,8 @@ class ScheduleRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer o registro no sistema")
+        finally:
+            self.session_manager.close(self.db)
 
     def put_schedule_start(self, start: StartSchedule, school: PointModel, destiny: PointModel | None):
         try:
@@ -128,6 +150,8 @@ class ScheduleRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer o registro no sistema")
+        finally:
+            self.session_manager.close(self.db)
     
     def put_schedule_end(self, schedule: ScheduleModel, user_id: int):
         try:
@@ -147,3 +171,5 @@ class ScheduleRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer o registro no sistema")
+        finally:
+            self.session_manager.close(self.db)

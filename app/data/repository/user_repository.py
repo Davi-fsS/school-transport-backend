@@ -1,73 +1,98 @@
 from sqlalchemy.orm import Session
+from data.infrastructure.database import SessionManager
 from data.model.student_model import StudentModel
 from data.model.user_student_model import UserStudentModel
 from data.model.user_phone_model import UserPhoneModel
 from data.model.user_point_model import UserPointModel
 from data.model.user_model import UserModel
-from data.infrastructure.database import get_db
 from presentation.dto.UpdateUser import UpdateUser
 from typing import List
 from datetime import datetime
 from sqlalchemy import inspect
 
 class UserRepository():
-    db: Session
-
     def __init__(self):
-        self.db = next(get_db())
+        self.session_manager = SessionManager()
+        self.db = next(self.session_manager.get_db())
 
     def get_user(self, user_id: int):
         try:
             return self.db.query(UserModel).filter(UserModel.id == user_id).first()
         except:
             self.db.rollback()
-            raise ValueError("Erro ao fazer a leitura no sistema")        
+            raise ValueError("Erro ao fazer a leitura no sistema")   
+        finally:
+            self.session_manager.close(self.db)
+
     def get_user_by_code(self, code: str):
         try:
             return self.db.query(UserModel).filter(UserModel.code == code).first()
         except:
             self.db.rollback()
-            raise ValueError("Erro ao fazer a leitura no sistema")        
+            raise ValueError("Erro ao fazer a leitura no sistema")   
+        finally:
+            self.session_manager.close(self.db)
+
     def get_user_by_list(self, user_id_list : List[int]):
         try:
             return self.db.query(UserModel).filter(UserModel.id.in_(user_id_list)).all()
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
+        finally:
+            self.session_manager.close(self.db)
         
     def get_responsibles_by_list(self, user_id_list : List[int]):
-        return self.db.query(UserModel).filter(UserModel.id.in_(user_id_list), UserModel.user_type_id != 2).all()
-        
+        try:
+            return self.db.query(UserModel).filter(UserModel.id.in_(user_id_list), UserModel.user_type_id != 2).all()
+        finally:
+            self.session_manager.close(self.db)
+
     def get_all_drivers(self):
         try:
             return self.db.query(UserModel).filter(UserModel.user_type_id == 2).all()
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
+        finally:
+            self.session_manager.close(self.db)
+
     def get_user_by_email(self, email: str):
         try:
             return self.db.query(UserModel).filter(UserModel.email == email).first()
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")    
+        finally:
+            self.session_manager.close(self.db)
+            
     def get_user_by_cnh(self, cnh: str):
         try:
             return self.db.query(UserModel).filter(UserModel.cnh == cnh).first()
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")    
+        finally:
+            self.session_manager.close(self.db)
+
     def get_user_by_cpf(self, cpf: str):
         try:
             return self.db.query(UserModel).filter(UserModel.cpf == cpf).first()
         except:
             self.db.rollback()
             raise ValueError("Erro ao fazer a leitura no sistema")
+        finally:
+            self.session_manager.close(self.db)
+
     def get_user_by_rg(self, rg: str):
         try:
             return self.db.query(UserModel).filter(UserModel.rg == rg).first()
         except:
             self.db.rollback()
-            raise ValueError("Erro ao fazer a leitura no sistema")        
+            raise ValueError("Erro ao fazer a leitura no sistema")       
+        finally:
+            self.session_manager.close(self.db)
+
     def create_user(self, db_user: UserModel):
         try:
             self.db.add(db_user)
@@ -76,6 +101,9 @@ class UserRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
+        finally:
+            self.session_manager.close(self.db)
+
     def update_user_uuid(self, id: int, uuid: str):
         try:
             user = self.get_user(id)
@@ -86,7 +114,10 @@ class UserRepository():
             self.db.commit()
         except:
             self.db.rollback()
-            raise ValueError("Erro ao salvar no sistema")        
+            raise ValueError("Erro ao salvar no sistema")
+        finally:
+            self.session_manager.close(self.db)        
+
     def update_user(self, user_update: UpdateUser):
         try:
             user = self.get_user(user_update.id)
@@ -100,7 +131,10 @@ class UserRepository():
             self.db.commit()
         except:
             self.db.rollback()
-            raise ValueError("Erro ao salvar no sistema")        
+            raise ValueError("Erro ao salvar no sistema") 
+        finally:
+            self.session_manager.close(self.db)       
+
     def update_user_code(self, user_update_id: int, code: str):
         try:
             user = self.get_user(user_update_id)
@@ -111,6 +145,8 @@ class UserRepository():
         except:
             self.db.rollback()
             raise ValueError("Erro ao salvar no sistema")
+        finally:
+            self.session_manager.close(self.db)
 
     def delete_user(self, user: UserModel, user_point_list: List[UserPointModel], user_phone_list: List[UserPhoneModel], 
                 user_students: List[UserStudentModel], others_user_students: List[UserStudentModel], 
@@ -168,3 +204,5 @@ class UserRepository():
         except Exception as e:
             self.db.rollback()
             raise ValueError(f"Erro ao salvar no sistema: {e}")
+        finally:
+            self.session_manager.close(self.db)
