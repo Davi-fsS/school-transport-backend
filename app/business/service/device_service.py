@@ -46,8 +46,7 @@ class DeviceService():
             user_dto = User(id=user.id, uuid=user.uuid, name=user.name, email=user.email, cpf=user.cpf, cnh=user.cnh, rg=user.rg,
                             user_type_id=user.user_type_id, code=user.code, phones=[])
 
-            devices_dto.append(Device(id=device.id, name=device.name, code=device.code, user=user_dto,
-                                      creation_date=device.creation_user, creation_user=device.creation_user))
+            devices_dto.append(Device(id=device.id, name=device.name, code=device.code, user=user_dto, creation_user=device.creation_user))
 
         return devices_dto
 
