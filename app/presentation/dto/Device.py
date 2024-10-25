@@ -8,5 +8,4 @@ class Device(BaseModel):
     name: str
     code: str
     user: User
-    creation_date: datetime
     creation_user: int
