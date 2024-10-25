@@ -175,11 +175,6 @@ class PointService():
         for point in points_by_user:
             point_id = point.id
             points_ids_by_user.append(point_id)
-
-        driver_with_school = self.point_repository.get_points_school_by_point_list(points_ids_by_user)
-
-        if(len(driver_with_school) != 0):
-            raise ValueError("Já existe uma escola associada ao seu usuário")
         
         code = self.generate_code(user.name, point_db.name)
 
