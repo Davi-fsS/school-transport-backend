@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from sqlalchemy import Date, desc
 from typing import List
 from sqlalchemy.orm import Session
@@ -49,7 +49,7 @@ class ScheduleRepository():
 
     def create_schedule(self, schedule: CreateSchedule, driver: UserModel, vehicle: VehicleModel, school: PointModel):
         try:
-            creation_date = datetime.now()
+            creation_date = datetime.now() - timedelta(hours=3)
 
             if(schedule.schedule_type != 1 and schedule.schedule_type != 2):
                 raise ValueError("Tipo de viagem inválida")
@@ -87,7 +87,7 @@ class ScheduleRepository():
             schedule = self.get_schedule_not_started(start.schedule_id)
             
             schedule.end_date = start.end_date
-            schedule.real_initial_date = datetime.now()
+            schedule.real_initial_date = datetime.now() - timedelta(hours=3)
 
             if(schedule.schedule_type_id == 1):
                 for index, point in enumerate(start.points):
@@ -98,7 +98,7 @@ class ScheduleRepository():
                                                            description=f"Destino: Escola {school.name}" , creation_user=start.user_id, planned_date=start.end_date)
                 self.db.add(schedule_point_school)
             elif(schedule.schedule_type_id == 2):
-                schedule_point_school = SchedulePointModel(planned_date=datetime.now(), real_date=datetime.now(), schedule_id=schedule.id, order=1, point_id=school.id, 
+                schedule_point_school = SchedulePointModel(planned_date=datetime.now() - timedelta(hours=3), real_date=datetime.now() - timedelta(hours=3), schedule_id=schedule.id, order=1, point_id=school.id, 
                                                         description=f"Origem: Escola {school.name}" ,creation_user=start.user_id)
                 self.db.add(schedule_point_school)
 
