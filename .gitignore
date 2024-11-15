@@ -1,2 +1,4 @@
 .env
 auth-firebase.json
+requirements.txt
+Procfile
