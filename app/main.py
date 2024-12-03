@@ -1,4 +1,4 @@
-from fastapi import FastAPI, status, HTTPException, Header
+from fastapi import FastAPI, Request, status, HTTPException, Header
 from presentation.dto.SaveLoraCoordinate import SaveLoraCoordinate
 from presentation.dto.UpdateDevice import UpdateDevice
 from presentation.dto.CreateDevice import CreateDevice
@@ -40,6 +40,7 @@ from presentation.dto.UpdatePoint import UpdatePoint
 from presentation.dto.CreateSchedule import CreateSchedule
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
+from presentation.middleware.firebase_auth_middleware import FirebaseAuthMiddleware
 
 app = FastAPI()
 
@@ -61,6 +62,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.add_middleware(FirebaseAuthMiddleware)
 
 user_controller = UserController()
 user_type_controller = UserTypeController()
@@ -199,7 +202,7 @@ async def delete_student(student_id: int):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
     
 @app.get("/student/get-by-responsible", status_code=status.HTTP_200_OK)
-async def get_students_by_responsible(responsible_id: int):
+async def get_students_by_responsible(responsible_id: int, request: Request):
     try:
         students = student_controller.get_students_by_responsible(responsible_id=responsible_id)
 
