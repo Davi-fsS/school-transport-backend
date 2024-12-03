@@ -1,23 +1,23 @@
 from fastapi import HTTPException, Request
 from starlette.middleware.base import BaseHTTPMiddleware
-from firebase_admin import credentials, auth
+from firebase_admin import credentials, auth, initialize_app
 import firebase_admin
 import os
+import json
 
 class FirebaseAuthMiddleware(BaseHTTPMiddleware):
     def __init__(self, app):
         super().__init__(app)
-        json_path = os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        project_root = os.path.join(current_dir, "../../../")
+        json_path = os.path.join(project_root, "auth-firebase.json")
         
-        if json_path:
-            cred = credentials.Certificate(json_path)
-            if not firebase_admin._apps:
-                firebase_admin.initialize_app(cred)
-        else:
-            raise ValueError("Caminho para o arquivo de credenciais não fornecido na variável de ambiente GOOGLE_APPLICATION_CREDENTIALS.")
-        
+        cred = credentials.Certificate(json_path)
+        if not firebase_admin._apps:
+            initialize_app(cred)
+
     async def dispatch(self, request: Request, call_next):
-        if request.url.path.startswith("/docs") or request.url.path.startswith("/user"):
+        if request.url.path.startswith("/docs") or request.url.path.startswith("/openapi.json") or request.url.path.startswith("/user"):
             return await call_next(request)
         
         token = request.headers.get("Authorization")

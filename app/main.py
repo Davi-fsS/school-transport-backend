@@ -63,7 +63,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.add_middleware(FirebaseAuthMiddleware)
+# apenas localmente
+# app.add_middleware(FirebaseAuthMiddleware)
 
 user_controller = UserController()
 user_type_controller = UserTypeController()
