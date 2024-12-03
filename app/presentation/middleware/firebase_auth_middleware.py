@@ -16,7 +16,7 @@ class FirebaseAuthMiddleware(BaseHTTPMiddleware):
             firebase_admin.initialize_app(cred)
 
     async def dispatch(self, request: Request, call_next):
-        if request.url.path.startswith("/docs") or request.url.path.startswith("/openapi.json") or request.url.path.startswith("/user/create"):
+        if request.url.path.startswith("/docs") or request.url.path.startswith("/user"):
             return await call_next(request)
         
         token = request.headers.get("Authorization")
