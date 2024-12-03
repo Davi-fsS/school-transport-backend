@@ -7,14 +7,15 @@ import os
 class FirebaseAuthMiddleware(BaseHTTPMiddleware):
     def __init__(self, app):
         super().__init__(app)
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        project_root = os.path.join(current_dir, "../../../")
-        json_path = os.path.join(project_root, "auth-firebase.json")
+        json_path = os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
         
-        cred = credentials.Certificate(json_path)
-        if not firebase_admin._apps:
-            firebase_admin.initialize_app(cred)
-
+        if json_path:
+            cred = credentials.Certificate(json_path)
+            if not firebase_admin._apps:
+                firebase_admin.initialize_app(cred)
+        else:
+            raise ValueError("Caminho para o arquivo de credenciais não fornecido na variável de ambiente GOOGLE_APPLICATION_CREDENTIALS.")
+        
     async def dispatch(self, request: Request, call_next):
         if request.url.path.startswith("/docs") or request.url.path.startswith("/user"):
             return await call_next(request)
